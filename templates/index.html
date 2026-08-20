@@ -1,985 +1,1228 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hemo Campus Navbar</title>
-    {% load static %}
+{% extends 'master.html' %}
+{% load static %}
 
+{% block title %}Hemo Campus - Smart Blood Bank Management System{% endblock %}
+
+{% block content %}
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
+    /* ================= ROOT VARIABLES & RESET ================= */
+    :root {
+        --primary-red: #c61a1a;
+        --dark-red: #800000;
+        --deep-wine: #3d0000;
+        --accent-gold: #ffd700;
+        --accent-gold-hover: #ffea70;
+        --bg-light: #f8fafc;
+        --card-bg: #ffffff;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+        --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.12);
+        --radius-sm: 10px;
+        --radius-md: 16px;
+        --radius-lg: 24px;
     }
 
-    .header {
+    .home-wrapper {
         width: 100%;
-        height: 60px;
+        overflow-x: hidden;
+        background: var(--bg-light);
+        color: var(--text-main);
+    }
+
+    .container-custom {
+        width: 100%;
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    /* ================= HERO & SLIDER SECTION ================= */
+    .hero-wrapper {
+        position: relative;
+        width: 100%;
+        background: #0f172a;
+        overflow: hidden;
+    }
+
+    .slider {
+        width: 100%;
+        height: 520px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .slides {
+        display: flex;
+        width: 500%;
+        height: 100%;
+        transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .slide {
+        width: 20%;
+        height: 100%;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        filter: brightness(0.65);
+    }
+
+    /* Hero Overlay Content */
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        background: linear-gradient(90deg, rgba(15, 23, 42, 0.88) 0%, rgba(15, 23, 42, 0.6) 60%, rgba(198, 26, 26, 0.35) 100%);
+        padding: 40px 0;
+    }
+
+    .hero-content {
+        max-width: 680px;
+        color: #ffffff;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 215, 0, 0.18);
+        border: 1px solid rgba(255, 215, 0, 0.4);
+        color: #ffd700;
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 18px;
+        backdrop-filter: blur(4px);
+    }
+
+    .hero-title {
+        font-size: clamp(26px, 4.5vw, 44px);
+        font-weight: 800;
+        line-height: 1.18;
+        margin-bottom: 16px;
+        letter-spacing: -0.5px;
+    }
+
+    .hero-title span {
+        color: #ff4d4d;
+        background: linear-gradient(90deg, #ff6b6b, #ffd700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+        font-size: clamp(14px, 1.8vw, 16.5px);
+        color: #cbd5e1;
+        line-height: 1.65;
+        margin-bottom: 28px;
+    }
+
+    .hero-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .btn-hero-primary {
+        background: linear-gradient(135deg, #c61a1a 0%, #a00000 100%);
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 15px;
+        padding: 13px 26px;
+        border-radius: 30px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        box-shadow: 0 6px 20px rgba(198, 26, 26, 0.45);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-hero-primary:hover {
+        background: linear-gradient(135deg, #e60000 0%, #b30000 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(230, 0, 0, 0.6);
+        color: #ffffff;
+    }
+
+    .btn-hero-secondary {
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 15px;
+        padding: 13px 24px;
+        border-radius: 30px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        transition: all 0.3s ease;
+    }
+
+    .btn-hero-secondary:hover {
+        background: rgba(255, 255, 255, 0.24);
+        color: #ffd700;
+        transform: translateY(-2px);
+    }
+
+    /* Slider Controls */
+    .prev, .next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(15, 23, 42, 0.6);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        width: 44px;
+        height: 44px;
+        cursor: pointer;
+        font-size: 18px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+    }
+
+    .prev:hover, .next:hover {
+        background-color: #ffd700;
+        color: #3d0000;
+        border-color: #ffd700;
+        transform: translateY(-50%) scale(1.08);
+    }
+
+    .prev { left: 20px; }
+    .next { right: 20px; }
+
+    .dots {
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+        text-align: center;
+        z-index: 10;
+    }
+
+    .dot {
+        height: 10px;
+        width: 10px;
+        margin: 0 4px;
+        background-color: rgba(255, 255, 255, 0.4);
+        border-radius: 50%;
+        display: inline-block;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .dot.active, .dot:hover {
+        background-color: #ffd700;
+        width: 26px;
+        border-radius: 10px;
+    }
+
+    /* ================= STATS TICKER SECTION ================= */
+    .stats-strip {
+        position: relative;
+        margin-top: -45px;
+        z-index: 20;
+        margin-bottom: 50px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        background: #ffffff;
+        padding: 24px;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
+    }
+
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 8px 12px;
+        border-right: 1px solid var(--border-color);
+    }
+
+    .stat-card:last-child {
+        border-right: none;
+    }
+
+    .stat-icon-wrap {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+
+    .stat-red { background: #fee2e2; color: #dc2626; }
+    .stat-green { background: #dcfce7; color: #16a34a; }
+    .stat-blue { background: #e0e7ff; color: #4338ca; }
+    .stat-gold { background: #fef3c7; color: #d97706; }
+
+    .stat-number {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--text-main);
+        line-height: 1.1;
+        margin-bottom: 2px;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    /* ================= INTERACTIVE COMPATIBILITY SECTION ================= */
+    .compat-section {
+        background: #ffffff;
+        border-radius: var(--radius-md);
+        padding: 36px 30px;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 60px;
+    }
+
+    .compat-header {
+        text-align: center;
+        max-width: 650px;
+        margin: 0 auto 30px;
+    }
+
+    .compat-header h3 {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 8px;
+    }
+
+    .compat-header p {
+        color: var(--text-muted);
+        font-size: 14.5px;
+    }
+
+    .blood-selector {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 30px;
+    }
+
+    .blood-pill {
+        background: var(--bg-light);
+        border: 2px solid var(--border-color);
+        color: var(--text-main);
+        font-size: 16px;
+        font-weight: 700;
+        padding: 10px 22px;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+
+    .blood-pill:hover {
+        border-color: var(--primary-red);
+        color: var(--primary-red);
+        transform: translateY(-2px);
+    }
+
+    .blood-pill.active {
+        background: var(--primary-red);
+        border-color: var(--primary-red);
+        color: #ffffff;
+        box-shadow: 0 4px 14px rgba(198, 26, 26, 0.35);
+    }
+
+    .compat-result-card {
+        background: linear-gradient(135deg, #fef2f2 0%, #fff7ed 100%);
+        border: 1px solid #fecaca;
+        border-radius: var(--radius-md);
+        padding: 26px 30px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    .compat-box {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: var(--radius-sm);
+        border: 1px solid #fee2e2;
+    }
+
+    .compat-box h5 {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--primary-red);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .compat-badge-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .badge-blood {
+        background: #fee2e2;
+        color: #b91c1c;
+        font-weight: 700;
+        font-size: 13px;
+        padding: 6px 14px;
+        border-radius: 20px;
+    }
+
+    /* ================= SECTION HEADERS ================= */
+    .section-head {
+        text-align: center;
+        max-width: 650px;
+        margin: 0 auto 40px;
+    }
+
+    .section-tag {
+        display: inline-block;
+        color: var(--primary-red);
+        background: #fee2e2;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 5px 14px;
+        border-radius: 20px;
+        margin-bottom: 12px;
+    }
+
+    .section-title {
+        font-size: clamp(24px, 3.5vw, 32px);
+        font-weight: 800;
+        color: var(--text-main);
+        letter-spacing: -0.5px;
+        margin-bottom: 10px;
+    }
+
+    .section-subtitle {
+        font-size: 15px;
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+
+    /* ================= CORE 4 ACTION CARDS ================= */
+    .card-grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        margin-bottom: 70px;
+    }
+
+    .action-card {
+        background: #ffffff;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        padding: 30px 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #c61a1a, #ffd700);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .action-card:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-lg);
+        border-color: #fca5a5;
+    }
+
+    .action-card:hover::before {
+        opacity: 1;
+    }
+
+    .action-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: #fee2e2;
+        color: #dc2626;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 20px;
+        transition: transform 0.3s ease;
+    }
+
+    .action-card:hover .action-icon {
+        transform: scale(1.1) rotate(4deg);
+    }
+
+    .action-card h4 {
+        font-size: 19px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 10px;
+    }
+
+    .action-card p {
+        font-size: 14px;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 22px;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--primary-red);
+        font-weight: 700;
+        font-size: 14.5px;
+        text-decoration: none;
+        transition: gap 0.2s ease;
+    }
+
+    .action-btn:hover {
+        gap: 12px;
+        color: var(--dark-red);
+    }
+
+    /* ================= 4 STEP PROCESS ================= */
+    .process-section {
+        background: #ffffff;
+        border-radius: var(--radius-lg);
+        padding: 50px 30px;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 70px;
+    }
+
+    .process-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        position: relative;
+    }
+
+    .process-card {
+        text-align: center;
+        position: relative;
+        padding: 20px 14px;
+    }
+
+    .step-badge {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #c61a1a, #800000);
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+        box-shadow: 0 4px 14px rgba(198, 26, 26, 0.3);
+    }
+
+    .process-card h4 {
+        font-size: 17px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text-main);
+    }
+
+    .process-card p {
+        font-size: 13.5px;
+        color: var(--text-muted);
+        line-height: 1.55;
+    }
+
+    /* ================= MODULES SECTION ================= */
+    .modules-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+        margin-bottom: 70px;
+    }
+
+    .module-card {
+        background: #ffffff;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        padding: 26px 22px;
+        display: flex;
+        gap: 18px;
+        transition: all 0.25s ease;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .module-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+        border-color: #cbd5e1;
+    }
+
+    .module-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: #f1f5f9;
+        color: var(--primary-red);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+    .module-info h4 {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 6px;
+    }
+
+    .module-info p {
+        font-size: 13.5px;
+        color: var(--text-muted);
+        line-height: 1.55;
+        margin: 0;
+    }
+
+    /* ================= PARTNER BLOOD CENTERS ================= */
+    .centers-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 70px;
+    }
+
+    .center-card {
+        background: #ffffff;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        padding: 22px 18px;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.25s ease;
+    }
+
+    .center-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+        border-color: #fca5a5;
+    }
+
+    .center-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: #fee2e2;
+        color: #dc2626;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        margin: 0 auto 14px;
+    }
+
+    .center-card h4 {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 4px;
+    }
+
+    .center-card .city {
+        font-size: 13px;
+        color: var(--primary-red);
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .center-card .badge-verified {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #dcfce7;
+        color: #15803d;
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 12px;
+    }
+
+    /* ================= EMERGENCY CTA BANNER ================= */
+    .cta-banner {
+        background: linear-gradient(135deg, #3d0000 0%, #8b0000 50%, #c61a1a 100%);
+        border-radius: var(--radius-lg);
+        padding: 45px 36px;
+        color: #ffffff;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: linear-gradient(90deg, #4b0000 0%, #a00000 50%, #ff1a1a 100%);
-        padding: 0 35px;
-        box-shadow: 0 5px 20px rgba(160,0,0,0.4);
-        position: sticky;
-        top: 0;
-        z-index: 1000;
+        gap: 30px;
+        box-shadow: 0 15px 40px rgba(198, 26, 26, 0.35);
+        margin-bottom: 60px;
     }
 
-    /* Logo + Brand */
-    .brand {
+    .cta-info h3 {
+        font-size: clamp(22px, 3vw, 30px);
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .cta-info p {
+        font-size: 15px;
+        color: #f1f5f9;
+        margin: 0;
+        max-width: 600px;
+    }
+
+    .cta-actions {
         display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        flex-shrink: 0;
+    }
+
+    .btn-cta-gold {
+        background: #ffd700;
+        color: #3d0000;
+        font-weight: 700;
+        padding: 13px 26px;
+        border-radius: 30px;
+        text-decoration: none;
+        display: inline-flex;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        transition: all 0.25s ease;
     }
 
-    .brand img {
-        height: 42px;
-        width: 42px;
-        border-radius: 50%;
-        background: white;
-        object-fit: cover;
-        box-shadow: 0 0 10px rgba(255,215,0,0.5);
+    .btn-cta-gold:hover {
+        background: #ffea70;
+        transform: translateY(-2px);
+        color: #000000;
     }
 
-    .brand-text {
-        color: white;
-        font-size: 24px;
-        font-weight: bold;
-        letter-spacing: 2px;
-        text-shadow: 0 0 8px rgba(255,255,255,0.6);
+    .btn-cta-outline {
+        background: transparent;
+        color: #ffffff;
+        font-weight: 600;
+        padding: 13px 24px;
+        border-radius: 30px;
+        text-decoration: none;
+        border: 2px solid rgba(255, 255, 255, 0.6);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.25s ease;
     }
 
-   .Novbaar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: nowrap;
-    background: #8b0000; /* dark red navbar bg */
-    padding: 12px 20px;
-}
-
-.Novbaar a, .dropbtn {
-    text-decoration: none;
-    color: white;
-    font-size: 15px;
-    font-weight: 600;
-    padding: 9px 14px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-    position: relative;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
-}
-
-/* Hover effect - golden glow for all nav items */
-.Novbaar a:hover, .dropbtn:hover {
-    background: linear-gradient(90deg, #ffd700, #ffea80);
-    color: #4b0000;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(255,215,0,0.4);
-}
-
-/* Dropdown container */
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-/* Dropdown menu */
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background: #fff;
-    min-width: 220px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    border-radius: 8px;
-    z-index: 1000;
-    top: 100%;
-    left: 0;
-    margin-top: 5px;
-    overflow: hidden;
-}
-
-/* Dropdown links */
-.dropdown-content a {
-    color: #4b0000;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    border-radius: 0;
-    font-weight: 500;
-    transform: none;
-}
-
-.dropdown-content a:hover {
-    background: #ffea80;
-    color: #4b0000;
-    transform: none;
-    box-shadow: none;
-}
-
-/* Show dropdown on hover */
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-/* Optional: Keep Account button styled different if you want */
-.account-btn {
-    background: linear-gradient(90deg, #ffd700, #ffea80);
-    color: #4b0000;
-}
-
-    .slider {
-    width: 100%;
-    height: 500px;
-    position: relative;
-    overflow: hidden;
-    margin-top: 0;
-}
-
-.slides {
-    display: flex;
-    width: 500%; /* 5 slide = 500% */
-    height: 100%;
-    transition: transform 0.8s ease-in-out;
-}
-
-.slide {
-    width: 100%;
-    height: 500px;
-    position: relative;
-    flex-shrink: 0;
-}
-
-.slide img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* Arrows */
-.prev,.next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(0,0,0,0.4);
-    color: white;
-    border: none;
-    padding: 15px;
-    cursor: pointer;
-    font-size: 24px;
-    border-radius: 50%;
-    transition: 0.3s;
-    z-index: 10;
-}
-
-.prev:hover,.next:hover {
-    background-color: #ffd700;
-    color: #4b0000;
-}
-
-.prev { left: 20px; }
-.next { right: 20px; }
-
-/* Dots */
-.dots {
-    position: absolute;
-    bottom: 20px;
-    width: 100%;
-    text-align: center;
-}
-
-.dot {
-    height: 12px;
-    width: 12px;
-    margin: 0 5px;
-    background-color: #bbb;
-    border-radius: 50%;
-    display: inline-block;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.active,.dot:hover {
-    background-color: #ffd700;
-}
-
-
-
-.card-container {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 60px 40px;
-    flex-wrap: nowrap;
-    background: #ffffff;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.card {
-    flex: 1;
-    min-width: 0;
-    background: white;
-    border-radius: 15px;
-    padding: 30px 15px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(160,0,0,0.15);
-    transition: all 0.4s ease;
-    cursor: pointer;
-}
-
-.card:hover {
-    transform: translateY(-5px) scale(1.02); /* -12px se -5px kar diya */
-    box-shadow: 0 10px 25px rgba(160,0,0,0.25); /* shadow bhi halka kar diya */
-    background: linear-gradient(180deg, #fff, #ffecec);
-}
-
-.card-icon {
-    font-size: 50px;
-    margin-bottom: 15px;
-    transition: transform 0.3s ease; /* 0.2s se 0.3s kiya, smooth lagega */
-}
-
-.card:hover .card-icon {
-    transform: rotate(5deg) scale(1.1); /* icon bhi halka ghumega */
-}
-
-.card-content h3 {
-    font-size: 20px;
-    color: #a00000;
-    margin-bottom: 12px;
-}
-
-.card-content p {
-    font-size: 13px;
-    color: #555;
-    line-height: 1.6;
-    margin-bottom: 20px;
-}
-
-.card-btn {
-    display: inline-block;
-    background: linear-gradient(90deg, #ff1a1a, #a00000);
-    color: white;
-    padding: 10px 18px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
-    border: 2px solid #ffd700;
-    transition: 0.3s;
-    font-size: 14px;
-}
-
-.card-btn:hover {
-    background: linear-gradient(90deg, #ffd700, #ffea80); /* ye bhi add kar diya */
-    color: #4b0000;
-    transform: scale(1.05); /* 1.08 se 1.05 kiya */
-}
-
-
-
-.two-card-container {
-    display: flex;
-    gap: 25px;
-    padding: 60px 40px;
-    background: #ffffff;
-    width: 100%;
-    box-sizing: border-box;
-    align-items: stretch;
-}
-
-/* LEFT - Chhota Card */
-.card-small {
-    flex: 1;
-    background: white;
-    border-radius: 15px;
-    padding: 35px 20px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(160,0,0,0.15);
-    transition: all 0.4s ease;
-    cursor: pointer;
-}
-
-.card-small:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 10px 25px rgba(160,0,0,0.25);
-    background: linear-gradient(180deg, #fff, #ffecec);
-}
-
-/* RIGHT - Bada Card */
-.card-big {
-    flex: 2;
-    background: white;
-    border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 4px 10px rgba(160,0,0,0.15);
-
-    transition: all 0.4s ease;
-}
-
-.card-big:hover {
-    box-shadow: 0 10px 25px rgba(160,0,0,0.25);
-}
-
-.card-big h3 {
-    font-size: 26px;
-    color: #a00000;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-/* 3 Sub Cards Inside Right Card */
-.sub-card-container {
-    display: flex;
-    gap: 15px;
-    justify-content: space-between;
-}
-
-.sub-card {
-    flex: 1;
-    background: #fff5f5;
-    border-radius: 12px;
-    padding: 20px 15px;
-    text-align: center;
-    border: 1px solid #ffd700;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.sub-card:hover {
-    transform: translateY(-8px);
-    background: linear-gradient(180deg, #ffecec, #ffdada);
-    border-color: #ff1a1a;
-    box-shadow: 0 8px 20px rgba(160,0,0,0.2);
-}
-
-.sub-icon {
-    font-size: 35px;
-    margin-bottom: 10px;
-    transition: transform 0.3s ease;
-}
-
-.sub-card:hover .sub-icon {
-    transform: scale(1.2) rotate(5deg);
-}
-
-.sub-card h4 {
-    font-size: 16px;
-    color: #a00000;
-    margin-bottom: 8px;
-}
-
-.sub-card p {
-    font-size: 12px;
-    color: #555;
-    line-height: 1.5;
-    margin: 0;
-}
-
-.card-icon {
-    font-size: 50px;
-    margin-bottom: 15px;
-    transition: transform 0.3s ease;
-}
-
-.card-small:hover .card-icon {
-    transform: rotate(5deg) scale(1.1);
-}
-
-.card-content h3 {
-    font-size: 22px;
-    color: #a00000;
-    margin-bottom: 12px;
-}
-
-.card-content p {
-    font-size: 14px;
-    color: #555;
-    line-height: 1.7;
-    margin: 0;
-}
-
-.box
-{
-    height: 50px;
-    width: 100%;
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    margin-bottom: 10px; /* 15px se 10px kiya */
-}
-
-.box:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(160,0,0,0.25);
-}
-
-.box h2 {
-    font-size: 16px;
-    color: black;
-    font-weight: bold;
-    margin: 0;
-    text-align: center;
-}
-
-.box h2 {
-    font-size: 40px; /* font bhi thoda bada kiya 16px se 20px */
-    color:black; /* red color kar diya */
-    font-weight: bold;
-    margin: 0;
-    text-align: center;
-    letter-spacing: 0.5px;
-}
-
-.box2{
-    width:90%;
-    max-width:1100px;
-    margin:15px auto;
-    background:transparent;
-    padding:20px 20px;
-}
-
-.box2-title{
-    text-align:center;
-    font-size:32px;
-    color:#a00000;
-    margin-bottom:20px;
-}
-
-.box2-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:20px;
-}
-
-.mini-card{
-    background:#fff;
-    border-radius:12px;
-    padding:25px 20px;
-    text-align:center;
-    box-shadow:0 4px 10px rgba(0,0,0,0.1);
-    transition:0.3s;
-    cursor:pointer;
-}
-
-.mini-card:hover{
-    transform:translateY(-8px);
-    box-shadow:0 10px 20px rgba(0,0,0,0.2);
-}
-
-.mini-icon{
-    font-size:40px;
-    margin-bottom:10px;
-}
-
-.mini-card h4{
-    color:#a00000;
-    font-size:28px;
-    margin-bottom:10px;
-}
-
-.mini-card p{
-    color:#555;
-    font-size:16px;
-}
-
-.box3 {
-    width: 90%;
-    max-width: 1100px;
-    margin: 20px auto;
-    border-radius: 10px;
-    padding: 25px 30px;
-    text-align: center;
-}
-
-.box3 h3 {
-    font-size: 35px;
-    color: black;
-    font-weight: bold;
-    margin: 0 0 8px 0; /* heading ke niche gap */
-}
-
-.box3 p {
-    font-size: 20px;
-    color: black; /* halka white */
-    margin: 0;
-    line-height: 1.5;
-}
-
-
-.centre-grid {
-    width: 90%;
-    max-width: 1100px;
-    margin: 30px auto;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2x2 grid */
-    gap: 25px;
-}
-
-.centre-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 25px;
-    display: flex;
-    align-items: flex-start; /* upar se align */
-    gap: 20px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08); /* halka shadow */
-    transition: all 0.3s ease;
-}
-
-.centre-card:hover {
-    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-    transform: translateY(-3px);
-}
-
-.centre-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: #e0e0e0; /* grey circle */
-    flex-shrink: 0;
-    position: relative;
-}
-
-/* Icon ke andar user silhouette */
-.centre-icon::before {
-    content: '';
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    background: white;
-    border-radius: 50%;
-    top: 15px;
-    left: 25px;
-}
-.centre-icon::after {
-    content: '';
-    position: absolute;
-    width: 50px;
-    height: 25px;
-    background: white;
-    border-radius: 25px 25px 0 0;
-    bottom: 10px;
-    left: 15px;
-}
-
-.centre-info h4 {
-    font-size: 17px;
-    color: #2c4a6b; /* neela color */
-    font-weight: 600;
-    margin: 0 0 8px 0;
-    line-height: 1.4;
-}
-
-.centre-info .city {
-    font-size: 14px;
-    color: #333;
-    font-weight: 600;
-    margin: 0 0 8px 0;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #cce0ff; /* neeli line */
-    width: fit-content;
-}
-
-.centre-info .since {
-    font-size: 14px;
-    color: #666;
-    margin: 0;
-}
-
-/* Sabse pehle body ka margin hatado */
-body {
-    margin: 0;
-    padding: 0;
-}
-
-.footer {
-    width: 100vw; /* screen ki full width */
-    background: #000000; /* black bg */
-    color: white; /* white font */
-    padding: 40px 0 0 0;
-    margin: 50px 0 0 0; /* left right margin 0 */
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw; /* screen ke kinare tak le jane ke liye */
-    margin-right: -50vw;
-    box-sizing: border-box;
-}
-
-.footer-container {
-    width: 90%; /* andar ka content 90% rakhenge */
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
-    padding-bottom: 30px;
-}
-
-.footer-col h4 {
-    font-size: 18px;
-    margin-bottom: 15px;
-    color: white;
-    font-weight: bold;
-}
-
-.footer-col p, .footer-col ul li, .footer-col ul li a {
-    font-size: 14px;
-    color: #cccccc;
-    text-decoration: none;
-}
-
-.footer-col ul li a:hover, .social-icons a:hover {
-    color: white;
-}
-
-.footer-bottom {
-    width: 100%;
-    background: #111111;
-    text-align: center;
-    padding: 15px 10px;
-    font-size: 13px;
-    color: white;
-}
-
-
+    .btn-cta-outline:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: #ffffff;
+        color: #ffffff;
+    }
+
+    /* ================= RESPONSIVE BREAKPOINTS ================= */
+    @media (max-width: 1024px) {
+        .slider { height: 460px; }
+        .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .stat-card:nth-child(2) { border-right: none; }
+        .card-grid-4 { grid-template-columns: repeat(2, 1fr); }
+        .process-grid { grid-template-columns: repeat(2, 1fr); gap: 28px; }
+        .modules-grid { grid-template-columns: repeat(2, 1fr); }
+        .centers-grid { grid-template-columns: repeat(2, 1fr); }
+        .cta-banner { flex-direction: column; text-align: center; }
+        .cta-actions { justify-content: center; }
+    }
+
+    @media (max-width: 768px) {
+        .slider { height: 420px; }
+        .hero-overlay { padding: 30px 15px; }
+        .stats-strip { margin-top: -25px; }
+        .compat-result-card { grid-template-columns: 1fr; }
+        .prev, .next { width: 38px; height: 38px; font-size: 15px; }
+        .prev { left: 10px; }
+        .next { right: 10px; }
+    }
+
+    @media (max-width: 576px) {
+        .slider { height: 400px; }
+        .hero-title { font-size: 24px; }
+        .hero-desc { font-size: 13.5px; margin-bottom: 20px; }
+        .hero-buttons { flex-direction: column; width: 100%; }
+        .btn-hero-primary, .btn-hero-secondary { width: 100%; justify-content: center; }
+        .stats-grid { grid-template-columns: 1fr; }
+        .stat-card { border-right: none; border-bottom: 1px solid var(--border-color); padding-bottom: 14px; }
+        .stat-card:last-child { border-bottom: none; }
+        .card-grid-4 { grid-template-columns: 1fr; }
+        .process-grid { grid-template-columns: 1fr; }
+        .modules-grid { grid-template-columns: 1fr; }
+        .centers-grid { grid-template-columns: 1fr; }
+        .compat-section { padding: 24px 16px; }
+        .cta-banner { padding: 30px 20px; }
+        .btn-cta-gold, .btn-cta-outline { width: 100%; justify-content: center; }
+    }
 </style>
-</head>
-<body>
 
-<div class="header">
-    <div class="brand">
-{#        <img src="hemo-logo.png" alt="Hemo Campus Logo"> <!-- yaha apna logo daal do -->#}
-        <span class="brand-text">HEMO CAMPUS</span>
-    </div>
-         <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-   <div class="Novbaar">
-    <a href="/">Home</a>
-    <a href="/about/">About Us</a>
+<div class="home-wrapper">
 
-    <!-- Service Dropdown -->
-    <div class="dropdown">
-        <button class="dropbtn">Service ▾</button>
-        <div class="dropdown-content">
-            <a href="/blood-availability/">Blood Availability</a>
-            <a href="/blood-center-directory/">Blood Center Directory</a>
-            <a href="/camp-schedule/">Camp Schedule</a>
-        </div>
-    </div>
-
-    <a href="/donate/">Donate Blood</a>
-  <a href="/request-blood/">Request Blood</a>
-    <a href="/contact/">Contact Us</a>
-
-    <!-- Account Dropdown -->
-    <div class="dropdown">
-        <button class="dropbtn account-btn">Account ▾</button>
-        <div class="dropdown-content">
-            <a href="/login/">Login</a>
-{#            <a href="/register/">Register</a>#}
-        </div>
-    </div>
-</div>
-</div>
-
-<!-- SLIDER START -->
-<div class="slider">
-    <div class="slides">
-
-        <div class="slide">
-               <img src="{% static 'images/Slide1st.jpg' %}" alt="Slide 1" style="width: 1260px" height="80px">
-        </div>
-
-        <div class="slide">
-               <img src="{% static 'images/Slide2nd.jpg' %}" alt="Slide 1" style="width: 1260px" height="80px">
-        </div>
-
-        <div class="slide">
-               <img src="{% static 'images/Slide3rd.jpg' %}" alt="Slide 1" style="width: 1260px" height="80px">
-        </div>
-
-        <div class="slide">
-               <img src="{% static 'images/Slide4th.jpg' %}" alt="Slide 1" style="width: 1260px" height="80px">
-        </div>
-
-        <div class="slide">
-               <img src="{% static 'images/Slide5th.jpg' %}" alt="Slide 1" style="width: 1260px" height="80px">
-        </div>
-
-    </div>
-
-    <!-- Arrows -->
-    <button class="prev" onclick="moveSlide(-1)">❮</button>
-    <button class="next" onclick="moveSlide(1)">❯</button>
-
-    <!-- Dots -->
-    <div class="dots">
-        <span class="dot" onclick="currentSlide(1)"></span>
-        <span class="dot" onclick="currentSlide(2)"></span>
-        <span class="dot" onclick="currentSlide(3)"></span>
-        <span class="dot" onclick="currentSlide(4)"></span>
-        <span class="dot" onclick="currentSlide(5)"></span>
-    </div>
-</div>
-<!-- SLIDER END -->
-
-
-
-<!-- CARDS SECTION START -->
-<div class="card-container">
-
-    <div class="card">
-        <div class="card-icon">❤️</div>
-        <div class="card-content">
-            <h3>Why Hemo Campus?</h3>
-            <p>Hemo Campus is a smart Blood Bank Management System that manages blood donations, donor records, and blood availability efficiently.</p>
-            <a href="About.html" class="card-btn">Learn More</a>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-icon">🏥</div>
-        <div class="card-content">
-            <h3>Request Blood</h3>
-            <p>Blood Request the required blood group quickly and securely. Check blood availability in real time and receive fast support for emergency and medical needs.</p>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-icon">📊</div>
-        <div class="card-content">
-            <h3>Blood Availability</h3>
-            <p>Check the availability of different blood groups in real time. Hemo Campus helps users find the required blood quickly and ensures timely support during emergencies.</p>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-icon">🤝</div>
-        <div class="card-content">
-            <h3>Organize Campus</h3>
-            <p>Easily organize blood donation camps by managing event details, donor registrations, schedules, and participation. Hemo Campus makes every blood donation camp simple, efficient, and well-coordinated.</p>
-        </div>
-    </div>
-</div>
-<!-- CARDS SECTION END -->
-
-
-<!-- 2 CARD SECTION START -->
-<div class="two-card-container">
-
-    <!-- LEFT SMALL CARD -->
-    <div class="card-small">
-        <div class="card-content">
-            <h3>Welcome to Hemo Campus</h3>
-            <p>Hemo Campus is a modern, cloud-based Blood Bank Management System that simplifies blood donation, donor management, blood requests, and inventory tracking through a secure and user-friendly platform.
-               It connects donors, hospitals, and patients to provide fast, reliable, and efficient blood services whenever needed.</p>
-        </div>
-    </div>
-
-    <!-- RIGHT BIG CARD WITH 3 BOXES -->
-    <div class="card-big">
-        <h3>Our Services</h3>
-        <div class="sub-card-container">
-
-            <div class="sub-card">
-                <div class="sub-icon">🩸</div>
-                <h4>Donate Blood</h4>
-                <p>Become a donor and save 3 lives with one donation.</p>
+    <!-- ================= HERO SECTION & SLIDER ================= -->
+    <div class="hero-wrapper">
+        <div class="slider">
+            <div class="slides" id="mainSlides">
+                <div class="slide"><img src="{% static 'images/Slide1st.jpg' %}" alt="Slide 1"></div>
+                <div class="slide"><img src="{% static 'images/Slide2nd.jpg' %}" alt="Slide 2"></div>
+                <div class="slide"><img src="{% static 'images/Slide3rd.jpg' %}" alt="Slide 3"></div>
+                <div class="slide"><img src="{% static 'images/Slide4th.jpg' %}" alt="Slide 4"></div>
+                <div class="slide"><img src="{% static 'images/Slide5th.jpg' %}" alt="Slide 5"></div>
             </div>
 
-            <div class="sub-card">
-                <div class="sub-icon">🔍</div>
-                <h4>Find Donors</h4>
-                <p>Search verified donors by blood group and location.</p>
+            <!-- Slider Arrows -->
+            <button class="prev" onclick="moveSlide(-1)" aria-label="Previous Slide">❮</button>
+            <button class="next" onclick="moveSlide(1)" aria-label="Next Slide">❯</button>
+
+            <!-- Dots -->
+            <div class="dots">
+                <span class="dot active" onclick="currentSlide(1)"></span>
+                <span class="dot" onclick="currentSlide(2)"></span>
+                <span class="dot" onclick="currentSlide(3)"></span>
+                <span class="dot" onclick="currentSlide(4)"></span>
+                <span class="dot" onclick="currentSlide(5)"></span>
             </div>
-
-            <div class="sub-card">
-                <div class="sub-icon">🏥</div>
-                <h4>Blood Banks</h4>
-                <p>Check real-time blood availability in hospitals.</p>
-            </div>
-
-        </div>
-    </div>
-
-</div>
-<!-- 2 CARD SECTION END -->
-
-<div class="box">
-    <h2>Available Modules</h2>
-</div>
-
-<div class="box2">
-    <div class="box2-grid">
-
-        <div class="mini-card">
-            <div class="mini-icon">👤</div>
-            <h4>Donor Management</h4>
-            <p>Verify donor details, record vital information, confirm blood group, and maintain secure donor records.</p>
         </div>
 
-        <div class="mini-card">
-            <div class="mini-icon">📝</div>
-            <h4>Bleeding Entry & Screening</h4>
-            <p>Record donor bleeding details, perform health screening, and capture test results to ensure a safe and secure blood donation process.</p>
-        </div>
-
-        <div class="mini-card">
-            <div class="mini-icon">🩸</div>
-            <h4>Blood Transfusion</h4>
-            <p>Manage blood transfusion requests, verify blood compatibility, perform cross-matching, and ensure the safe and timely issue of blood to patients.</p>
-        </div>
-
-        <div class="mini-card">
-            <div class="mini-icon">🏕️</div>
-            <h4>Blood Camp Management</h4>
-            <p>Organize blood donation camps, register donors, manage camp records, and generate e-Donor Cards for a smooth and efficient donation process.</p>
-        </div>
-
-        <div class="mini-card">
-            <div class="mini-icon">🔄</div>
-            <h4>Receive & Transfer of Blood</h4>
-            <p>Easily transfer and receive blood units between blood banks and storage centers while maintaining accurate records for safe, efficient, and seamless blood management.</p>
-        </div>
-
-        <div class="mini-card">
-            <div class="mini-icon">💉</div>
-            <h4>Apheresis</h4>
-            <p>Manage donor selection, prepare blood components, perform quality checks, and maintain accurate records for a safe and efficient apheresis process.</p>
-        </div>
-    </div>
-
-<div class="box3">
-    <h3>Blood Banks</h3>
-    <p>More than 70 Blood Banks are using Hemo Campus Application.</p>
-</div>
-
-<div class="centre-grid">
-    <div class="centre-card">
-        <div class="centre-icon"></div>
-        <div class="centre-info">
-            <h4>Transfusion Centre, AIIMS</h4>
-            <p class="city">New Delhi</p>
-            <p class="since">Since 1956....</p>
-        </div>
-    </div>
-
-    <div class="centre-card">
-        <div class="centre-icon"></div>
-        <div class="centre-info">
-            <h4> Tata Memorial Hospital</h4>
-            <p class="city">Mumbai, Maharashtra</p>
-            <p class="since">Since 1941....</p>
-        </div>
-    </div>
-
-    <div class="centre-card">
-        <div class="centre-icon"></div>
-        <div class="centre-info">
-            <h4>National Institute of Mental Health & Neurosciences</h4>
-            <p class="city">Bengaluru, Karnataka</p>
-            <p class="since">Since 1974....</p>
-        </div>
-    </div>
-
-    <div class="centre-card">
-        <div class="centre-icon"></div>
-        <div class="centre-info">
-            <h4>Post Graduate Institute of Medical Education & Research</h4>
-            <p class="city">Chandigarh</p>
-            <p class="since">Since 1962....</p>
-        </div>
-    </div>
-</div>
-
-<footer class="footer">
-    <div class="footer-container">
-
-        <div class="footer-col">
-            <h4>Hemo Campus</h4>
-            <p>Connecting Blood Donors and Blood Banks across India. Donate Blood, Save Lives.</p>
-        </div>
-
-        <div class="footer-col">
-            <h4>Quick Links</h4>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Find Blood Bank</a></li>
-                <li><a href="#">Register as Donor</a></li>
-                <li><a href="#">About Us</a></li>
-            </ul>
-        </div>
-
-        <div class="footer-col">
-            <h4>Contact Us</h4>
-            <ul>
-                <li>📍 Ministry of Health, New Delhi</li>
-                <li>📞 1800-11-1100</li>
-                <li>✉️ support@ebloodbank.gov.in</li>
-            </ul>
-        </div>
-
-        <div class="footer-col">
-            <h4>Follow Us</h4>
-            <div class="social-icons">
-                <a href="#">Facebook</a>
-                <a href="#">Twitter</a>
-                <a href="#">Instagram</a>
+        <!-- Floating Hero Overlay -->
+        <div class="hero-overlay">
+            <div class="container-custom">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <i class="fa-solid fa-circle-dot fa-beat-fade" style="color: #ff4d4d;"></i>
+                        <span>Live Smart Blood Bank Network • 24/7 Support</span>
+                    </div>
+                    <h1 class="hero-title">
+                        Donate Blood, <span>Save Lives</span> & Support In Emergencies
+                    </h1>
+                    <p class="hero-desc">
+                        Hemo Campus connects voluntary donors, verified hospitals, and urgent patients across India on a single real-time platform.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="/donate/" class="btn-hero-primary">
+                            <i class="fa-solid fa-heart-pulse"></i> Donate Blood Now
+                        </a>
+                        <a href="/request-blood/" class="btn-hero-secondary">
+                            <i class="fa-solid fa-truck-medical"></i> Request Blood Urgently
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-
-    <div class="footer-bottom">
-        <p>© 2026 Hemo Campus - Developed by Pankaj,Abhishek,Ranjeet,Anisha,Sandhya,Garima. Guided by Mentor. Akhilesh Sir | Mecatredz Mechnology </p>
+    <!-- ================= STATS TICKER STRIP ================= -->
+    <div class="container-custom stats-strip">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon-wrap stat-red">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div>
+                    <div class="stat-number">15,400+</div>
+                    <div class="stat-label">Registered Donors</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon-wrap stat-green">
+                    <i class="fa-solid fa-hand-holding-heart"></i>
+                </div>
+                <div>
+                    <div class="stat-number">38,200+</div>
+                    <div class="stat-label">Lives Saved</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon-wrap stat-blue">
+                    <i class="fa-solid fa-hospital"></i>
+                </div>
+                <div>
+                    <div class="stat-number">70+</div>
+                    <div class="stat-label">Partner Hospitals</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon-wrap stat-gold">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <div>
+                    <div class="stat-number">&lt; 15 Mins</div>
+                    <div class="stat-label">Emergency Response</div>
+                </div>
+            </div>
+        </div>
     </div>
-</footer>
 
+    <div class="container-custom">
+
+        <!-- ================= INTERACTIVE BLOOD COMPATIBILITY TOOL ================= -->
+        <div class="compat-section">
+            <div class="compat-header">
+                <span class="section-tag">Interactive Matcher</span>
+                <h3>🩸 Check Your Blood Compatibility</h3>
+                <p>Select your blood group to see who you can donate to and receive blood from.</p>
+            </div>
+
+            <div class="blood-selector">
+                <button class="blood-pill active" onclick="selectBlood('O+', this)">O+</button>
+                <button class="blood-pill" onclick="selectBlood('O-', this)">O-</button>
+                <button class="blood-pill" onclick="selectBlood('A+', this)">A+</button>
+                <button class="blood-pill" onclick="selectBlood('A-', this)">A-</button>
+                <button class="blood-pill" onclick="selectBlood('B+', this)">B+</button>
+                <button class="blood-pill" onclick="selectBlood('B-', this)">B-</button>
+                <button class="blood-pill" onclick="selectBlood('AB+', this)">AB+</button>
+                <button class="blood-pill" onclick="selectBlood('AB-', this)">AB-</button>
+            </div>
+
+            <div class="compat-result-card" id="compatResult">
+                <div class="compat-box">
+                    <h5><i class="fa-solid fa-arrow-up-from-bracket"></i> You Can GIVE Blood To:</h5>
+                    <div class="compat-badge-list" id="giveList">
+                        <span class="badge-blood">O+</span>
+                        <span class="badge-blood">A+</span>
+                        <span class="badge-blood">B+</span>
+                        <span class="badge-blood">AB+</span>
+                    </div>
+                </div>
+                <div class="compat-box">
+                    <h5><i class="fa-solid fa-arrow-down-to-bracket"></i> You Can RECEIVE Blood From:</h5>
+                    <div class="compat-badge-list" id="receiveList">
+                        <span class="badge-blood">O+</span>
+                        <span class="badge-blood">O-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= CORE 4 ACTION SERVICES ================= -->
+        <div class="section-head">
+            <span class="section-tag">Key Features</span>
+            <h2 class="section-title">How Hemo Campus Helps You</h2>
+            <p class="section-subtitle">Comprehensive solutions designed for donors, patients, and hospital blood banks.</p>
+        </div>
+
+        <div class="card-grid-4">
+            <div class="action-card">
+                <div>
+                    <div class="action-icon">
+                        <i class="fa-solid fa-hand-holding-droplet"></i>
+                    </div>
+                    <h4>Donate Blood</h4>
+                    <p>Become a certified voluntary donor. Track your donation milestones, eligibility date, and earn reward points.</p>
+                </div>
+                <a href="/donate/" class="action-btn">
+                    <span>Register to Donate</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="action-card">
+                <div>
+                    <div class="action-icon" style="background:#fef3c7; color:#d97706;">
+                        <i class="fa-solid fa-truck-medical"></i>
+                    </div>
+                    <h4>Request Blood</h4>
+                    <p>Submit emergency or planned blood requests for critical patients. Instant notification to matching donors.</p>
+                </div>
+                <a href="/request-blood/" class="action-btn" style="color:#d97706;">
+                    <span>Create Blood Request</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="action-card">
+                <div>
+                    <div class="action-icon" style="background:#e0e7ff; color:#4338ca;">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <h4>Live Stock Search</h4>
+                    <p>Real-time visibility into available blood components (Whole Blood, Plasma, Platelets) across authorized centers.</p>
+                </div>
+                <a href="/blood-availability/" class="action-btn" style="color:#4338ca;">
+                    <span>Check Availability</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="action-card">
+                <div>
+                    <div class="action-icon" style="background:#dcfce7; color:#16a34a;">
+                        <i class="fa-solid fa-hospital"></i>
+                    </div>
+                    <h4>Blood Directory</h4>
+                    <p>Access direct contact details, addresses, and helpline numbers of 70+ government and private blood banks.</p>
+                </div>
+                <a href="/blood-center-directory/" class="action-btn" style="color:#16a34a;">
+                    <span>Explore Centers</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- ================= 4-STEP DONATION PROCESS ================= -->
+        <div class="process-section">
+            <div class="section-head">
+                <span class="section-tag">Simple & Safe</span>
+                <h2 class="section-title">The 4-Step Donation Journey</h2>
+                <p class="section-subtitle">Donating blood is simple, completely sterile, and takes only 15 minutes of your time.</p>
+            </div>
+
+            <div class="process-grid">
+                <div class="process-card">
+                    <div class="step-badge">1</div>
+                    <h4>Quick Registration</h4>
+                    <p>Sign up online in 60 seconds with your basic contact and medical details.</p>
+                </div>
+                <div class="process-card">
+                    <div class="step-badge">2</div>
+                    <h4>Mini Health Screening</h4>
+                    <p>Complimentary checkup for pulse, blood pressure, weight, and hemoglobin levels.</p>
+                </div>
+                <div class="process-card">
+                    <div class="step-badge">3</div>
+                    <h4>15-Min Safe Donation</h4>
+                    <p>Comfortable blood collection by certified healthcare experts using sterile single-use kits.</p>
+                </div>
+                <div class="process-card">
+                    <div class="step-badge">4</div>
+                    <h4>Refreshment & Certificate</h4>
+                    <p>Enjoy energizing snacks, receive a Donor Hero certificate and earn points.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= AVAILABLE MODULES GRID ================= -->
+        <div class="section-head">
+            <span class="section-tag">System Capabilities</span>
+            <h2 class="section-title">Available Platform Modules</h2>
+            <p class="section-subtitle">Enterprise management suite built for high precision and compliance.</p>
+        </div>
+
+        <div class="modules-grid">
+            <div class="module-card">
+                <div class="module-icon"><i class="fa-solid fa-user-shield"></i></div>
+                <div class="module-info">
+                    <h4>Donor Management</h4>
+                    <p>Manage donor registry, verify donor health vitals, and maintain complete historical logs.</p>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+                <div class="module-info">
+                    <h4>Screening & Testing</h4>
+                    <p>Record clinical test reports, antibody screenings, and enforce safety compliance.</p>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-icon"><i class="fa-solid fa-droplet"></i></div>
+                <div class="module-info">
+                    <h4>Blood Transfusion</h4>
+                    <p>Manage cross-matching compatibility, patient requisitions, and emergency releases.</p>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-icon"><i class="fa-solid fa-tent"></i></div>
+                <div class="module-info">
+                    <h4>Camp Scheduling</h4>
+                    <p>Organize on-campus and community donation drives with volunteer assignment.</p>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-icon"><i class="fa-solid fa-boxes-packing"></i></div>
+                <div class="module-info">
+                    <h4>Stock Transfer</h4>
+                    <p>Seamlessly transfer tested units between hospitals, blood banks, and cold-chain hubs.</p>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-icon"><i class="fa-solid fa-vial-virus"></i></div>
+                <div class="module-info">
+                    <h4>Apheresis Unit</h4>
+                    <p>Specialized separation and storage workflows for Platelets (SDP/RDP) and Plasma.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PARTNER BLOOD CENTERS ================= -->
+        <div class="section-head">
+            <span class="section-tag">Verified Network</span>
+            <h2 class="section-title">Partner Blood Centers</h2>
+            <p class="section-subtitle">Directly synchronized with premier medical institutions nationwide.</p>
+        </div>
+
+        <div class="centers-grid">
+            <div class="center-card">
+                <div class="center-icon"><i class="fa-solid fa-hospital"></i></div>
+                <h4>AIIMS New Delhi</h4>
+                <p class="city">New Delhi</p>
+                <span class="badge-verified"><i class="fa-solid fa-circle-check"></i> Verified Partner</span>
+            </div>
+            <div class="center-card">
+                <div class="center-icon"><i class="fa-solid fa-hospital"></i></div>
+                <h4>Tata Memorial Hospital</h4>
+                <p class="city">Mumbai, Maharashtra</p>
+                <span class="badge-verified"><i class="fa-solid fa-circle-check"></i> Verified Partner</span>
+            </div>
+            <div class="center-card">
+                <div class="center-icon"><i class="fa-solid fa-hospital"></i></div>
+                <h4>NIMHANS Blood Center</h4>
+                <p class="city">Bengaluru, Karnataka</p>
+                <span class="badge-verified"><i class="fa-solid fa-circle-check"></i> Verified Partner</span>
+            </div>
+            <div class="center-card">
+                <div class="center-icon"><i class="fa-solid fa-hospital"></i></div>
+                <h4>PGIMER Blood Bank</h4>
+                <p class="city">Chandigarh</p>
+                <span class="badge-verified"><i class="fa-solid fa-circle-check"></i> Verified Partner</span>
+            </div>
+        </div>
+
+        <!-- ================= EMERGENCY CTA BANNER ================= -->
+        <div class="cta-banner">
+            <div class="cta-info">
+                <h3>🚨 Need Blood Immediately In An Emergency?</h3>
+                <p>Our automated dispatch network notifies all verified nearby donors and hospital inventory instantly.</p>
+            </div>
+            <div class="cta-actions">
+                <a href="/request-blood/" class="btn-cta-gold">
+                    <i class="fa-solid fa-truck-medical"></i> Request Blood Now
+                </a>
+                <a href="/contact/" class="btn-cta-outline">
+                    <i class="fa-solid fa-phone"></i> 24/7 Helpline
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Interactive Scripts -->
 <script>
-let slideIndex = 0;
-let slides = document.querySelector('.slides');
-let totalSlides = document.querySelectorAll('.slide').length;
+    // ================= SLIDER LOGIC =================
+    let currentSlideIndex = 0;
+    const slidesTrack = document.getElementById('mainSlides');
+    const allSlides = document.querySelectorAll('.slide');
+    const allDots = document.querySelectorAll('.dot');
+    const totalSlideCount = allSlides.length;
 
-function showSlide() {
-    slides.style.transform = 'translateX(' + (-slideIndex * 100) + '%)';
+    function renderSlide() {
+        if (slidesTrack) {
+            slidesTrack.style.transform = 'translateX(' + (-currentSlideIndex * 20) + '%)';
+            allDots.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === currentSlideIndex);
+            });
+        }
+    }
 
-    // dots active
-    let dots = document.querySelectorAll('.dot');
-    dots.forEach(dot => dot.classList.remove('active'));
-    dots[slideIndex].classList.add('active');
-}
+    function moveSlide(direction) {
+        currentSlideIndex += direction;
+        if (currentSlideIndex >= totalSlideCount) currentSlideIndex = 0;
+        if (currentSlideIndex < 0) currentSlideIndex = totalSlideCount - 1;
+        renderSlide();
+    }
 
-function moveSlide(n) {
-    slideIndex += n;
-    if (slideIndex >= totalSlides) slideIndex = 0;
-    if (slideIndex < 0) slideIndex = totalSlides - 1;
-    showSlide();
-}
+    function currentSlide(index) {
+        currentSlideIndex = index - 1;
+        renderSlide();
+    }
 
-function currentSlide(n) {
-    slideIndex = n - 1;
-    showSlide();
-}
+    let slideTimer = setInterval(() => moveSlide(1), 5000);
 
-// Auto slide har 4 second me
-setInterval(() => {
-    moveSlide(1);
-}, 4000);
+    const sliderContainer = document.querySelector('.slider');
+    if (sliderContainer) {
+        sliderContainer.addEventListener('mouseenter', () => clearInterval(slideTimer));
+        sliderContainer.addEventListener('mouseleave', () => {
+            slideTimer = setInterval(() => moveSlide(1), 5000);
+        });
+    }
 
-// pehli baar load
-showSlide();
+    // ================= BLOOD COMPATIBILITY DATA =================
+    const compatData = {
+        'O+': { give: ['O+', 'A+', 'B+', 'AB+'], receive: ['O+', 'O-'] },
+        'O-': { give: ['All Groups (Universal Donor)'], receive: ['O-'] },
+        'A+': { give: ['A+', 'AB+'], receive: ['A+', 'A-', 'O+', 'O-'] },
+        'A-': { give: ['A+', 'A-', 'AB+', 'AB-'], receive: ['A-', 'O-'] },
+        'B+': { give: ['B+', 'AB+'], receive: ['B+', 'B-', 'O+', 'O-'] },
+        'B-': { give: ['B+', 'B-', 'AB+', 'AB-'], receive: ['B-', 'O-'] },
+        'AB+': { give: ['AB+'], receive: ['All Groups (Universal Recipient)'] },
+        'AB-': { give: ['AB+', 'AB-'], receive: ['AB-', 'A-', 'B-', 'O-'] }
+    };
+
+    function selectBlood(group, el) {
+        document.querySelectorAll('.blood-pill').forEach(p => p.classList.remove('active'));
+        if (el) el.classList.add('active');
+
+        const data = compatData[group];
+        if (!data) return;
+
+        const giveList = document.getElementById('giveList');
+        const receiveList = document.getElementById('receiveList');
+
+        if (giveList) {
+            giveList.innerHTML = data.give.map(g => `<span class="badge-blood">${g}</span>`).join('');
+        }
+        if (receiveList) {
+            receiveList.innerHTML = data.receive.map(g => `<span class="badge-blood">${g}</span>`).join('');
+        }
+    }
+
+    renderSlide();
 </script>
-</div>
-</body>
-</html>
+{% endblock %}

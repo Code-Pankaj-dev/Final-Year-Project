@@ -1,1592 +1,748 @@
-{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HemoCampus - Hospital Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #dc2626;
+      --primary-dark: #b91c1c;
+      --primary-light: #fee2e2;
+      --dark: #0f172a;
+      --dark-card: #1e293b;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #334155;
+      --text-light: #64748b;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --amber: #d97706;
+      --amber-light: #fef3c7;
+      --blue: #2563eb;
+      --blue-light: #dbeafe;
+      --sidebar-w: 240px;
+    }
 
-<link rel="stylesheet" href="{% static 'Hospital/css/hospital_dashboard.css' %}">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
 
-<div class="container-fluid p-4">
+    /* Mobile Header */
+    .mobile-header {
+      display: none;
+      background: var(--dark);
+      color: #fff;
+      padding: 12px 18px;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1050;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+    .mobile-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .mobile-toggle-btn {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
 
-    <!-- ========================= -->
-    <!-- PAGE HEADER -->
-    <!-- ========================= -->
+    /* Overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+      backdrop-filter: blur(2px);
+    }
 
-    <div class="row align-items-center mb-4">
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--dark);
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      z-index: 1000;
+      transition: transform 0.3s ease;
+    }
+    .sidebar-brand {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      background: #2563eb;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 18px;
+    }
+    .brand-title { font-size: 17px; font-weight: 700; color: #fff; }
+    .brand-sub { font-size: 11px; color: #94a3b8; }
+    .sidebar-nav {
+      padding: 18px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item i { width: 18px; text-align: center; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+    .nav-item.active { background: #2563eb; color: #fff; font-weight: 600; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+    
+    .sidebar-footer {
+      padding: 16px 12px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .logout-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: #f87171;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .logout-item:hover { background: rgba(220,38,38,0.15); color: #fca5a5; }
 
-        <div class="col-md-6">
+    /* Main Container */
+    .main-wrapper {
+      margin-left: var(--sidebar-w);
+      padding: 24px 32px 60px;
+      min-height: 100vh;
+    }
 
-            <h2 class="fw-bold mb-1">
-                <i class="fa-solid fa-hospital text-danger"></i>
-                Hospital Dashboard
-            </h2>
+    /* Page Header */
+    .page-header {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .header-title h1 { font-size: 22px; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+    .header-title p { font-size: 13.5px; color: var(--text-light); }
+    .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    
+    .btn-action-primary {
+      background: #2563eb;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13.5px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-action-primary:hover { background: #1d4ed8; }
+    
+    .btn-action-emergency {
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13.5px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(220,38,38,0.25);
+    }
+    .btn-action-emergency:hover { background: var(--primary-dark); }
 
-            <p class="text-muted">
+    /* Quick Links Bar */
+    .quick-bar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      margin-bottom: 24px;
+      padding-bottom: 4px;
+    }
+    .quick-chip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 8px 16px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: 1px solid var(--border);
+    }
+    .quick-chip i { color: #2563eb; }
+    .quick-chip:hover { border-color: #2563eb; background: #fff; transform: translateY(-1px); }
 
-                Welcome,
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .kpi-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      border-left: 4px solid #2563eb;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .kpi-box.border-green { border-left-color: var(--success); }
+    .kpi-box.border-amber { border-left-color: var(--amber); }
+    .kpi-box.border-red { border-left-color: var(--primary); }
+    .kpi-box.border-purple { border-left-color: #9333ea; }
+    .kpi-box.border-slate { border-left-color: #64748b; }
+    .kpi-box .lbl { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--text-light); margin-bottom: 4px; }
+    .kpi-box .val { font-size: 20px; font-weight: 800; color: var(--dark); }
 
-                <strong>
+    /* 2 Column Layout */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+    .card-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-header h3 { font-size: 16px; font-weight: 700; color: var(--dark); }
 
-                    {% if hospital %}
-                        {{ hospital.hospital_name }}
+    /* Tables */
+    .table-wrap { width: 100%; overflow-x: auto; }
+    table.clean-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    table.clean-table th {
+      text-align: left;
+      padding: 10px 12px;
+      color: var(--text-light);
+      font-weight: 600;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+    }
+    table.clean-table td {
+      padding: 12px;
+      border-bottom: 1px solid #f1f5f9;
+      color: var(--dark);
+    }
+    .pill { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 700; }
+    .pill-red { background: var(--primary-light); color: var(--primary-dark); }
+    .pill-green { background: var(--success-light); color: #15803d; }
+    .pill-amber { background: var(--amber-light); color: #b45309; }
+
+    /* Stock Matrix Grid */
+    .stock-chip-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .stock-chip {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 10px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .stock-chip:hover { border-color: #2563eb; transform: translateY(-2px); background: #fff; }
+    .stock-chip .group { font-size: 16px; font-weight: 800; color: #2563eb; margin-bottom: 2px; }
+    .stock-chip .units { font-size: 13px; font-weight: 700; color: var(--dark); }
+    .stock-chip .tag { font-size: 10.5px; font-weight: 700; display: inline-block; padding: 2px 6px; border-radius: 4px; margin-top: 4px; }
+
+    /* Form Fields */
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--dark); margin-bottom: 4px; text-transform: uppercase; }
+    .form-control {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13.5px;
+      outline: none;
+      background: #f8fafc;
+    }
+    .form-control:focus { border-color: #2563eb; background: #fff; }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.6);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(3px);
+      padding: 16px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-card {
+      background: #fff;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 540px;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-header h3 { font-size: 18px; font-weight: 800; color: var(--dark); }
+    .close-modal-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-light); }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+      .content-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .mobile-header { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.active { display: block; }
+      .main-wrapper { margin-left: 0; padding: 16px; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .stock-chip-grid { grid-template-columns: repeat(2, 1fr); }
+      .page-header { flex-direction: column; align-items: flex-start; gap: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Topbar -->
+  <div class="mobile-header">
+    <div class="mobile-brand">
+      <span style="color:#2563eb; font-size:20px;">🏥</span> HemoCampus Hospital
+    </div>
+    <button class="mobile-toggle-btn" id="hospNavToggle">☰</button>
+  </div>
+
+  <!-- Overlay -->
+  <div class="sidebar-overlay" id="hospSidebarOverlay"></div>
+
+  <!-- Sidebar (All links stay within Hospital Portal) -->
+  <aside class="sidebar" id="hospSidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-hospital"></i></div>
+      <div>
+        <div class="brand-title">HemoCampus</div>
+        <div class="brand-sub">Hospital Network</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/hospital-dashboard/" class="nav-item active"><i class="fas fa-grip"></i><span>Dashboard</span></a>
+      <button type="button" onclick="openRequestModal('Normal')" class="nav-item"><i class="fas fa-plus-circle"></i><span>New Request</span></button>
+      <button type="button" onclick="openRequestModal('Emergency')" class="nav-item"><i class="fas fa-triangle-exclamation" style="color:#f87171;"></i><span>Emergency Need</span></button>
+      <a href="#requests-section" class="nav-item"><i class="fas fa-list-check"></i><span>Requisitions</span></a>
+      <a href="#stock-section" class="nav-item"><i class="fas fa-cubes-stacked"></i><span>Blood Stock</span></a>
+      <a href="#profile-section" class="nav-item"><i class="fas fa-hospital-user"></i><span>Hospital Profile</span></a>
+      <button type="button" onclick="openSupportModal()" class="nav-item"><i class="fas fa-headset"></i><span>Support Line</span></button>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="/LogoutPage/" class="logout-item"><i class="fas fa-arrow-right-from-bracket"></i><span>Logout</span></a>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-title">
+        <h1>{{ hospital.hospital_name|default:"Hospital Requisition Control" }} 🏥</h1>
+        <p>Incharge: <strong>{{ hospital.doctor_name|default:"Chief Medical Officer" }}</strong> | District: <strong>{{ hospital.district|default:"Central" }}</strong></p>
+      </div>
+      <div class="header-actions">
+        <button onclick="openRequestModal('Normal')" class="btn-action-primary"><i class="fas fa-plus"></i> Requisition Blood</button>
+        <button onclick="openRequestModal('Emergency')" class="btn-action-emergency"><i class="fas fa-bolt"></i> Emergency SOS</button>
+      </div>
+    </div>
+
+    <!-- Quick Links Bar -->
+    <div class="quick-bar">
+      <button type="button" onclick="openRequestModal('Normal')" class="quick-chip"><i class="fas fa-plus"></i> Order Blood</button>
+      <button type="button" onclick="openRequestModal('Emergency')" class="quick-chip" style="border-color:#fca5a5; color:#dc2626;"><i class="fas fa-bolt" style="color:#dc2626;"></i> Emergency SOS</button>
+      <a href="#requests-section" class="quick-chip"><i class="fas fa-list-check"></i> Requisitions Log</a>
+      <a href="#stock-section" class="quick-chip"><i class="fas fa-magnifying-glass"></i> Central Stock Matrix</a>
+      <a href="#profile-section" class="quick-chip"><i class="fas fa-hospital-user"></i> Hospital Profile</a>
+      <button type="button" onclick="openSupportModal()" class="quick-chip"><i class="fas fa-headset"></i> 24x7 Clinical Line</button>
+    </div>
+
+    <!-- KPI Strip -->
+    <div class="kpi-grid">
+      <div class="kpi-box">
+        <div class="lbl">Total Requisitions</div>
+        <div class="val mono">{{ total_requests }}</div>
+      </div>
+      <div class="kpi-box border-green">
+        <div class="lbl">Approved / Dispatched</div>
+        <div class="val mono" style="color:var(--success);">{{ approved_requests }}</div>
+      </div>
+      <div class="kpi-box border-amber">
+        <div class="lbl">Pending Review</div>
+        <div class="val mono" style="color:var(--amber);">{{ pending_requests }}</div>
+      </div>
+      <div class="kpi-box border-red">
+        <div class="lbl">Emergency Requisitions</div>
+        <div class="val mono" style="color:var(--primary);">{{ emergency_requests }}</div>
+      </div>
+      <div class="kpi-box border-purple">
+        <div class="lbl">Units Received</div>
+        <div class="val mono">{{ blood_units_received }}</div>
+      </div>
+      <div class="kpi-box border-slate">
+        <div class="lbl">Partner Status</div>
+        <span class="pill pill-green">Accredited</span>
+      </div>
+    </div>
+
+    <!-- 2 Column Content -->
+    <div class="content-grid">
+      
+      <!-- Left Column: Requisitions List & Central Bank Stock -->
+      <div>
+        
+        <!-- Requisitions Table -->
+        <div class="card-panel" id="requests-section" style="margin-bottom: 24px;">
+          <div class="panel-header">
+            <h3>📋 Hospital Blood Requisition Orders</h3>
+            <button onclick="openRequestModal('Normal')" style="font-size:13px; color:#2563eb; background:none; border:none; font-weight:700; cursor:pointer;">+ New Order</button>
+          </div>
+          <div class="table-wrap">
+            <table class="clean-table">
+              <thead>
+                <tr>
+                  <th>Patient Name</th>
+                  <th>Blood Group</th>
+                  <th>Units</th>
+                  <th>Priority</th>
+                  <th>Required By</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for req in requests %}
+                <tr>
+                  <td>
+                    <strong>{{ req.patient_name }}</strong><br>
+                    <span style="font-size:11.5px; color:var(--text-light);">{{ req.remarks|default:"Clinical Need" }}</span>
+                  </td>
+                  <td><span class="pill pill-red">{{ req.blood_group }}</span></td>
+                  <td><strong>{{ req.units }} Unit(s)</strong></td>
+                  <td>
+                    {% if req.priority == 'Emergency' %}
+                    <span style="color:#dc2626; font-weight:800;">🚨 Emergency</span>
                     {% else %}
-                        Hospital
+                    <span style="color:#64748b;">Normal</span>
                     {% endif %}
-
-                </strong>
-
-            </p>
-
-        </div>
-
-        <div class="col-md-6 text-end">
-
-            <a href="{% url 'request_blood' %}"
-               class="btn btn-danger rounded-pill px-4">
-
-                <i class="fa-solid fa-plus"></i>
-
-                New Blood Request
-
-            </a>
-
-        </div>
-
-    </div>
-
-    <!-- ========================= -->
-    <!-- DASHBOARD CARDS -->
-    <!-- ========================= -->
-
-    <div class="row g-4">
-
-        <!-- Card 1 -->
-
-        <div class="col-xl-4 col-lg-6">
-
-            <div class="card dashboard-card border-0 shadow">
-
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between">
-
-                        <div>
-
-                            <h6 class="text-muted">
-
-                                Total Blood Requests
-
-                            </h6>
-
-                            <h2 class="fw-bold counter">
-
-                                {{ total_requests }}
-
-                            </h2>
-
-                        </div>
-
-                        <div class="icon-box bg-primary">
-
-                            <i class="fa-solid fa-droplet"></i>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- Card 2 -->
-
-        <div class="col-xl-4 col-lg-6">
-
-            <div class="card dashboard-card border-0 shadow">
-
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between">
-
-                        <div>
-
-                            <h6 class="text-muted">
-
-                                Approved Requests
-
-                            </h6>
-
-                            <h2 class="text-success fw-bold counter">
-
-                                {{ approved_requests }}
-
-                            </h2>
-
-                        </div>
-
-                        <div class="icon-box bg-success">
-
-                            <i class="fa-solid fa-check"></i>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- Card 3 -->
-
-        <div class="col-xl-4 col-lg-6">
-
-            <div class="card dashboard-card border-0 shadow">
-
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between">
-
-                        <div>
-
-                            <h6 class="text-muted">
-
-                                Pending Requests
-
-                            </h6>
-
-                            <h2 class="text-warning fw-bold counter">
-
-                                {{ pending_requests }}
-
-                            </h2>
-
-                        </div>
-
-                        <div class="icon-box bg-warning">
-
-                            <i class="fa-solid fa-clock"></i>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- Card 4 -->
-
-        <div class="col-xl-4 col-lg-6">
-
-            <div class="card dashboard-card border-0 shadow">
-
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between">
-
-                        <div>
-
-                            <h6 class="text-muted">
-
-                                Rejected Requests
-
-                            </h6>
-
-                            <h2 class="text-danger fw-bold counter">
-
-                                {{ rejected_requests }}
-
-                            </h2>
-
-                        </div>
-
-                        <div class="icon-box bg-danger">
-
-                            <i class="fa-solid fa-xmark"></i>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- Card 5 -->
-
-        <div class="col-xl-4 col-lg-6">
-
-            <div class="card dashboard-card border-0 shadow">
-
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between">
-
-                        <div>
-
-                            <h6 class="text-muted">
-
-                                Blood Units Received
-
-                            </h6>
-
-                            <h2 class="text-info fw-bold counter">
-
-                                {{ blood_units_received }}
-
-                            </h2>
-
-                        </div>
-
-                        <div class="icon-box bg-info">
-
-                            <i class="fa-solid fa-box"></i>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- Card 6 -->
-
-        <div class="col-xl-4 col-lg-6">
-
-            <div class="card dashboard-card border-0 shadow">
-
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between">
-
-                        <div>
-
-                            <h6 class="text-muted">
-
-                                Emergency Requests
-
-                            </h6>
-
-                            <h2 class="text-danger fw-bold counter">
-
-                                {{ emergency_requests }}
-
-                            </h2>
-
-                        </div>
-
-                        <div class="icon-box bg-danger">
-
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- ========================= -->
-    <!-- QUICK ACTION -->
-    <!-- ========================= -->
-
-    <div class="card border-0 shadow mt-5">
-
-        <div class="card-header bg-white">
-
-            <h5>
-
-                <i class="fa-solid fa-bolt text-danger"></i>
-
-                Quick Actions
-
-            </h5>
-
-        </div>
-
-        <div class="card-body">
-
-            <div class="row g-3">
-
-                <div class="col-lg-4">
-
-                    <a href="{% url 'request_blood' %}"
-                       class="btn btn-danger w-100 p-3">
-
-                        <i class="fa-solid fa-plus"></i>
-
-                        New Blood Request
-
-                    </a>
-
-                </div>
-
-                <div class="col-lg-4">
-
-                    <a href="{% url 'emergency_request' %}"
-                       class="btn btn-warning w-100 p-3">
-
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-
-                        Emergency Request
-
-                    </a>
-
-                </div>
-
-                <div class="col-lg-4">
-
-                    <a href="{% url 'hospital_blood_availability' %}"
-                       class="btn btn-primary w-100 p-3">
-
-                        <i class="fa-solid fa-droplet"></i>
-
-                        Blood Availability
-
-                    </a>
-
-                </div>
-
-                <div class="col-lg-4">
-
-                    <a href="{% url 'my_requests' %}"
-                       class="btn btn-success w-100 p-3">
-
-                        <i class="fa-solid fa-list"></i>
-
-                        My Requests
-
-                    </a>
-
-                </div>
-
-                <div class="col-lg-4">
-
-                    <a href="{% url 'hospital_profile' %}"
-                       class="btn btn-dark w-100 p-3">
-
-                        <i class="fa-solid fa-user-doctor"></i>
-
-                        Update Profile
-
-                    </a>
-
-                </div>
-
-                <div class="col-lg-4">
-
-                    <a href="{% url 'download_report' %}"
-                       class="btn btn-secondary w-100 p-3">
-
-                        <i class="fa-solid fa-download"></i>
-
-                        Download Report
-
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{% static 'Hospital/js/hospital_dashboard.js' %}"></script>
-
-
-
-
-<!-- ===================================================== -->
-<!-- SEARCH & FILTER -->
-<!-- ===================================================== -->
-
-<div class="card border-0 shadow rounded-4 mt-5">
-
-    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-
-        <h5 class="mb-0">
-            <i class="fa-solid fa-magnifying-glass text-danger"></i>
-            Search Blood Requests
-        </h5>
-
-    </div>
-
-    <div class="card-body">
-
-        <div class="row">
-
-            <div class="col-lg-6">
-
-                <input type="text"
-                       id="searchInput"
-                       class="form-control"
-                       placeholder="Search Patient Name / Blood Group">
-
-            </div>
-
-            <div class="col-lg-3">
-
-                <select class="form-select">
-
-                    <option>All Status</option>
-
-                    <option>Approved</option>
-
-                    <option>Pending</option>
-
-                    <option>Rejected</option>
-
-                </select>
-
-            </div>
-
-            <div class="col-lg-3">
-
-                <button class="btn btn-danger w-100">
-
-                    <i class="fa-solid fa-filter"></i>
-
-                    Filter
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- ===================================================== -->
-<!-- RECENT BLOOD REQUEST TABLE -->
-<!-- ===================================================== -->
-
-<div class="card border-0 shadow rounded-4 mt-4">
-
-    <div class="card-header bg-white">
-
-        <h5 class="mb-0">
-
-            <i class="fa-solid fa-table text-danger"></i>
-
-            Recent Blood Requests
-
-        </h5>
-
-    </div>
-
-    <div class="card-body table-responsive">
-
-        <table class="table table-hover align-middle" id="requestTable">
-
-            <thead class="table-danger">
-
-                <tr>
-
-                    <th>Request ID</th>
-
-                    <th>Patient Name</th>
-
-                    <th>Blood Group</th>
-
-                    <th>Units</th>
-
-                    <th>Hospital</th>
-
-                    <th>Required Date</th>
-
-                    <th>Status</th>
-
-                    <th>Action</th>
-
+                  </td>
+                  <td><span style="font-size:12.5px;">{{ req.required_date|date:"d M Y"|default:"Immediate" }}</span></td>
+                  <td>
+                    {% if req.status == 'Approved' or req.status == 'Fulfilled' %}
+                    <span class="pill pill-green">{{ req.status }}</span>
+                    {% elif req.status == 'Rejected' %}
+                    <span class="pill pill-red">Rejected</span>
+                    {% else %}
+                    <span class="pill pill-amber">Pending</span>
+                    {% endif %}
+                  </td>
                 </tr>
-
-            </thead>
-
-            <tbody>
-
-                {% for request in requests %}
-
-                <tr>
-
-                    <td>
-
-                        #REQ{{ request.id }}
-
-                    </td>
-
-                    <td>
-
-                        {{ request.patient_name }}
-
-                    </td>
-
-                    <td>
-
-                        <span class="badge bg-danger">
-
-                            {{ request.blood_group }}
-
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        {{ request.units }}
-
-                    </td>
-
-                    <td>
-
-                        {{ hospital.hospital_name }}
-
-                    </td>
-
-                    <td>
-
-                        {{ request.required_date }}
-
-                    </td>
-
-                    <td>
-
-                        {% if request.status == "Approved" %}
-
-                        <span class="badge bg-success">
-
-                            Approved
-
-                        </span>
-
-                        {% elif request.status == "Pending" %}
-
-                        <span class="badge bg-warning text-dark">
-
-                            Pending
-
-                        </span>
-
-                        {% else %}
-
-                        <span class="badge bg-danger">
-
-                            Rejected
-
-                        </span>
-
-                        {% endif %}
-
-                    </td>
-
-                    <td>
-
-                        <button class="btn btn-primary btn-sm">
-
-                            <i class="fa-solid fa-eye"></i>
-
-                        </button>
-
-                        <button class="btn btn-success btn-sm">
-
-                            <i class="fa-solid fa-pen"></i>
-
-                        </button>
-
-                        <button class="btn btn-danger btn-sm">
-
-                            <i class="fa-solid fa-trash"></i>
-
-                        </button>
-
-                    </td>
-
-                </tr>
-
                 {% empty %}
-
                 <tr>
-
-                    <td colspan="8" class="text-center text-muted">
-
-                        No Blood Requests Found
-
-                    </td>
-
+                  <td colspan="6" style="text-align:center; padding:32px; color:#94a3b8;">
+                    No blood requisitions placed yet. Click <strong>Requisition Blood</strong> above to order units!
+                  </td>
                 </tr>
-
                 {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-
-
-<!-- ===================================================== -->
-<!-- PAGINATION -->
-<!-- ===================================================== -->
-
-<nav class="mt-4">
-
-    <ul class="pagination justify-content-center">
-
-        <li class="page-item disabled">
-
-            <a class="page-link">
-
-                Previous
-
-            </a>
-
-        </li>
-
-        <li class="page-item active">
-
-            <a class="page-link">
-
-                1
-
-            </a>
-
-        </li>
-
-        <li class="page-item">
-
-            <a class="page-link">
-
-                2
-
-            </a>
-
-        </li>
-
-        <li class="page-item">
-
-            <a class="page-link">
-
-                3
-
-            </a>
-
-        </li>
-
-        <li class="page-item">
-
-            <a class="page-link">
-
-                Next
-
-            </a>
-
-        </li>
-
-    </ul>
-
-</nav>
-
-<!-- ====================================================== -->
-<!--               BLOOD AVAILABILITY SECTION               -->
-<!-- ====================================================== -->
-
-<div class="row mt-5">
-
-    <div class="col-12 mb-4">
-
-        <h4 class="fw-bold text-dark">
-            <i class="fas fa-tint text-danger"></i>
-            Blood Availability
-        </h4>
-
-        <p class="text-muted">
-            Live Blood Stock Available in Blood Bank
-        </p>
-
-    </div>
-
-</div>
-
-<div class="row g-4">
-
-    <!-- A+ -->
-
-    <div class="col-xl-3 col-lg-4 col-md-6">
-
-        <div class="card shadow-sm border-0 rounded-4 blood-card">
-
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between">
-
-                    <h3 class="text-danger fw-bold">
-
-                        A+
-
-                    </h3>
-
-                    <i class="fas fa-droplet fa-2x text-danger"></i>
-
-                </div>
-
-                <h5 class="mt-3">
-
-                    120 Units
-
-                </h5>
-
-                <div class="progress mt-3">
-
-                    <div class="progress-bar bg-danger"
-                         style="width:90%;">
-
-                    </div>
-
-                </div>
-
-                <small class="text-success">
-
-                    Available
-
-                </small>
-
-            </div>
-
+              </tbody>
+            </table>
+          </div>
         </div>
 
-    </div>
-
-    <!-- A- -->
-
-    <div class="col-xl-3 col-lg-4 col-md-6">
-
-        <div class="card shadow-sm border-0 rounded-4 blood-card">
-
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between">
-
-                    <h3 class="text-danger fw-bold">
-
-                        A-
-
-                    </h3>
-
-                    <i class="fas fa-droplet fa-2x text-danger"></i>
-
-                </div>
-
-                <h5 class="mt-3">
-
-                    65 Units
-
-                </h5>
-
-                <div class="progress mt-3">
-
-                    <div class="progress-bar bg-warning"
-                         style="width:60%;">
-
-                    </div>
-
-                </div>
-
-                <small class="text-warning">
-
-                    Limited
-
-                </small>
-
+        <!-- Central Blood Bank Availability Overview -->
+        <div class="card-panel" id="stock-section">
+          <div class="panel-header">
+            <h3>🩸 Central Blood Bank Inventory Telemetry</h3>
+            <span style="font-size:12px; color:var(--text-light);">Real-time Central Units</span>
+          </div>
+          <div class="stock-chip-grid">
+            {% for s in stocks %}
+            <div class="stock-chip">
+              <div class="group">{{ s.blood_group }}</div>
+              <div class="units">{{ s.units }} Units</div>
+              <div>
+                {% if s.status_level == 'high' %}
+                <span class="tag" style="background:#dcfce7; color:#15803d;">Optimal</span>
+                {% elif s.status_level == 'medium' %}
+                <span class="tag" style="background:#fef3c7; color:#b45309;">Moderate</span>
+                {% else %}
+                <span class="tag" style="background:#fee2e2; color:#b91c1c;">Critical Low</span>
+                {% endif %}
+              </div>
             </div>
-
+            {% endfor %}
+          </div>
         </div>
 
-    </div>
+      </div>
 
-    <!-- B+ -->
+      <!-- Right Column: Hospital Profile Details -->
+      <div id="profile-section">
+        <div class="card-panel">
+          <div class="panel-header">
+            <h3>🏥 Hospital Profile & Accreditations</h3>
+            <span class="pill pill-green">Verified</span>
+          </div>
 
-    <div class="col-xl-3 col-lg-4 col-md-6">
+          <form method="POST" action="/hospital-dashboard/">
+            {% csrf_token %}
+            <input type="hidden" name="update_profile" value="1">
 
-        <div class="card shadow-sm border-0 rounded-4 blood-card">
-
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between">
-
-                    <h3 class="text-danger fw-bold">
-
-                        B+
-
-                    </h3>
-
-                    <i class="fas fa-droplet fa-2x text-danger"></i>
-
-                </div>
-
-                <h5 class="mt-3">
-
-                    95 Units
-
-                </h5>
-
-                <div class="progress mt-3">
-
-                    <div class="progress-bar bg-success"
-                         style="width:80%;">
-
-                    </div>
-
-                </div>
-
-                <small class="text-success">
-
-                    Available
-
-                </small>
-
+            <div class="form-group">
+              <label>Hospital / Clinic Name</label>
+              <input type="text" name="hospital_name" value="{{ hospital.hospital_name }}" class="form-control" required>
             </div>
 
+            <div class="form-group">
+              <label>Incharge Doctor / Medical Officer</label>
+              <input type="text" name="doctor_name" value="{{ hospital.doctor_name }}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label>Registration / License Number</label>
+              <input type="text" value="{{ hospital.registration_no }}" class="form-control" disabled style="background:#f1f5f9; cursor:not-allowed;">
+            </div>
+
+            <div class="form-group">
+              <label>Contact Phone</label>
+              <input type="text" name="phone" value="{{ hospital.phone }}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label>District / City</label>
+              <input type="text" name="district" value="{{ hospital.district }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label>Hospital Address</label>
+              <textarea name="address" rows="2" class="form-control">{{ hospital.address }}</textarea>
+            </div>
+
+            <button type="submit" style="width:100%; background:var(--dark); color:#fff; padding:10px; border-radius:8px; border:none; font-weight:700; cursor:pointer;">
+              Update Hospital Details
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- 1. Requisition Modal Form -->
+  <div class="modal-overlay" id="requestModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle">🩸 Place Blood Requisition Order</h3>
+        <button class="close-modal-btn" onclick="closeModal('requestModal')">&times;</button>
+      </div>
+      <form method="POST" action="/hospital-dashboard/request-blood/">
+        {% csrf_token %}
+        <input type="hidden" name="priority" id="requestPriorityInput" value="Normal">
+
+        <div class="form-group">
+          <label>Patient Full Name</label>
+          <input type="text" name="patient_name" placeholder="Enter patient name" class="form-control" required>
         </div>
 
-    </div>
-
-    <!-- B- -->
-
-    <div class="col-xl-3 col-lg-4 col-md-6">
-
-        <div class="card shadow-sm border-0 rounded-4 blood-card">
-
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between">
-
-                    <h3 class="text-danger fw-bold">
-
-                        B-
-
-                    </h3>
-
-                    <i class="fas fa-droplet fa-2x text-danger"></i>
-
-                </div>
-
-                <h5 class="mt-3">
-
-                    42 Units
-
-                </h5>
-
-                <div class="progress mt-3">
-
-                    <div class="progress-bar bg-info"
-                         style="width:45%;">
-
-                    </div>
-
-                </div>
-
-                <small class="text-primary">
-
-                    Moderate
-
-                </small>
-
-            </div>
-
+        <div class="form-group">
+          <label>Blood Group Required</label>
+          <select name="blood_group" class="form-control" required>
+            <option value="">-- Select Blood Group --</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
         </div>
 
-    </div>
-
-    <!-- AB+ -->
-
-    <div class="col-xl-3 col-lg-4 col-md-6">
-
-        <div class="card shadow-sm border-0 rounded-4 blood-card">
-
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between">
-
-                    <h3 class="text-danger fw-bold">
-
-                        AB+
-
-                    </h3>
-
-                    <i class="fas fa-droplet fa-2x text-danger"></i>
-
-                </div>
-
-                <h5 class="mt-3">
-
-                    38 Units
-
-                </h5>
-
-                <div class="progress mt-3">
-
-                    <div class="progress-bar bg-warning"
-                         style="width:40%;">
-
-                    </div>
-
-                </div>
-
-                <small class="text-warning">
-
-                    Low Stock
-
-                </small>
-
-            </div>
-
+        <div class="form-group">
+          <label>Units Needed</label>
+          <input type="number" name="units" min="1" max="50" value="1" class="form-control" required>
         </div>
 
-    </div>
-
-    <!-- AB- -->
-
-    <div class="col-xl-3 col-lg-4 col-md-6">
-
-        <div class="card shadow-sm border-0 rounded-4 blood-card">
-
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between">
-
-                    <h3 class="text-danger fw-bold">
-
-                        AB-
-
-                    </h3>
-
-                    <i class="fas fa-droplet fa-2x text-danger"></i>
-
-                </div>
-
-                <h5 class="mt-3">
-
-                    15 Units
-
-                </h5>
-
-                <div class="progress mt-3">
-
-                    <div class="progress-bar bg-danger"
-                         style="width:20%;">
-
-                    </div>
-
-                </div>
-
-                <small class="text-danger">
-
-                    Critical
-
-                </small>
-
-            </div>
-
+        <div class="form-group">
+          <label>Required Date</label>
+          <input type="date" name="required_date" class="form-control" required>
         </div>
 
-    </div>
-
-    <!-- O+ -->
-
-    <div class="col-xl-3 col-lg-4 col-md-6">
-
-        <div class="card shadow-sm border-0 rounded-4 blood-card">
-
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between">
-
-                    <h3 class="text-danger fw-bold">
-
-                        O+
-
-                    </h3>
-
-                    <i class="fas fa-droplet fa-2x text-danger"></i>
-
-                </div>
-
-                <h5 class="mt-3">
-
-                    140 Units
-
-                </h5>
-
-                <div class="progress mt-3">
-
-                    <div class="progress-bar bg-success"
-                         style="width:95%;">
-
-                    </div>
-
-                </div>
-
-                <small class="text-success">
-
-                    Excellent
-
-                </small>
-
-            </div>
-
+        <div class="form-group">
+          <label>Clinical Notes / Medical Purpose</label>
+          <input type="text" name="remarks" placeholder="e.g., Surgery / ICU Emergency" class="form-control">
         </div>
 
-    </div>
-
-    <!-- O- -->
-
-    <div class="col-xl-3 col-lg-4 col-md-6">
-
-        <div class="card shadow-sm border-0 rounded-4 blood-card">
-
-            <div class="card-body">
-
-                <div class="d-flex justify-content-between">
-
-                    <h3 class="text-danger fw-bold">
-
-                        O-
-
-                    </h3>
-
-                    <i class="fas fa-droplet fa-2x text-danger"></i>
-
-                </div>
-
-                <h5 class="mt-3">
-
-                    22 Units
-
-                </h5>
-
-                <div class="progress mt-3">
-
-                    <div class="progress-bar bg-danger"
-                         style="width:28%;">
-
-                    </div>
-
-                </div>
-
-                <small class="text-danger">
-
-                    Critical
-
-                </small>
-
-            </div>
-
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+          <button type="button" onclick="closeModal('requestModal')" style="padding:9px 18px; border:1px solid var(--border); border-radius:8px; background:#fff; cursor:pointer;">Cancel</button>
+          <button type="submit" id="modalSubmitBtn" style="padding:9px 24px; border:none; border-radius:8px; background:#2563eb; color:#fff; font-weight:700; cursor:pointer;">Submit Order</button>
         </div>
-
+      </form>
     </div>
-
-</div>
-
-<!-- ===================================================== -->
-<!--            EMERGENCY BLOOD REQUEST SECTION            -->
-<!-- ===================================================== -->
-
-<div class="row mt-5">
-
-    <!-- Emergency Requests Table -->
-
-    <div class="col-lg-8">
-
-        <div class="card border-0 shadow rounded-4">
-
-            <div class="card-header bg-danger text-white">
-
-                <h5 class="mb-0">
-
-                    <i class="fas fa-triangle-exclamation"></i>
-
-                    Recent Emergency Requests
-
-                </h5>
-
-            </div>
-
-            <div class="card-body table-responsive">
-
-                <table class="table table-hover align-middle">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Priority</th>
-                            <th>Patient</th>
-                            <th>Blood Group</th>
-                            <th>Units</th>
-                            <th>Required Date</th>
-                            <th>Status</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for request in requests %}
-
-                            {% if request.priority == "Emergency" %}
-
-                            <tr>
-
-                                <td>
-
-                                    <span class="badge bg-danger">
-
-                                        Emergency
-
-                                    </span>
-
-                                </td>
-
-                                <td>
-
-                                    {{ request.patient_name }}
-
-                                </td>
-
-                                <td>
-
-                                    <span class="badge bg-dark">
-
-                                        {{ request.blood_group }}
-
-                                    </span>
-
-                                </td>
-
-                                <td>
-
-                                    {{ request.units }}
-
-                                </td>
-
-                                <td>
-
-                                    {{ request.required_date }}
-
-                                </td>
-
-                                <td>
-
-                                    {% if request.status == "Approved" %}
-
-                                        <span class="badge bg-success">
-
-                                            Approved
-
-                                        </span>
-
-                                    {% elif request.status == "Pending" %}
-
-                                        <span class="badge bg-warning text-dark">
-
-                                            Pending
-
-                                        </span>
-
-                                    {% else %}
-
-                                        <span class="badge bg-danger">
-
-                                            Rejected
-
-                                        </span>
-
-                                    {% endif %}
-
-                                </td>
-
-                            </tr>
-
-                            {% endif %}
-
-                        {% empty %}
-
-                        <tr>
-
-                            <td colspan="6" class="text-center">
-
-                                No Emergency Requests
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
+  </div>
+
+  <!-- 2. In-Portal Hospital Support Modal -->
+  <div class="modal-overlay" id="supportModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🏥 Hospital Clinical Dispatch & Support</h3>
+        <button class="close-modal-btn" onclick="closeModal('supportModal')">&times;</button>
+      </div>
+      <div style="line-height:1.8; font-size:14px; color:var(--text);">
+        <p>Direct priority line for hospital coordinators, clinical transfusions, and emergency cross-matching coordination:</p>
+        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:16px; margin:16px 0;">
+          <div>📞 <strong>Priority Hospital Hotline:</strong> +91 1800-300-HOSP</div>
+          <div>🚑 <strong>Emergency Blood Transit Cell:</strong> +91 98765-00108</div>
+          <div>✉️ <strong>Clinical Desk:</strong> clinical-orders@hemocampus.edu</div>
+          <div>📍 <strong>Central Blood Depot:</strong> Gateway Medical Center, Wing B</div>
         </div>
-
+        <p style="font-size:13px; color:var(--text-light);">Emergency dispatch requests placed with priority 'Emergency' are routed to our on-call driver within 8 minutes.</p>
+      </div>
+      <div style="display:flex; justify-content:flex-end; margin-top:16px;">
+        <button type="button" onclick="closeModal('supportModal')" style="padding:8px 20px; border-radius:8px; background:var(--dark); color:#fff; border:none; font-weight:700; cursor:pointer;">Close</button>
+      </div>
     </div>
-
-    <!-- Emergency Summary -->
-
-    <div class="col-lg-4">
-
-        <div class="card border-0 shadow rounded-4">
-
-            <div class="card-header bg-dark text-white">
-
-                <h5 class="mb-0">
-
-                    <i class="fas fa-bell"></i>
-
-                    Emergency Summary
-
-                </h5>
-
-            </div>
-
-            <div class="card-body">
-
-                <div class="mb-4">
-
-                    <h6>Total Emergency Requests</h6>
-
-                    <h2 class="text-danger">
-
-                        {{ emergency_requests }}
-
-                    </h2>
-
-                </div>
-
-                <hr>
-
-                <div class="mb-4">
-
-                    <h6>Approved</h6>
-
-                    <h3 class="text-success">
-
-                        {{ approved_requests }}
-
-                    </h3>
-
-                </div>
-
-                <hr>
-
-                <div class="mb-4">
-
-                    <h6>Pending</h6>
-
-                    <h3 class="text-warning">
-
-                        {{ pending_requests }}
-
-                    </h3>
-
-                </div>
-
-                <hr>
-
-                <div>
-
-                    <h6>Rejected</h6>
-
-                    <h3 class="text-danger">
-
-                        {{ rejected_requests }}
-
-                    </h3>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<!-- ========================================= -->
-<!-- Notification & Hospital Profile Section -->
-<!-- ========================================= -->
-
-<div class="row mt-5">
-
-    <!-- Notifications -->
-
-    <div class="col-lg-6">
-
-        <div class="card shadow border-0 rounded-4 h-100">
-
-            <div class="card-header bg-primary text-white">
-
-                <h5 class="mb-0">
-                    <i class="fas fa-bell"></i>
-                    Recent Notifications
-                </h5>
-
-            </div>
-
-            <div class="card-body">
-
-                <ul class="list-group list-group-flush">
-
-                    <li class="list-group-item">
-                        🩸 Your blood request has been approved.
-                    </li>
-
-                    <li class="list-group-item">
-                        🚑 Emergency request submitted successfully.
-                    </li>
-
-                    <li class="list-group-item">
-                        📦 Blood stock has been updated.
-                    </li>
-
-                    <li class="list-group-item">
-                        ✔ Profile updated successfully.
-                    </li>
-
-                    <li class="list-group-item">
-                        🔔 New blood units are available.
-                    </li>
-
-                </ul>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- Hospital Profile -->
-
-    <div class="col-lg-6">
-
-        <div class="card shadow border-0 rounded-4 h-100">
-
-            <div class="card-header bg-danger text-white">
-
-                <h5 class="mb-0">
-                    <i class="fas fa-hospital"></i>
-                    Hospital Profile
-                </h5>
-
-            </div>
-
-            <div class="card-body text-center">
-
-                <img src="{% static 'Hospital/images/hospital.png' %}"
-                     class="rounded-circle shadow mb-3"
-                     width="120"
-                     height="120"
-                     alt="Hospital Logo">
-
-                <h4>
-
-                    {% if hospital %}
-
-                        {{ hospital.hospital_name }}
-
-                    {% else %}
-
-                        ABC Hospital
-
-                    {% endif %}
-
-                </h4>
-
-                <hr>
-
-                <table class="table table-borderless">
-
-                    <tr>
-
-                        <th>Registration No.</th>
-
-                        <td>
-
-                            {% if hospital %}
-
-                                {{ hospital.registration_no }}
-
-                            {% else %}
-
-                                HOSP001
-
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <th>Doctor</th>
-
-                        <td>
-
-                            {% if hospital %}
-
-                                {{ hospital.doctor_name }}
-
-                            {% else %}
-
-                                Dr. Sharma
-
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <th>Email</th>
-
-                        <td>
-
-                            {% if hospital %}
-
-                                {{ hospital.email }}
-
-                            {% else %}
-
-                                hospital@gmail.com
-
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <th>Phone</th>
-
-                        <td>
-
-                            {% if hospital %}
-
-                                {{ hospital.phone }}
-
-                            {% else %}
-
-                                9876543210
-
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <th>District</th>
-
-                        <td>
-
-                            {% if hospital %}
-
-                                {{ hospital.district }}
-
-                            {% else %}
-
-                                Lucknow
-
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <th>State</th>
-
-                        <td>
-
-                            {% if hospital %}
-
-                                {{ hospital.state }}
-
-                            {% else %}
-
-                                Uttar Pradesh
-
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<!-- ========================================= -->
-<!-- Footer -->
-<!-- ========================================= -->
-
-<footer class="mt-5">
-
-    <div class="card border-0 shadow-sm">
-
-        <div class="card-body text-center">
-
-            <p class="mb-1">
-
-                © 2026 HemoCampus - Blood Bank Management System
-
-            </p>
-
-            <small class="text-muted">
-
-                Developed by <strong>Pankaj Upadhyay, Abhishek kumar, Ranjeet Bharti, Anisha kumari, Km. Sandhya Bharti, Garima Singh </strong>
-
-            </small>
-
-        </div>
-
-    </div>
-
-</footer>
+  </div>
+
+  <script>
+    const navToggle = document.getElementById('hospNavToggle');
+    const sidebar = document.getElementById('hospSidebar');
+    const overlay = document.getElementById('hospSidebarOverlay');
+
+    if (navToggle && sidebar && overlay) {
+      function toggle() {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+      }
+      navToggle.addEventListener('click', toggle);
+      overlay.addEventListener('click', toggle);
+    }
+
+    function openRequestModal(priority) {
+      document.getElementById('requestPriorityInput').value = priority;
+      const today = new Date().toISOString().split('T')[0];
+      const dateInput = document.querySelector('#requestModal input[name="required_date"]');
+      if (dateInput && !dateInput.value) dateInput.value = today;
+
+      const title = document.getElementById('modalTitle');
+      const submitBtn = document.getElementById('modalSubmitBtn');
+      if (priority === 'Emergency') {
+        title.innerHTML = '🚨 Emergency Blood Requisition (High Priority)';
+        submitBtn.style.background = '#dc2626';
+        submitBtn.innerText = 'Dispatch Emergency Request';
+      } else {
+        title.innerHTML = '🩸 Place Blood Requisition Order';
+        submitBtn.style.background = '#2563eb';
+        submitBtn.innerText = 'Submit Requisition';
+      }
+      document.getElementById('requestModal').classList.add('active');
+    }
+
+    function openSupportModal() {
+      document.getElementById('supportModal').classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+  </script>
+</body>
+</html>

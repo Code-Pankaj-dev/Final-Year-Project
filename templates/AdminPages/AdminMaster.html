@@ -21,10 +21,51 @@
       font-family: "Inter", system-ui, sans-serif;
       background: var(--light);
       color: var(--dark);
+      overflow-x: hidden;
     }
-    .dashboard { display: flex; min-height: 100vh; }
+    .dashboard { display: flex; min-height: 100vh; flex-direction: column; }
 
-    /* Sidebar CSS yahan rakho - ek hi baar */
+    /* Top Bar for Mobile Screens */
+    .admin-mobile-topbar {
+      display: none;
+      background: var(--dark);
+      color: white;
+      padding: 12px 18px;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1050;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .mobile-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .toggle-sidebar-btn {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: white;
+      font-size: 22px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* Sidebar Overlay Backdrop */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+      backdrop-filter: blur(2px);
+    }
+
+    /* Sidebar CSS */
     .sidebar {
       width: 240px;
       background: var(--dark);
@@ -36,9 +77,10 @@
       left: 0;
       top: 0;
       height: 100vh;
-      z-index: 100;
+      z-index: 1000;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .logo { padding: 24px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255, 255, 0.08); }
+    .logo { padding: 24px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
     .logo-icon { width: 38px; height: 38px; background: var(--primary); border-radius: 10px; display: grid; place-items: center; }
     .logo-icon svg { width: 22px; height: 22px; fill: white; }
     .logo-text h1 { font-size: 18px; color: white; font-weight: 700; }
@@ -46,9 +88,10 @@
     .sidebar nav { padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; flex: 1; overflow-y: auto; }
     .sidebar nav a { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 8px; color: #cbd5e1; text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s ease; }
     .sidebar nav a svg { width: 20px; height: 20px; stroke-width: 2; flex-shrink: 0; }
-    .sidebar nav a:hover { background: rgba(255, 255, 0.06); color: white; }
+    .sidebar nav a:hover { background: rgba(255, 255, 255, 0.06); color: white; }
     .sidebar nav a.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25); }
-    .sidebar nav a.logout { margin-top: auto; border-top: 1px solid rgba(255, 255, 255, 0.08); margin-top: 16px; padding-top: 16px; }
+    .sidebar nav a.logout { margin-top: auto; border-top: 1px solid rgba(255, 255, 255, 0.08); margin-top: 16px; padding-top: 16px; color: #f87171; }
+    .sidebar nav a.logout:hover { background: rgba(220, 38, 38, 0.15); color: #fca5a5; }
 
     /* Main content wrapper */
     .main {
@@ -57,12 +100,44 @@
       min-width: 0;
       display: flex;
       flex-direction: column;
+      padding: 10px;
+    }
+
+    /* Responsive Queries */
+    @media (max-width: 768px) {
+      .admin-mobile-topbar {
+        display: flex;
+      }
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-overlay.active {
+        display: block;
+      }
+      .main {
+        margin-left: 0;
+        padding: 12px;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Mobile Header -->
+  <div class="admin-mobile-topbar">
+    <div class="mobile-brand">
+      <span style="color:var(--primary); font-size:20px;">🩸</span> HemoCampus Admin
+    </div>
+    <button class="toggle-sidebar-btn" id="adminNavToggle" aria-label="Toggle Navigation">☰</button>
+  </div>
+
+  <!-- Overlay -->
+  <div class="sidebar-overlay" id="adminSidebarOverlay"></div>
+
   <div class="dashboard">
-    <aside class="sidebar">
+    <aside class="sidebar" id="adminSidebar">
       <div class="logo">
         <div class="logo-icon">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -75,7 +150,7 @@
         </div>
       </div>
       <nav>
-        <a href="/Admin_Dashboard/" class="{% if request.path == '/Admin_Dashboard' %}active{% endif %}">
+        <a href="/Admin_Dashboard/" class="{% if request.path == '/Admin_Dashboard/' or request.path == '/Admin_Dashboard' %}active{% endif %}">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
           <span>Dashboard</span>
         </a>
@@ -99,7 +174,7 @@
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
           <span>Settings</span>
         </a>
-        <a href="#" class="logout">
+        <a href="/LogoutPage/" class="logout">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
           <span>Logout</span>
         </a>
@@ -111,6 +186,33 @@
       {% endblock %}
     </main>
   </div>
+
+  <script>
+    const adminToggle = document.getElementById('adminNavToggle');
+    const adminSidebar = document.getElementById('adminSidebar');
+    const adminOverlay = document.getElementById('adminSidebarOverlay');
+
+    if (adminToggle && adminSidebar && adminOverlay) {
+      function toggleSidebar() {
+        adminSidebar.classList.toggle('open');
+        adminOverlay.classList.toggle('active');
+      }
+
+      adminToggle.addEventListener('click', toggleSidebar);
+      adminOverlay.addEventListener('click', toggleSidebar);
+
+      // Close sidebar when clicking any link in mobile view
+      const navLinks = adminSidebar.querySelectorAll('nav a');
+      navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth <= 768) {
+            adminSidebar.classList.remove('open');
+            adminOverlay.classList.remove('active');
+          }
+        });
+      });
+    }
+  </script>
 </body>
 </html>
 

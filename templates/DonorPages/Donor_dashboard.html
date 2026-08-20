@@ -1,741 +1,840 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>HemoCampus - Donor Dashboard (Preview)</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>HemoCampus - Donor Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #dc2626;
+      --primary-dark: #b91c1c;
+      --primary-light: #fee2e2;
+      --dark: #0f172a;
+      --dark-card: #1e293b;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #334155;
+      --text-light: #64748b;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --amber: #d97706;
+      --amber-light: #fef3c7;
+      --blue: #2563eb;
+      --blue-light: #dbeafe;
+      --sidebar-w: 240px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* Mobile Header */
+    .mobile-header {
+      display: none;
+      background: var(--dark);
+      color: #fff;
+      padding: 12px 18px;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1050;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+    .mobile-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .mobile-toggle-btn {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* Overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+      backdrop-filter: blur(2px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--dark);
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      z-index: 1000;
+      transition: transform 0.3s ease;
+    }
+    .sidebar-brand {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 18px;
+    }
+    .brand-title { font-size: 17px; font-weight: 700; color: #fff; }
+    .brand-sub { font-size: 11px; color: #94a3b8; }
+    .sidebar-nav {
+      padding: 18px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item i { width: 18px; text-align: center; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+    .nav-item.active { background: var(--primary); color: #fff; font-weight: 600; box-shadow: 0 4px 12px rgba(220,38,38,0.3); }
+    
+    .sidebar-footer {
+      padding: 16px 12px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .logout-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: #f87171;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .logout-item:hover { background: rgba(220,38,38,0.15); color: #fca5a5; }
+
+    /* Main Container */
+    .main-wrapper {
+      margin-left: var(--sidebar-w);
+      padding: 24px 32px 60px;
+      min-height: 100vh;
+    }
+
+    /* Page Header */
+    .page-header {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .header-title h1 { font-size: 22px; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+    .header-title p { font-size: 13.5px; color: var(--text-light); }
+    .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-donate {
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(220,38,38,0.25);
+    }
+    .btn-donate:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+    .btn-req-blood {
+      background: #2563eb;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-req-blood:hover { background: #1d4ed8; }
+
+    /* Quick Links Bar */
+    .quick-bar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      margin-bottom: 24px;
+      padding-bottom: 4px;
+    }
+    .quick-chip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 8px 16px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .quick-chip i { color: var(--primary); }
+    .quick-chip:hover { border-color: var(--primary); background: #fff; transform: translateY(-1px); }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .kpi-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      border-left: 4px solid var(--primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .kpi-box.border-blue { border-left-color: var(--blue); }
+    .kpi-box.border-green { border-left-color: var(--success); }
+    .kpi-box.border-amber { border-left-color: var(--amber); }
+    .kpi-box.border-purple { border-left-color: #9333ea; }
+    .kpi-box.border-slate { border-left-color: #64748b; }
+    .kpi-box .lbl { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--text-light); margin-bottom: 4px; }
+    .kpi-box .val { font-size: 20px; font-weight: 800; color: var(--dark); }
+
+    /* 2 Column Layout */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+    .card-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-header h3 { font-size: 16px; font-weight: 700; color: var(--dark); }
+
+    /* Tables */
+    .table-wrap { width: 100%; overflow-x: auto; }
+    table.clean-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    table.clean-table th {
+      text-align: left;
+      padding: 10px 12px;
+      color: var(--text-light);
+      font-weight: 600;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+    }
+    table.clean-table td {
+      padding: 12px;
+      border-bottom: 1px solid #f1f5f9;
+      color: var(--dark);
+    }
+    .pill { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 700; }
+    .pill-red { background: var(--primary-light); color: var(--primary-dark); }
+    .pill-green { background: var(--success-light); color: #15803d; }
+    .pill-amber { background: var(--amber-light); color: #b45309; }
+
+    /* Stock Matrix Grid */
+    .stock-chip-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .stock-chip {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 10px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .stock-chip:hover { border-color: var(--primary); transform: translateY(-2px); background: #fff; }
+    .stock-chip .group { font-size: 16px; font-weight: 800; color: var(--primary); margin-bottom: 2px; }
+    .stock-chip .units { font-size: 13px; font-weight: 700; color: var(--dark); }
+    .stock-chip .tag { font-size: 10.5px; font-weight: 700; display: inline-block; padding: 2px 6px; border-radius: 4px; margin-top: 4px; }
+
+    /* Form Fields */
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--dark); margin-bottom: 4px; text-transform: uppercase; }
+    .form-control {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13.5px;
+      outline: none;
+      background: #f8fafc;
+    }
+    .form-control:focus { border-color: var(--primary); background: #fff; }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.6);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(3px);
+      padding: 16px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-card {
+      background: #fff;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 520px;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-header h3 { font-size: 18px; font-weight: 800; color: var(--dark); }
+    .close-modal-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-light); }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+      .content-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .mobile-header { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.active { display: block; }
+      .main-wrapper { margin-left: 0; padding: 16px; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .stock-chip-grid { grid-template-columns: repeat(2, 1fr); }
+      .page-header { flex-direction: column; align-items: flex-start; gap: 14px; }
+    }
+  </style>
 </head>
 <body>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
-<style>
-    :root {
-        --ink: #10151f;
-        --ink-soft: #1b2333;
-        --crimson: #d62839;
-        --crimson-deep: #a11d2e;
-        --crimson-tint: #fdeaec;
-        --bg: #f4f5f8;
-        --card: #ffffff;
-        --line: #e8e9ee;
-        --slate: #626b7a;
-        --ink-text: #171b23;
-        --success: #1a9c5a;
-        --success-tint: #e7f8ef;
-        --warn: #c8860a;
-        --warn-tint: #fdf3e2;
-        --sidebar-w: 220px;
-    }
+  <!-- Mobile Topbar -->
+  <div class="mobile-header">
+    <div class="mobile-brand">
+      <span style="color:var(--primary); font-size:20px;">🩸</span> HemoCampus Donor
+    </div>
+    <button class="mobile-toggle-btn" id="donorNavToggle">☰</button>
+  </div>
 
-    * { box-sizing: border-box; }
+  <!-- Overlay -->
+  <div class="sidebar-overlay" id="donorSidebarOverlay"></div>
 
-    body {
-        font-family: 'Inter', sans-serif;
-        background: var(--bg);
-        color: var(--ink-text);
-    }
+  <!-- Sidebar (All links stay within Donor Portal) -->
+  <aside class="sidebar" id="donorSidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-droplet"></i></div>
+      <div>
+        <div class="brand-title">HemoCampus</div>
+        <div class="brand-sub">Donor Portal</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/donor-dashboard/" class="nav-item active"><i class="fas fa-grip"></i><span>Dashboard</span></a>
+      <button type="button" onclick="openDonateModal()" class="nav-item"><i class="fas fa-hand-holding-medical"></i><span>Donate Blood</span></button>
+      <button type="button" onclick="openRequestModal()" class="nav-item"><i class="fas fa-heart-pulse"></i><span>Request Blood</span></button>
+      <a href="#donations-section" class="nav-item"><i class="fas fa-clock-rotate-left"></i><span>My Donations</span></a>
+      <a href="#requests-section" class="nav-item"><i class="fas fa-list-check"></i><span>My Requests</span></a>
+      <a href="#stock-section" class="nav-item"><i class="fas fa-magnifying-glass"></i><span>Blood Stock</span></a>
+      <a href="#profile-section" class="nav-item"><i class="fas fa-user-gear"></i><span>My Profile</span></a>
+      <button type="button" onclick="openSupportModal()" class="nav-item"><i class="fas fa-headset"></i><span>Help & Support</span></button>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="/LogoutPage/" class="logout-item"><i class="fas fa-arrow-right-from-bracket"></i><span>Logout</span></a>
+    </div>
+  </aside>
 
-    .mono { font-family: 'JetBrains Mono', monospace; }
-    .serif { font-family: 'Fraunces', serif; }
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
 
-    /* ============ SIDEBAR ============ */
-    .sidebar {
-        position: fixed;
-        top: 0; left: 0;
-        width: var(--sidebar-w);
-        height: 100vh;
-        background: var(--ink);
-        display: flex;
-        flex-direction: column;
-        padding: 26px 18px;
-        z-index: 1000;
-    }
-
-    .brand {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 40px;
-        padding-left: 4px;
-    }
-
-    .brand-mark {
-        width: 34px; height: 34px;
-        border-radius: 9px;
-        background: var(--crimson);
-        display: flex; align-items: center; justify-content: center;
-        color: #fff; font-size: 15px;
-        flex-shrink: 0;
-    }
-
-    .brand-text {
-        color: #fff;
-        font-family: 'Fraunces', serif;
-        font-weight: 600;
-        font-size: 1.08rem;
-        line-height: 1.1;
-    }
-
-    .brand-text small {
-        display: block;
-        font-family: 'Inter', sans-serif;
-        font-weight: 500;
-        font-size: 0.62rem;
-        letter-spacing: 0.08em;
-        color: #8b93a7;
-        text-transform: uppercase;
-        margin-top: 2px;
-    }
-
-    .nav-list { list-style: none; padding: 0; margin: 0; flex: 1; }
-    .nav-list li { margin-bottom: 4px; }
-
-    .nav-list a {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 11px 12px;
-        border-radius: 8px;
-        color: #a4abbb;
-        text-decoration: none;
-        font-size: 0.86rem;
-        font-weight: 500;
-        border-left: 3px solid transparent;
-        transition: 0.18s ease;
-    }
-
-    .nav-list a i { width: 16px; text-align: center; font-size: 0.85rem; }
-
-    .nav-list a:hover { background: rgba(255,255,255,0.05); color: #fff; }
-
-    .nav-list a.active {
-        background: rgba(214,40,57,0.14);
-        border-left-color: var(--crimson);
-        color: #fff;
-    }
-
-    .sidebar-bottom a {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 11px 12px;
-        border-radius: 8px;
-        color: #d68a90;
-        text-decoration: none;
-        font-size: 0.86rem;
-        font-weight: 500;
-        border-top: 1px solid rgba(255,255,255,0.08);
-        margin-top: 8px;
-        padding-top: 16px;
-        transition: 0.18s ease;
-    }
-
-    .sidebar-bottom a:hover { color: #fff; }
-
-    @media (max-width: 768px) {
-        .sidebar { width: 64px; padding: 20px 10px; }
-        .brand-text, .nav-list a span, .sidebar-bottom a span { display: none; }
-        .brand { justify-content: center; }
-        .nav-list a, .sidebar-bottom a { justify-content: center; }
-        .main-wrap { margin-left: 64px !important; }
-    }
-
-    /* ============ MAIN WRAP ============ */
-    .main-wrap { margin-left: var(--sidebar-w); padding: 34px 36px 50px; }
-
-    /* ============ HEADER ============ */
-    .page-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 22px; flex-wrap: wrap; gap: 14px; }
-    .page-head h1 { font-family: 'Fraunces', serif; font-size: 1.9rem; font-weight: 600; margin: 0 0 4px; color: var(--ink-text); }
-    .page-head p { color: var(--slate); margin: 0; font-size: 0.92rem; }
-    .page-head p strong { color: var(--ink-text); }
-
-    .btn-crimson {
-        background: var(--crimson);
-        color: #fff;
-        border: none;
-        padding: 11px 22px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.88rem;
-        display: inline-flex; align-items: center; gap: 8px;
-        transition: 0.18s ease;
-    }
-    .btn-crimson:hover { background: var(--crimson-deep); color: #fff; }
-
-    .pulse-divider { width: 100%; height: 26px; margin: 6px 0 26px; opacity: 0.55; }
-    .pulse-divider path { stroke: var(--crimson); }
-
-    /* ============ QUICK ACTION STRIP ============ */
-    .quick-strip {
-        display: flex;
-        gap: 10px;
-        overflow-x: auto;
-        padding-bottom: 6px;
-        margin-bottom: 30px;
-    }
-
-    .quick-pill {
-        flex: 0 0 auto;
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        background: var(--card);
-        border: 1px solid var(--line);
-        padding: 11px 18px;
-        border-radius: 30px;
-        text-decoration: none;
-        color: var(--ink-text);
-        font-size: 0.83rem;
-        font-weight: 600;
-        white-space: nowrap;
-        transition: 0.18s ease;
-    }
-
-    .quick-pill i { color: var(--crimson); font-size: 0.85rem; }
-    .quick-pill:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
-    .quick-pill:hover i { color: #ff8a94; }
-
-    /* ============ SECTION TITLE ============ */
-    .sec-title {
-        font-family: 'Fraunces', serif;
-        font-size: 1.08rem;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        margin-bottom: 16px;
-        color: var(--ink-text);
-    }
-    .sec-title .dash { width: 18px; height: 2px; background: var(--crimson); display: inline-block; }
-    .sec-title .view-all { margin-left: auto; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600; color: var(--crimson); text-decoration: none; }
-
-    /* ============ STAT STRIP (compact) ============ */
-    .stat-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 32px; }
-    @media (max-width: 1100px) { .stat-strip { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 600px) { .stat-strip { grid-template-columns: repeat(2, 1fr); } }
-
-    .stat-block {
-        background: var(--card);
-        border-left: 3px solid var(--crimson);
-        border-radius: 8px;
-        padding: 14px 14px;
-        box-shadow: 0 1px 3px rgba(16,21,31,0.05);
-    }
-    .stat-block.acc-blue { border-left-color: #2f6fed; }
-    .stat-block.acc-green { border-left-color: var(--success); }
-    .stat-block.acc-amber { border-left-color: var(--warn); }
-    .stat-block.acc-slate { border-left-color: #6b7280; }
-    .stat-block.acc-teal { border-left-color: #0d9488; }
-
-    .stat-block .lbl { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--slate); font-weight: 700; margin-bottom: 6px; }
-    .stat-block .val { font-family: 'JetBrains Mono', monospace; font-size: 1.35rem; font-weight: 700; color: var(--ink-text); line-height: 1; }
-    .stat-block .val.small { font-size: 1rem; font-family: 'Inter', sans-serif; }
-
-    /* ============ CARD (generic) ============ */
-    .panel {
-        background: var(--card);
-        border-radius: 12px;
-        border: 1px solid var(--line);
-        box-shadow: 0 1px 4px rgba(16,21,31,0.04);
-    }
-    .panel-head { padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; align-items: center; }
-    .panel-body { padding: 18px 20px; }
-
-    /* ============ TABLE CLEAN ============ */
-    .table-clean { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-    .table-clean th {
-        text-align: left; padding: 8px 10px;
-        font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em;
-        color: var(--slate); font-weight: 700; border-bottom: 1px solid var(--line);
-    }
-    .table-clean td { padding: 11px 10px; border-bottom: 1px solid var(--line); color: var(--ink-text); }
-    .table-clean tr:last-child td { border-bottom: none; }
-    .table-clean tr:hover td { background: #fafafc; }
-
-    .pill { display: inline-block; padding: 3px 11px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
-    .pill-red { background: var(--crimson-tint); color: var(--crimson-deep); }
-    .pill-green { background: var(--success-tint); color: var(--success); }
-    .pill-amber { background: var(--warn-tint); color: var(--warn); }
-    .pill-gray { background: #eef0f3; color: var(--slate); }
-
-    /* ============ BLOOD CHIP GRID ============ */
-    .blood-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-    @media (max-width: 900px) { .blood-grid { grid-template-columns: repeat(2, 1fr); } }
-
-    .blood-chip {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 14px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .ring {
-        width: 52px; height: 52px;
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0;
-        background: conic-gradient(var(--ring-color) calc(var(--pct) * 1%), #eef0f3 0);
-    }
-    .ring-inner {
-        width: 40px; height: 40px;
-        border-radius: 50%;
-        background: #fff;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: 800; font-size: 0.78rem; color: var(--ink-text);
-    }
-
-    .blood-chip .info { flex: 1; min-width: 0; }
-    .blood-chip .units { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.92rem; }
-    .blood-chip .stock-lbl { font-size: 0.68rem; font-weight: 700; }
-
-    /* ============ NOTIFICATIONS TIMELINE ============ */
-    .tl-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
-    .tl-item:last-child { border-bottom: none; }
-    .tl-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--crimson); margin-top: 6px; flex-shrink: 0; }
-    .tl-item h6 { font-size: 0.85rem; font-weight: 700; margin: 0 0 3px; }
-    .tl-item p { font-size: 0.8rem; color: var(--slate); margin: 0 0 3px; }
-    .tl-item small { color: #a4abbb; font-size: 0.7rem; }
-
-    /* ============ PROFILE ============ */
-    .avatar-ring { padding: 3px; border-radius: 50%; border: 2px solid var(--crimson); display: inline-block; }
-    .avatar-ring img { display: block; border-radius: 50%; width: 92px; height: 92px; object-fit: cover; }
-
-    .kv-table td { padding: 6px 4px; font-size: 0.85rem; border: none; }
-    .kv-table th { padding: 6px 4px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--slate); font-weight: 700; border: none; width: 40%; }
-
-    /* ============ PROGRESS BARS (thin) ============ */
-    .thin-progress { height: 7px; border-radius: 6px; background: #eef0f3; overflow: hidden; margin-top: 6px; }
-    .thin-progress .fill { height: 100%; border-radius: 6px; background: var(--crimson); }
-
-    /* ============ CTA INK CARD ============ */
-    .cta-ink {
-        background: var(--ink);
-        border-radius: 12px;
-        padding: 34px 28px;
-        text-align: center;
-        color: #fff;
-        position: relative;
-        overflow: hidden;
-        height: 100%;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-    }
-    .cta-ink i { color: var(--crimson); font-size: 2.2rem; margin-bottom: 12px; }
-    .cta-ink h3 { font-family: 'Fraunces', serif; font-weight: 600; margin-bottom: 8px; }
-    .cta-ink p { color: #a4abbb; font-size: 0.9rem; margin-bottom: 18px; }
-    .cta-ink strong { color: #fff; }
-
-    /* ============ EDIT FORM FIELDS ============ */
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
-    @media (max-width: 500px) { .form-grid { grid-template-columns: 1fr; } }
-    .form-field { display: flex; flex-direction: column; gap: 5px; }
-    .form-field.full { grid-column: 1 / -1; }
-    .form-field label {
-        font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em;
-        color: var(--slate); font-weight: 700;
-    }
-    .form-field input, .form-field select, .form-field textarea {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 9px 12px;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.85rem;
-        color: var(--ink-text);
-        background: #fbfbfd;
-        transition: 0.15s ease;
-        width: 100%;
-    }
-    .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
-        outline: none;
-        border-color: var(--crimson);
-        background: #fff;
-        box-shadow: 0 0 0 3px var(--crimson-tint);
-    }
-    .form-field input:disabled { background: #f0f1f4; color: var(--slate); }
-
-    .form-actions { display: flex; gap: 10px; margin-top: 18px; }
-    .btn-outline {
-        background: transparent;
-        border: 1px solid var(--line);
-        color: var(--ink-text);
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: 0.15s ease;
-    }
-    .btn-outline:hover { border-color: var(--crimson); color: var(--crimson); }
-    .btn-crimson[type="submit"] { cursor: pointer; }
-
-    /* ============ NOTIFICATION MARQUEE (scrolls upward) ============ */
-    .notify-marquee-wrap {
-        height: 300px;
-        overflow: hidden;
-        position: relative;
-        -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
-        mask-image: linear-gradient(to bottom, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
-    }
-    .notify-marquee-track {
-        display: flex;
-        flex-direction: column;
-        animation: notify-scroll-up 18s linear infinite;
-    }
-    .notify-marquee-wrap:hover .notify-marquee-track { animation-play-state: paused; }
-
-    @keyframes notify-scroll-up {
-        0% { transform: translateY(0); }
-        100% { transform: translateY(-50%); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .notify-marquee-track { animation: none; }
-    }
-
-    footer.site-foot { text-align: center; margin-top: 40px; padding: 24px 0; color: var(--slate); font-size: 0.82rem; }
-    footer.site-foot p { margin: 2px 0; }
-
-    .row-gap { display: grid; grid-template-columns: 1.7fr 1fr; gap: 16px; }
-    @media (max-width: 992px) { .row-gap { grid-template-columns: 1fr; } }
-    .row-gap-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    @media (max-width: 992px) { .row-gap-2 { grid-template-columns: 1fr; } }
-    .row-gap-3 { display: grid; grid-template-columns: 5fr 7fr; gap: 16px; }
-    @media (max-width: 992px) { .row-gap-3 { grid-template-columns: 1fr; } }
-    .section-gap { margin-bottom: 26px; }
-</style>
-
-<!-- ============ SIDEBAR ============ -->
-<div class="sidebar">
-    <div class="brand">
-        <div class="brand-mark"><i class="fas fa-droplet"></i></div>
-        <div class="brand-text">HemoCampus<small>Blood Bank System</small></div>
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-title">
+        <h1>Welcome, {{ donor.full_name|default:"Verified Donor" }} 👋</h1>
+        <p>Your blood donations power emergency rescues across campuses and partner hospitals.</p>
+      </div>
+      <div class="header-actions">
+        <button type="button" onclick="openDonateModal()" class="btn-donate"><i class="fas fa-droplet"></i> Record Donation</button>
+        <button type="button" onclick="openRequestModal()" class="btn-req-blood"><i class="fas fa-plus"></i> Request Blood</button>
+      </div>
     </div>
 
-    <ul class="nav-list">
-        <li><a href="#" class="active"><i class="fas fa-grip"></i><span>Dashboard</span></a></li>
-        <li><a href="#"><i class="fas fa-gear"></i><span>Settings</span></a></li>
-    </ul>
-
-    <div class="sidebar-bottom">
-        <a href="#"><i class="fas fa-arrow-right-from-bracket"></i><span>Logout</span></a>
-    </div>
-</div>
-
-<div class="main-wrap">
-
-    <!-- ============ HEADER ============ -->
-    <div class="page-head">
-        <div>
-            <h1>Welcome back, Rahul Sharma</h1>
-            <p>Thank you for being part of HemoCampus <strong>❤️ every donation saves up to 3 lives.</strong></p>
-        </div>
-        <a href="#" class="btn-crimson"><i class="fas fa-droplet"></i> Donate Blood</a>
+    <!-- Quick Links Bar (Stays within portal) -->
+    <div class="quick-bar">
+      <button type="button" onclick="openDonateModal()" class="quick-chip"><i class="fas fa-hand-holding-medical"></i> Log Donation</button>
+      <button type="button" onclick="openRequestModal()" class="quick-chip"><i class="fas fa-heart-pulse"></i> Request Blood</button>
+      <a href="#stock-section" class="quick-chip"><i class="fas fa-magnifying-glass"></i> Check Blood Stock</a>
+      <a href="#donations-section" class="quick-chip"><i class="fas fa-clock-rotate-left"></i> Donation History</a>
+      <a href="#requests-section" class="quick-chip"><i class="fas fa-list-check"></i> My Requests</a>
+      <a href="#profile-section" class="quick-chip"><i class="fas fa-user-pen"></i> Edit Profile</a>
+      <button type="button" onclick="openSupportModal()" class="quick-chip"><i class="fas fa-headset"></i> Support Hotline</button>
     </div>
 
-    <svg class="pulse-divider" viewBox="0 0 800 26" preserveAspectRatio="none" fill="none">
-        <path d="M0 13 H320 L340 2 L360 24 L380 6 L400 20 L420 13 H800" stroke-width="2" vector-effect="non-scaling-stroke"/>
-    </svg>
-
-    <!-- ============ QUICK ACTIONS ============ -->
-    <div class="quick-strip">
-        <a href="#" class="quick-pill"><i class="fas fa-hand-holding-medical"></i>Donate</a>
-        <a href="#" class="quick-pill"><i class="fas fa-heart-pulse"></i>Request Blood</a>
-        <a href="#" class="quick-pill"><i class="fas fa-magnifying-glass"></i>Search Blood</a>
-        <a href="#" class="quick-pill"><i class="fas fa-user-pen"></i>Update Profile</a>
-        <a href="#" class="quick-pill"><i class="fas fa-award"></i>Certificate</a>
-        <a href="#" class="quick-pill"><i class="fas fa-clock-rotate-left"></i>History</a>
+    <!-- KPI Strip -->
+    <div class="kpi-grid">
+      <div class="kpi-box">
+        <div class="lbl">Total Donations</div>
+        <div class="val mono">{{ total_donations }}</div>
+      </div>
+      <div class="kpi-box border-blue">
+        <div class="lbl">Blood Group</div>
+        <div class="val" style="color:var(--primary);">{{ donor.blood_group|default:"N/A" }}</div>
+      </div>
+      <div class="kpi-box border-green">
+        <div class="lbl">Reward Points</div>
+        <div class="val mono" style="color:var(--success);">{{ reward_points }}</div>
+      </div>
+      <div class="kpi-box border-amber">
+        <div class="lbl">Last Donated</div>
+        <div class="val" style="font-size:14px;">{{ donor.last_donation_date|default:"Never" }}</div>
+      </div>
+      <div class="kpi-box border-purple">
+        <div class="lbl">Approved Units</div>
+        <div class="val mono">{{ approved_donations }}</div>
+      </div>
+      <div class="kpi-box border-slate">
+        <div class="lbl">Status</div>
+        <span class="pill pill-green">Verified</span>
+      </div>
     </div>
 
-    <!-- ============ STAT STRIP ============ -->
-    <div class="stat-strip">
-        <div class="stat-block"><div class="lbl">Total Donations</div><div class="val mono">8</div></div>
-        <div class="stat-block acc-blue"><div class="lbl">Blood Group</div><div class="val">O+</div></div>
-        <div class="stat-block acc-green"><div class="lbl">Reward Points</div><div class="val mono">480</div></div>
-        <div class="stat-block acc-amber"><div class="lbl">Last Donation</div><div class="val small">12 May 2026</div></div>
-        <div class="stat-block acc-teal"><div class="lbl">Next Eligible</div><div class="val small">12 Aug 2026</div></div>
-        <div class="stat-block acc-slate"><div class="lbl">Status</div><span class="pill pill-green">Eligible</span></div>
-    </div>
-
-    <!-- ============ DONATIONS + SUMMARY ============ -->
-    <div class="row-gap section-gap">
-
-        <div class="panel">
-            <div class="panel-head">
-                <div class="sec-title" style="margin:0;"><span class="dash"></span>Recent Donations<a href="#" class="view-all">View all</a></div>
-            </div>
-            <div class="panel-body" style="padding-top:8px;">
-                <table class="table-clean">
-                    <thead>
-                        <tr><th>ID</th><th>Date</th><th>Group</th><th>Units</th><th>Hospital</th><th>Status</th></tr>
-                    </thead>
-                    <tbody>
-
-<tr><td class="mono">DON-1042</td><td>12 May 2026</td><td><span class="pill pill-red">O+</span></td><td>1 Unit</td><td>City Care Hospital</td><td><span class="pill pill-green">Approved</span></td></tr>
-<tr><td class="mono">DON-1031</td><td>02 Feb 2026</td><td><span class="pill pill-red">O+</span></td><td>1 Unit</td><td>Campus Health Center</td><td><span class="pill pill-green">Approved</span></td></tr>
-<tr><td class="mono">DON-1020</td><td>19 Nov 2025</td><td><span class="pill pill-red">O+</span></td><td>1 Unit</td><td>Red Cross Blood Bank</td><td><span class="pill pill-amber">Pending</span></td></tr>
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-head"><div class="sec-title" style="margin:0;"><span class="dash"></span>Donor Summary</div></div>
-            <div class="panel-body">
-                <div class="text-center" style="margin-bottom:16px;">
-                    <div class="avatar-ring">
-
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=RahulSharma" alt="Profile">
-
-                    </div>
-                </div>
-                <form method="post" action="#" enctype="multipart/form-data">
-
-                    <div class="form-grid">
-                        <div class="form-field full">
-                            <label>Full Name</label>
-                            <input type="text" name="full_name" value="Rahul Sharma">
-                        </div>
-                        <div class="form-field">
-                            <label>Blood Group</label>
-                            <select name="blood_group">
-                                <option>A+</option>
-                                <option>A-</option>
-                                <option>B+</option>
-                                <option>B-</option>
-                                <option>AB+</option>
-                                <option>AB-</option>
-                                <option selected>O+</option>
-                                <option>O-</option>
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label>Reward Points</label>
-                            <input type="text" value="480" disabled>
-                        </div>
-                        <div class="form-field">
-                            <label>Mobile</label>
-                            <input type="tel" name="mobile" value="+91 98765 43210">
-                        </div>
-                        <div class="form-field">
-                            <label>Email</label>
-                            <input type="email" name="email" value="rahul.sharma@hemocampus.edu">
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-crimson">Save Changes</button>
-                        <button type="reset" class="btn-outline">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- ============ BLOOD REQUESTS ============ -->
-    <div class="panel section-gap">
-        <div class="panel-head">
-            <div class="sec-title" style="margin:0;"><span class="dash"></span>My Blood Requests<a href="#" class="view-all">View all</a></div>
-        </div>
-        <div class="panel-body" style="padding-top:8px;">
-            <table class="table-clean">
-                <thead>
-                    <tr><th>Request ID</th><th>Group</th><th>Units</th><th>Hospital</th><th>Status</th><th>Date</th></tr>
-                </thead>
-                <tbody>
-
-<tr><td class="mono">BR-208</td><td><span class="pill pill-red">B-</span></td><td>2</td><td>City Care Hospital</td><td><span class="pill pill-amber">Pending</span></td><td>15 Jul 2026</td></tr>
-<tr><td class="mono">BR-197</td><td><span class="pill pill-red">O+</span></td><td>1</td><td>Campus Health Center</td><td><span class="pill pill-green">Approved</span></td><td>02 Jun 2026</td></tr>
-
-                </tbody>
+    <!-- 2 Column Content -->
+    <div class="content-grid">
+      
+      <!-- Left Column: Donations, Requests & Stock -->
+      <div>
+        
+        <!-- 1. Donation History -->
+        <div class="card-panel" id="donations-section" style="margin-bottom: 24px;">
+          <div class="panel-header">
+            <h3>🩸 My Donation History</h3>
+            <button type="button" onclick="openDonateModal()" style="font-size:13px; color:var(--primary); font-weight:700; background:none; border:none; cursor:pointer;">+ Record Donation</button>
+          </div>
+          <div class="table-wrap">
+            <table class="clean-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Blood Group</th>
+                  <th>Units</th>
+                  <th>Center / Hospital</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for d in donations %}
+                <tr>
+                  <td><strong>{{ d.donation_date|date:"d M Y"|default:"Recent" }}</strong></td>
+                  <td><span class="pill pill-red">{{ d.blood_group|default:donor.blood_group }}</span></td>
+                  <td><strong>{{ d.units }} Unit(s)</strong></td>
+                  <td>{{ d.hospital_name|default:"Campus Blood Center" }}</td>
+                  <td>
+                    {% if d.status == 'Approved' or d.status == 'Completed' %}
+                    <span class="pill pill-green">Completed</span>
+                    {% elif d.status == 'Rejected' %}
+                    <span class="pill pill-red">Rejected</span>
+                    {% else %}
+                    <span class="pill pill-amber">Pending</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" style="text-align:center; padding:28px; color:#94a3b8;">
+                    No donation records logged yet. Click <strong>Record Donation</strong> above to register your donation!
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
             </table>
+          </div>
         </div>
-    </div>
 
-    <!-- ============ BLOOD AVAILABILITY ============ -->
-    <div class="section-gap">
-        <div class="sec-title"><span class="dash"></span>Blood Availability</div>
-        <div class="blood-grid">
-
-            <div class="blood-chip"><div class="ring" style="--pct:90; --ring-color:var(--success);"><div class="ring-inner">A+</div></div>
-                <div class="info"><div class="units">120 Units</div><div class="stock-lbl" style="color:var(--success);">Excellent Stock</div></div></div>
-
-            <div class="blood-chip"><div class="ring" style="--pct:60; --ring-color:var(--warn);"><div class="ring-inner">A-</div></div>
-                <div class="info"><div class="units">58 Units</div><div class="stock-lbl" style="color:var(--warn);">Moderate Stock</div></div></div>
-
-            <div class="blood-chip"><div class="ring" style="--pct:85; --ring-color:var(--success);"><div class="ring-inner">B+</div></div>
-                <div class="info"><div class="units">95 Units</div><div class="stock-lbl" style="color:var(--success);">Good Stock</div></div></div>
-
-            <div class="blood-chip"><div class="ring" style="--pct:25; --ring-color:var(--crimson);"><div class="ring-inner">B-</div></div>
-                <div class="info"><div class="units">18 Units</div><div class="stock-lbl" style="color:var(--crimson);">Critical Stock</div></div></div>
-
-            <div class="blood-chip"><div class="ring" style="--pct:70; --ring-color:#2f6fed;"><div class="ring-inner">AB+</div></div>
-                <div class="info"><div class="units">74 Units</div><div class="stock-lbl" style="color:#2f6fed;">Healthy Stock</div></div></div>
-
-            <div class="blood-chip"><div class="ring" style="--pct:45; --ring-color:var(--warn);"><div class="ring-inner">AB-</div></div>
-                <div class="info"><div class="units">40 Units</div><div class="stock-lbl" style="color:var(--warn);">Moderate Stock</div></div></div>
-
-            <div class="blood-chip"><div class="ring" style="--pct:100; --ring-color:var(--success);"><div class="ring-inner">O+</div></div>
-                <div class="info"><div class="units">180 Units</div><div class="stock-lbl" style="color:var(--success);">Excellent Stock</div></div></div>
-
-            <div class="blood-chip"><div class="ring" style="--pct:18; --ring-color:var(--crimson);"><div class="ring-inner">O-</div></div>
-                <div class="info"><div class="units">12 Units</div><div class="stock-lbl" style="color:var(--crimson);">Urgent Need</div></div></div>
-
+        <!-- 2. My Blood Requests -->
+        <div class="card-panel" id="requests-section" style="margin-bottom: 24px;">
+          <div class="panel-header">
+            <h3>📋 My Emergency Blood Requisitions</h3>
+            <button type="button" onclick="openRequestModal()" style="font-size:13px; color:#2563eb; font-weight:700; background:none; border:none; cursor:pointer;">+ New Request</button>
+          </div>
+          <div class="table-wrap">
+            <table class="clean-table">
+              <thead>
+                <tr>
+                  <th>Hospital / Clinic</th>
+                  <th>Blood Group</th>
+                  <th>Units</th>
+                  <th>Requested Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for r in blood_requests %}
+                <tr>
+                  <td><strong>{{ r.hospital_name }}</strong></td>
+                  <td><span class="pill pill-red">{{ r.blood_group }}</span></td>
+                  <td><strong>{{ r.required_units }} Unit(s)</strong></td>
+                  <td>{{ r.requested_date|date:"d M Y"|default:"Immediate" }}</td>
+                  <td>
+                    {% if r.status == 'Approved' or r.status == 'Fulfilled' %}
+                    <span class="pill pill-green">Approved</span>
+                    {% elif r.status == 'Rejected' %}
+                    <span class="pill pill-red">Rejected</span>
+                    {% else %}
+                    <span class="pill pill-amber">Pending Review</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" style="text-align:center; padding:24px; color:#94a3b8;">
+                    No active blood requests placed. Need emergency blood? Click <strong>Request Blood</strong>.
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
-    </div>
 
-    <!-- ============ NOTIFICATIONS + PROFILE ============ -->
-    <div class="row-gap-3 section-gap">
-
-        <div class="panel">
-            <div class="panel-head"><div class="sec-title" style="margin:0;"><span class="dash"></span>Recent Notifications</div></div>
-            <div class="panel-body" style="padding:0;">
-
-                <div class="notify-marquee-wrap">
-                    <div class="notify-marquee-track">
-                        <!-- set 1 -->
-                        <div style="padding:16px 20px 4px;">
-
-<div class="tl-item"><div class="tl-dot"></div><div><h6>Donation Approved</h6><p>Your donation of 12 May has been approved and recorded.</p><small>2 days ago</small></div></div>
-<div class="tl-item"><div class="tl-dot"></div><div><h6>Urgent: O- Needed</h6><p>City Care Hospital needs O- donors urgently this week.</p><small>5 days ago</small></div></div>
-<div class="tl-item"><div class="tl-dot"></div><div><h6>Reward Unlocked</h6><p>You earned 50 reward points for your last donation.</p><small>1 week ago</small></div></div>
-<div class="tl-item"><div class="tl-dot"></div><div><h6>Blood Drive on Campus</h6><p>HemoCampus donation camp this Friday at the Health Center.</p><small>1 week ago</small></div></div>
-<div class="tl-item"><div class="tl-dot"></div><div><h6>Request Fulfilled</h6><p>Your blood request BR-197 has been fulfilled successfully.</p><small>2 weeks ago</small></div></div>
-<div class="tl-item"><div class="tl-dot"></div><div><h6>Eligibility Reminder</h6><p>You'll be eligible to donate again from 12 Aug 2026.</p><small>3 weeks ago</small></div></div>
-
-                        </div>
-                        <!-- set 2 (duplicate for seamless loop) -->
-                        <div style="padding:16px 20px 4px;">
-
-<div class="tl-item"><div class="tl-dot"></div><div><h6>Donation Approved</h6><p>Your donation of 12 May has been approved and recorded.</p><small>2 days ago</small></div></div>
-<div class="tl-item"><div class="tl-dot"></div><div><h6>Urgent: O- Needed</h6><p>City Care Hospital needs O- donors urgently this week.</p><small>5 days ago</small></div></div>
-<div class="tl-item"><div class="tl-dot"></div><div><h6>Reward Unlocked</h6><p>You earned 50 reward points for your last donation.</p><small>1 week ago</small></div></div>
-<div class="tl-item"><div class="tl-dot"></div><div><h6>Blood Drive on Campus</h6><p>HemoCampus donation camp this Friday at the Health Center.</p><small>1 week ago</small></div></div>
-<div class="tl-item"><div class="tl-dot"></div><div><h6>Request Fulfilled</h6><p>Your blood request BR-197 has been fulfilled successfully.</p><small>2 weeks ago</small></div></div>
-<div class="tl-item"><div class="tl-dot"></div><div><h6>Eligibility Reminder</h6><p>You'll be eligible to donate again from 12 Aug 2026.</p><small>3 weeks ago</small></div></div>
-
-                        </div>
-                    </div>
-                </div>
-                <!--else-->
-                <div class="text-center py-4" style="color:var(--slate);">
-                    <i class="fas fa-bell-slash fa-2x mb-2" style="opacity:0.4;"></i>
-                    <p style="margin:0;">No notifications available</p>
-                </div>
-
+        <!-- 3. Central Blood Availability Overview -->
+        <div class="card-panel" id="stock-section">
+          <div class="panel-header">
+            <h3>📊 Live Blood Bank Inventory Availability</h3>
+            <span style="font-size:12px; color:var(--text-light);">Real-time Central Stock</span>
+          </div>
+          <div class="stock-chip-grid">
+            {% for s in stocks %}
+            <div class="stock-chip">
+              <div class="group">{{ s.blood_group }}</div>
+              <div class="units">{{ s.units }} Units</div>
+              <div>
+                {% if s.status_level == 'high' %}
+                <span class="tag" style="background:#dcfce7; color:#15803d;">Optimal</span>
+                {% elif s.status_level == 'medium' %}
+                <span class="tag" style="background:#fef3c7; color:#b45309;">Moderate</span>
+                {% else %}
+                <span class="tag" style="background:#fee2e2; color:#b91c1c;">Critical</span>
+                {% endif %}
+              </div>
             </div>
+            {% endfor %}
+          </div>
         </div>
 
-        <div class="panel">
-            <div class="panel-head"><div class="sec-title" style="margin:0;"><span class="dash"></span>Donor Profile</div></div>
-            <div class="panel-body">
-                <form method="post" action="#" enctype="multipart/form-data">
+      </div>
 
-                    <div style="display:flex; gap:20px; flex-wrap:wrap;">
-                        <div class="text-center" style="flex:0 0 auto;">
-                            <div class="avatar-ring">
+      <!-- Right Column: Profile Card & Update -->
+      <div id="profile-section">
+        <div class="card-panel">
+          <div class="panel-header">
+            <h3>👤 Donor Profile Details</h3>
+            <span class="pill pill-green">Active</span>
+          </div>
 
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=RahulSharma" alt="Profile">
+          <form method="POST" action="/donor-dashboard/">
+            {% csrf_token %}
+            <input type="hidden" name="update_profile" value="1">
 
-                            </div>
-                            <div class="form-field" style="margin-top:10px;">
-                                <input type="file" name="profile_photo" style="font-size:0.72rem;">
-                            </div>
-                        </div>
-                        <div style="flex:1; min-width:260px;">
-                            <div class="form-grid">
-                                <div class="form-field">
-                                    <label>Gender</label>
-                                    <select name="gender">
-                                        <option selected>Male</option>
-                                        <option>Female</option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
-                                <div class="form-field">
-                                    <label>Age</label>
-                                    <input type="number" name="age" value="22">
-                                </div>
-                                <div class="form-field">
-                                    <label>Date of Birth</label>
-                                    <input type="date" name="date_of_birth" value="2004-03-14">
-                                </div>
-                                <div class="form-field">
-                                    <label>Mobile</label>
-                                    <input type="tel" name="mobile" value="+91 98765 43210">
-                                </div>
-                                <div class="form-field full">
-                                    <label>Email</label>
-                                    <input type="email" name="email" value="rahul.sharma@hemocampus.edu">
-                                </div>
-                                <div class="form-field full">
-                                    <label>Address</label>
-                                    <textarea name="address" rows="2">Hostel Block C, Room 214</textarea>
-                                </div>
-                                <div class="form-field">
-                                    <label>City</label>
-                                    <input type="text" name="city" value="Lucknow">
-                                </div>
-                                <div class="form-field">
-                                    <label>State</label>
-                                    <input type="text" name="state" value="Uttar Pradesh">
-                                </div>
-                                <div class="form-field">
-                                    <label>Last Donation</label>
-                                    <input type="text" value="12 May 2026" disabled>
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn-crimson">Save Changes</button>
-                                <button type="reset" class="btn-outline">Cancel</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" name="full_name" value="{{ donor.full_name }}" class="form-control" required>
             </div>
+
+            <div class="form-group">
+              <label>Blood Group</label>
+              <select name="blood_group" class="form-control" required>
+                <option value="A+" {% if donor.blood_group == 'A+' %}selected{% endif %}>A+</option>
+                <option value="A-" {% if donor.blood_group == 'A-' %}selected{% endif %}>A-</option>
+                <option value="B+" {% if donor.blood_group == 'B+' %}selected{% endif %}>B+</option>
+                <option value="B-" {% if donor.blood_group == 'B-' %}selected{% endif %}>B-</option>
+                <option value="AB+" {% if donor.blood_group == 'AB+' %}selected{% endif %}>AB+</option>
+                <option value="AB-" {% if donor.blood_group == 'AB-' %}selected{% endif %}>AB-</option>
+                <option value="O+" {% if donor.blood_group == 'O+' %}selected{% endif %}>O+</option>
+                <option value="O-" {% if donor.blood_group == 'O-' %}selected{% endif %}>O-</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Mobile Number</label>
+              <input type="text" name="mobile" value="{{ donor.mobile }}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" value="{{ donor.email }}" class="form-control" disabled style="cursor:not-allowed; background:#f1f5f9;">
+            </div>
+
+            <div class="form-group">
+              <label>City</label>
+              <input type="text" name="city" value="{{ donor.city }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label>Address</label>
+              <textarea name="address" rows="2" class="form-control">{{ donor.address }}</textarea>
+            </div>
+
+            <button type="submit" style="width:100%; background:var(--dark); color:#fff; padding:10px; border-radius:8px; border:none; font-weight:700; cursor:pointer;">
+              Save Profile Changes
+            </button>
+          </form>
         </div>
+      </div>
 
     </div>
 
-    <!-- ============ PROGRESS + CTA ============ -->
-    <div class="row-gap-2">
+  </main>
 
-        <div class="panel">
-            <div class="panel-head"><div class="sec-title" style="margin:0;"><span class="dash"></span>Donation Progress</div></div>
-            <div class="panel-body">
-                <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:600; color:var(--slate);">
-                    <span>Lifetime Donations</span><span class="mono">8</span>
-                </div>
-                <div class="thin-progress"><div class="fill" style="width:75%;"></div></div>
+  <!-- ================= IN-PORTAL MODALS ================= -->
 
-                <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:600; color:var(--slate); margin-top:18px;">
-                    <span>Reward Progress</span><span class="mono">480</span>
-                </div>
-                <div class="thin-progress"><div class="fill" style="width:60%; background:var(--warn);"></div></div>
-            </div>
+  <!-- 1. In-Portal Donate Blood Modal -->
+  <div class="modal-overlay" id="donateModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🩸 Record Blood Donation</h3>
+        <button class="close-modal-btn" onclick="closeModal('donateModal')">&times;</button>
+      </div>
+      <form method="POST" action="/donor-dashboard/donate-blood/">
+        {% csrf_token %}
+        <div class="form-group">
+          <label>Blood Group</label>
+          <select name="blood_group" class="form-control" required>
+            <option value="A+" {% if donor.blood_group == 'A+' %}selected{% endif %}>A+</option>
+            <option value="A-" {% if donor.blood_group == 'A-' %}selected{% endif %}>A-</option>
+            <option value="B+" {% if donor.blood_group == 'B+' %}selected{% endif %}>B+</option>
+            <option value="B-" {% if donor.blood_group == 'B-' %}selected{% endif %}>B-</option>
+            <option value="AB+" {% if donor.blood_group == 'AB+' %}selected{% endif %}>AB+</option>
+            <option value="AB-" {% if donor.blood_group == 'AB-' %}selected{% endif %}>AB-</option>
+            <option value="O+" {% if donor.blood_group == 'O+' %}selected{% endif %}>O+</option>
+            <option value="O-" {% if donor.blood_group == 'O-' %}selected{% endif %}>O-</option>
+          </select>
         </div>
 
-        <div class="cta-ink">
-            <i class="fas fa-heart"></i>
-            <h3>Thank You</h3>
-            <p>Every blood donation can save up to <strong>3 lives</strong></p>
-            <a href="#" class="btn-crimson">Donate Again</a>
+        <div class="form-group">
+          <label>Units Donated</label>
+          <input type="number" name="units" min="1" max="5" value="1" class="form-control" required>
         </div>
 
+        <div class="form-group">
+          <label>Donation Center / Hospital</label>
+          <input type="text" name="hospital_name" value="Campus Blood Bank #1" placeholder="e.g. Red Cross / City Care Blood Bank" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Donation Date</label>
+          <input type="date" name="donation_date" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Remarks / Notes</label>
+          <input type="text" name="remarks" placeholder="e.g., Voluntary campus drive" class="form-control">
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+          <button type="button" onclick="closeModal('donateModal')" style="padding:9px 18px; border:1px solid var(--border); border-radius:8px; background:#fff; cursor:pointer;">Cancel</button>
+          <button type="submit" style="padding:9px 24px; border:none; border-radius:8px; background:var(--primary); color:#fff; font-weight:700; cursor:pointer;">Submit Donation (+50 pts)</button>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <footer class="site-foot">
-        <p>© 2026 HemoCampus Blood Bank Management System</p>
-        <p>Developed by <strong>Pankaj Upadhyay, Abhishek Kumar, Ranjeet Bharti, Anisha Kumari, Km. Sandhya Bharti, Garima Singh</strong></p>
-    </footer>
+  <!-- 2. In-Portal Request Blood Modal -->
+  <div class="modal-overlay" id="requestModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🚨 Place Blood Requisition Request</h3>
+        <button class="close-modal-btn" onclick="closeModal('requestModal')">&times;</button>
+      </div>
+      <form method="POST" action="/donor-dashboard/blood-requests/">
+        {% csrf_token %}
+        <div class="form-group">
+          <label>Patient Full Name</label>
+          <input type="text" name="patient_name" placeholder="Enter patient name" class="form-control" required>
+        </div>
 
-</div><!-- /.main-wrap -->
+        <div class="form-group">
+          <label>Blood Group Required</label>
+          <select name="blood_group" class="form-control" required>
+            <option value="">-- Select Blood Group --</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+        </div>
 
+        <div class="form-group">
+          <label>Units Needed</label>
+          <input type="number" name="units" min="1" max="10" value="1" class="form-control" required>
+        </div>
 
+        <div class="form-group">
+          <label>Hospital / Clinic Name</label>
+          <input type="text" name="hospital_name" placeholder="e.g. City Hospital, Metro Health" class="form-control" required>
+        </div>
 
+        <div class="form-group">
+          <label>Required Date</label>
+          <input type="date" name="required_date" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Emergency Reason / Notes</label>
+          <input type="text" name="remarks" placeholder="e.g., Surgery / ICU Emergency" class="form-control">
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+          <button type="button" onclick="closeModal('requestModal')" style="padding:9px 18px; border:1px solid var(--border); border-radius:8px; background:#fff; cursor:pointer;">Cancel</button>
+          <button type="submit" style="padding:9px 24px; border:none; border-radius:8px; background:#2563eb; color:#fff; font-weight:700; cursor:pointer;">Send Emergency Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. In-Portal Help & Support Modal -->
+  <div class="modal-overlay" id="supportModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🎧 24x7 Donor Support Helpline</h3>
+        <button class="close-modal-btn" onclick="closeModal('supportModal')">&times;</button>
+      </div>
+      <div style="line-height:1.8; font-size:14px; color:var(--text);">
+        <p>If you have any questions regarding donation eligibility, camp locations, or urgent blood coordination, our team is available 24x7:</p>
+        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:16px; margin:16px 0;">
+          <div>📞 <strong>Emergency Donor Helpline:</strong> +91 1800-200-HEMO</div>
+          <div>✉️ <strong>Donor Support Email:</strong> donorcare@hemocampus.edu</div>
+          <div>📍 <strong>Campus Health Office:</strong> Block 4, Central Health Wing</div>
+        </div>
+        <p style="font-size:13px; color:var(--text-light);">For blood compatibility advice, our clinical officers are on call to guide you before donating.</p>
+      </div>
+      <div style="display:flex; justify-content:flex-end; margin-top:16px;">
+        <button type="button" onclick="closeModal('supportModal')" style="padding:8px 20px; border-radius:8px; background:var(--dark); color:#fff; border:none; font-weight:700; cursor:pointer;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const navToggle = document.getElementById('donorNavToggle');
+    const sidebar = document.getElementById('donorSidebar');
+    const overlay = document.getElementById('donorSidebarOverlay');
+
+    if (navToggle && sidebar && overlay) {
+      function toggle() {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+      }
+      navToggle.addEventListener('click', toggle);
+      overlay.addEventListener('click', toggle);
+    }
+
+    function openDonateModal() {
+      // Set today as default date
+      const today = new Date().toISOString().split('T')[0];
+      const dateInput = document.querySelector('#donateModal input[name="donation_date"]');
+      if (dateInput && !dateInput.value) dateInput.value = today;
+      document.getElementById('donateModal').classList.add('active');
+    }
+
+    function openRequestModal() {
+      const today = new Date().toISOString().split('T')[0];
+      const dateInput = document.querySelector('#requestModal input[name="required_date"]');
+      if (dateInput && !dateInput.value) dateInput.value = today;
+      document.getElementById('requestModal').classList.add('active');
+    }
+
+    function openSupportModal() {
+      document.getElementById('supportModal').classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+  </script>
 </body>
 </html>

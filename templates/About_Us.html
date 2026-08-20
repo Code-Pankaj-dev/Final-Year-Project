@@ -1,13 +1,8 @@
 {% extends 'master.html' %}
+{% block title %}About Us - HemoCampus{% endblock %}
 {% block content %}
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About Us - HemoCampus | The Bloodline of Campus</title>
-    <style>
+<style>
       * {
         margin: 0;
         padding: 0;
@@ -1151,10 +1146,8 @@
         Verification is done by your own college.
       </p>
       <div class="btns">
-        <a class="btn btn-primary" href="#">Become a Donor — 2 Min</a>
-        <a class="btn btn-secondary" href="#">Request Blood — 30 Sec</a>
+        <a class="btn btn-primary" href="/donate/">Become a Donor — 2 Min</a>
+        <a class="btn btn-secondary" href="/request-blood/">Request Blood — 30 Sec</a>
       </div>
     </div>
-  </body>
-</html>
 {% endblock %}

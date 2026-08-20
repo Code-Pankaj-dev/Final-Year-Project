@@ -1,8 +1,17 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import logout
 from django.utils import timezone
 
 from .models import Hospital, BloodRequest
+
+
+def get_current_hospital(request):
+    aid = request.session.get('aid')
+    if aid:
+        hospital = Hospital.objects.filter(email=aid).first()
+        if hospital:
+            return hospital
+    return Hospital.objects.first()
 
 
 # ======================================
@@ -10,27 +19,49 @@ from .models import Hospital, BloodRequest
 # ======================================
 
 def hospital_dashboard(request):
+    if not request.session.has_key('aid'):
+        return HttpResponse(
+            "<script>alert('First Login as Hospital');window.location.href='/login/'</script>"
+        )
 
-    hospital = Hospital.objects.first()
-    requests = BloodRequest.objects.all().order_by('-created_at')
+    hospital = get_current_hospital(request)
+
+    if request.method == "POST" and "update_profile" in request.POST:
+        if hospital:
+            hospital.hospital_name = request.POST.get("hospital_name", hospital.hospital_name)
+            hospital.doctor_name = request.POST.get("doctor_name", hospital.doctor_name)
+            hospital.phone = request.POST.get("phone", hospital.phone)
+            hospital.district = request.POST.get("district", hospital.district)
+            hospital.address = request.POST.get("address", hospital.address)
+            hospital.save()
+            return HttpResponse(
+                "<script>alert('Hospital Profile Updated Successfully!');window.location.href='/hospital-dashboard/'</script>"
+            )
+
+    from AdminZone.models import BloodStock
+    from AdminZone.views import ensure_initial_blood_stock
+    ensure_initial_blood_stock()
+    stocks = BloodStock.objects.order_by('blood_group')
+
+    if hospital:
+        requests = BloodRequest.objects.filter(hospital=hospital).order_by('-id')
+    else:
+        requests = BloodRequest.objects.none()
+
+    approved_units = list(requests.filter(status__in=["Approved", "Fulfilled"]).values_list("units", flat=True))
+    total_received = sum(approved_units) if approved_units else 0
 
     context = {
         "hospital": hospital,
+        "stocks": stocks,
         "requests": requests,
         "today": timezone.now(),
-
         "total_requests": requests.count(),
-        "approved_requests": requests.filter(status="Approved").count(),
+        "approved_requests": requests.filter(status__in=["Approved", "Fulfilled"]).count(),
         "pending_requests": requests.filter(status="Pending").count(),
         "rejected_requests": requests.filter(status="Rejected").count(),
-
-        "blood_units_received": sum(
-            requests.filter(status="Approved").values_list("units", flat=True)
-        ),
-
-        "emergency_requests": requests.filter(
-            priority="Emergency"
-        ).count(),
+        "blood_units_received": total_received,
+        "emergency_requests": requests.filter(priority="Emergency").count(),
     }
 
     return render(
@@ -45,16 +76,29 @@ def hospital_dashboard(request):
 # ======================================
 
 def request_blood(request):
-
-    hospital = Hospital.objects.first()
-
-    return render(
-        request,
-        "HospitalPages/request_blood.html",
-        {
-            "hospital": hospital
-        }
-    )
+    if not request.session.has_key('aid'):
+        return HttpResponse("<script>alert('First Login');window.location.href='/login/'</script>")
+    hospital = get_current_hospital(request)
+    if request.method == "POST":
+        patient_name = request.POST.get("patient_name")
+        blood_group = request.POST.get("blood_group")
+        units = request.POST.get("units") or 1
+        required_date = request.POST.get("required_date") or timezone.now().date()
+        priority = request.POST.get("priority", "Normal")
+        remarks = request.POST.get("remarks", "")
+        if hospital:
+            BloodRequest.objects.create(
+                hospital=hospital,
+                patient_name=patient_name,
+                blood_group=blood_group,
+                units=units,
+                required_date=required_date,
+                priority=priority,
+                remarks=remarks,
+                status="Pending"
+            )
+            return HttpResponse("<script>alert('Blood Request Submitted Successfully!');window.location.href='/hospital-dashboard/'</script>")
+    return redirect("/hospital-dashboard/")
 
 
 # ======================================
@@ -62,16 +106,28 @@ def request_blood(request):
 # ======================================
 
 def emergency_request(request):
-
-    hospital = Hospital.objects.first()
-
-    return render(
-        request,
-        "HospitalPages/emergency_request.html",
-        {
-            "hospital": hospital
-        }
-    )
+    if not request.session.has_key('aid'):
+        return HttpResponse("<script>alert('First Login');window.location.href='/login/'</script>")
+    hospital = get_current_hospital(request)
+    if request.method == "POST":
+        patient_name = request.POST.get("patient_name")
+        blood_group = request.POST.get("blood_group")
+        units = request.POST.get("units") or 1
+        required_date = request.POST.get("required_date") or timezone.now().date()
+        remarks = request.POST.get("remarks", "")
+        if hospital:
+            BloodRequest.objects.create(
+                hospital=hospital,
+                patient_name=patient_name,
+                blood_group=blood_group,
+                units=units,
+                required_date=required_date,
+                priority="Emergency",
+                remarks=remarks,
+                status="Pending"
+            )
+            return HttpResponse("<script>alert('Emergency Blood Request Submitted Successfully!');window.location.href='/hospital-dashboard/'</script>")
+    return redirect("/hospital-dashboard/#emergency-section")
 
 
 # ======================================
@@ -79,11 +135,7 @@ def emergency_request(request):
 # ======================================
 
 def blood_availability(request):
-
-    return render(
-        request,
-        "HospitalPages/blood_availability.html"
-    )
+    return redirect("/hospital-dashboard/#stock-section")
 
 
 # ======================================
@@ -91,16 +143,7 @@ def blood_availability(request):
 # ======================================
 
 def my_requests(request):
-
-    requests = BloodRequest.objects.all().order_by("-created_at")
-
-    return render(
-        request,
-        "HospitalPages/my_requests.html",
-        {
-            "requests": requests
-        }
-    )
+    return redirect("/hospital-dashboard/#requests-section")
 
 
 # ======================================
@@ -108,16 +151,7 @@ def my_requests(request):
 # ======================================
 
 def request_history(request):
-
-    requests = BloodRequest.objects.all().order_by("-created_at")
-
-    return render(
-        request,
-        "HospitalPages/request_history.html",
-        {
-            "requests": requests
-        }
-    )
+    return redirect("/hospital-dashboard/#requests-section")
 
 
 # ======================================
@@ -125,11 +159,7 @@ def request_history(request):
 # ======================================
 
 def notifications(request):
-
-    return render(
-        request,
-        "HospitalPages/notifications.html"
-    )
+    return redirect("/hospital-dashboard/#requests-section")
 
 
 # ======================================
@@ -137,16 +167,7 @@ def notifications(request):
 # ======================================
 
 def hospital_profile(request):
-
-    hospital = Hospital.objects.first()
-
-    return render(
-        request,
-        "HospitalPages/profile.html",
-        {
-            "hospital": hospital
-        }
-    )
+    return redirect("/hospital-dashboard/#profile-section")
 
 
 # ======================================
@@ -154,11 +175,7 @@ def hospital_profile(request):
 # ======================================
 
 def settings(request):
-
-    return render(
-        request,
-        "HospitalPages/settings.html"
-    )
+    return redirect("/hospital-dashboard/#profile-section")
 
 
 # ======================================
@@ -166,16 +183,7 @@ def settings(request):
 # ======================================
 
 def download_report(request):
-
-    requests = BloodRequest.objects.all()
-
-    return render(
-        request,
-        "HospitalPages/download_report.html",
-        {
-            "requests": requests
-        }
-    )
+    return redirect("/hospital-dashboard/#requests-section")
 
 
 # ======================================
@@ -183,7 +191,7 @@ def download_report(request):
 # ======================================
 
 def logout_view(request):
-
     logout(request)
-
-    return redirect("/")
+    request.session.flush()
+    return redirect("/login/")
+

@@ -92,7 +92,6 @@ urlpatterns = [
         views.help_support,
         name='help_support'
     ),
-    path('settings/', views.settings, name='settings'),
 
     # ======================================
     # Logout
