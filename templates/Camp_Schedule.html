@@ -8,53 +8,64 @@
     .camp-hero {
         background: linear-gradient(135deg, #78350f 0%, #b45309 50%, #dc2626 100%);
         color: #fff;
-        padding: 40px 20px;
+        padding: 45px 20px 35px;
         text-align: center;
     }
     .camp-hero h1 {
-        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-size: clamp(2rem, 4.5vw, 2.8rem);
         font-weight: 800;
         margin-bottom: 10px;
     }
     .camp-hero p {
-        font-size: 1.05rem;
+        font-size: 1.1rem;
         color: #fef3c7;
-        max-width: 750px;
-        margin: 0 auto;
+        max-width: 800px;
+        margin: 0 auto 20px;
     }
     .camp-panel {
-        max-width: 1200px;
+        max-width: 1240px;
         margin: -25px auto 30px;
         background: #ffffff;
         border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        padding: 24px;
+        box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+        padding: 26px;
         border: 1px solid #fde68a;
         position: relative;
         z-index: 10;
     }
     .camp-filter-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
         gap: 16px;
         align-items: flex-end;
+    }
+    .form-group label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #475569;
+        display: block;
+        margin-bottom: 6px;
     }
     .form-control-custom {
         width: 100%;
         padding: 10px 14px;
-        border: 1.5px solid #e2e8f0;
+        border: 1.5px solid #cbd5e1;
         border-radius: 8px;
         font-size: 14px;
         background: #f8fafc;
         outline: none;
     }
+    .form-control-custom:focus {
+        border-color: #d97706;
+        background: #fff;
+    }
     .btn-search-amber {
         background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
         color: #fff;
         border: none;
-        padding: 11px 24px;
+        padding: 12px 24px;
         font-size: 15px;
-        font-weight: 600;
+        font-weight: 700;
         border-radius: 8px;
         cursor: pointer;
         display: flex;
@@ -62,65 +73,77 @@
         justify-content: center;
         gap: 8px;
     }
-    .alert-banner {
-        max-width: 1200px;
+
+    .alert-host-bar {
+        max-width: 1240px;
         margin: 0 auto 30px;
         padding: 0 20px;
+        display: grid;
+        grid-template-columns: 3fr 2fr;
+        gap: 20px;
     }
     .banner-box {
         background: #fffbeb;
         border: 1.5px dashed #f59e0b;
-        border-radius: 12px;
+        border-radius: 14px;
         padding: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 16px;
     }
+    .host-box {
+        background: linear-gradient(135deg, #7f1d1d 0%, #990000 100%);
+        color: #fff;
+        border-radius: 14px;
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 6px 20px rgba(153,0,0,0.15);
+    }
+
     .camps-list {
-        max-width: 1200px;
+        max-width: 1240px;
         margin: 0 auto 50px;
         padding: 0 20px;
         display: grid;
-        gap: 18px;
+        gap: 20px;
     }
     .camp-card-row {
         background: #ffffff;
-        border-radius: 14px;
+        border-radius: 16px;
         border: 1px solid #e2e8f0;
-        padding: 22px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        padding: 24px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.03);
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
         gap: 20px;
-        transition: transform 0.2s ease;
+        transition: transform 0.2s ease, border-color 0.2s ease;
     }
     .camp-card-row:hover {
         transform: translateY(-2px);
         border-color: #f59e0b;
-        box-shadow: 0 8px 25px rgba(245, 158, 11, 0.12);
+        box-shadow: 0 10px 30px rgba(245, 158, 11, 0.12);
     }
     .date-badge {
         background: #fef3c7;
         color: #b45309;
-        border-radius: 10px;
-        padding: 12px 18px;
+        border-radius: 12px;
+        padding: 14px 18px;
         text-align: center;
         min-width: 110px;
         font-weight: 800;
+        border: 1px solid #fde68a;
     }
-    .date-badge .day { font-size: 24px; line-height: 1; }
+    .date-badge .day { font-size: 26px; line-height: 1; }
     .date-badge .month { font-size: 13px; text-transform: uppercase; margin-top: 4px; }
+
     .btn-register-camp {
         background: #dc2626;
         color: #fff;
         border: none;
         padding: 10px 20px;
         border-radius: 8px;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 13.5px;
         cursor: pointer;
         display: inline-flex;
@@ -128,21 +151,39 @@
         gap: 6px;
         text-decoration: none;
     }
-    .btn-register-camp:hover { background: #b91c1c; color: #fff; }
+    .btn-register-camp:hover { background: #b91c1c; }
+
+    .btn-action-small {
+        background: #f1f5f9;
+        color: #334155;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 12.5px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .btn-action-small:hover { background: #e2e8f0; }
+
+    @media (max-width: 900px) {
+        .alert-host-bar { grid-template-columns: 1fr; }
+    }
 </style>
 
 <div class="camp-hero">
     <h1><i class="fa-solid fa-calendar-days text-warning"></i> Nationwide Blood Donation Camp Schedule</h1>
-    <p>Join campus blood drives, youth Red Ribbon rallies, corporate camps, and mobile donation vans to save lives in your city.</p>
+    <p>Join campus blood donation drives, youth Red Ribbon rallies, corporate camps, and mobile donation vans across universities and public centers in India.</p>
 </div>
 
 <div class="camp-panel">
-    <form method="GET" action="/camp-schedule/">
+    <form method="GET" action="/camp-schedule/" id="campFilterForm">
         <div class="camp-filter-grid">
             <div class="form-group">
-                <label style="font-size:13px; font-weight:600; color:#475569; display:block; margin-bottom:6px;"><i class="fa-solid fa-map-location-dot text-warning"></i> State</label>
-                <select name="state" class="form-control-custom" onchange="this.form.submit()">
-                    <option value="">All States</option>
+                <label><i class="fa-solid fa-map-location-dot text-warning"></i> Select State</label>
+                <select name="state" id="campStateSelect" class="form-control-custom" onchange="onCampStateChange()">
+                    <option value="">All States across India</option>
                     {% for st in all_states %}
                     <option value="{{ st }}" {% if selected_state == st %}selected{% endif %}>{{ st }}</option>
                     {% endfor %}
@@ -150,37 +191,74 @@
             </div>
 
             <div class="form-group">
-                <label style="font-size:13px; font-weight:600; color:#475569; display:block; margin-bottom:6px;"><i class="fa-solid fa-magnifying-glass text-warning"></i> Search Camp / Venue</label>
-                <input type="text" name="q" id="campSearchInput" value="{{ search_q }}" placeholder="Campus name, venue, organizer..." class="form-control-custom">
+                <label><i class="fa-solid fa-city text-warning"></i> Select District</label>
+                <select name="district" id="campDistrictSelect" class="form-control-custom">
+                    <option value="">All Districts</option>
+                </select>
             </div>
 
-            <button type="submit" class="btn-search-amber">
-                <i class="fa-solid fa-filter"></i> Filter Camps
-            </button>
+            <div class="form-group">
+                <label><i class="fa-solid fa-bullhorn text-warning"></i> Camp Type</label>
+                <select name="camp_type" class="form-control-custom">
+                    <option value="">All Camp Types</option>
+                    {% for t in all_types %}
+                    <option value="{{ t }}" {% if selected_type == t %}selected{% endif %}>{{ t }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-magnifying-glass text-warning"></i> Search Camp / Venue</label>
+                <input type="text" name="q" id="campSearchInput" value="{{ search_q }}" placeholder="Campus, venue, organizer..." class="form-control-custom">
+            </div>
+
+            <div style="display:flex; gap:8px;">
+                <button type="submit" class="btn-search-amber" style="flex:1;">
+                    <i class="fa-solid fa-filter"></i> Filter Camps
+                </button>
+                <a href="/camp-schedule/" class="btn-action-small" style="padding:12px;" title="Reset Filters">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </a>
+            </div>
         </div>
     </form>
 </div>
 
-<!-- Subscribe for Alerts Banner -->
-<div class="alert-banner">
+<!-- Alert Subscription + Host a Camp Banner -->
+<div class="alert-host-bar">
+    <!-- Subscribe Alert Box -->
     <div class="banner-box">
-        <div style="display:flex; align-items:center; gap:16px;">
-            <div style="font-size:38px;">📢</div>
+        <div style="display:flex; align-items:center; gap:14px; margin-bottom:12px;">
+            <div style="font-size:36px;">📢</div>
             <div>
-                <h4 style="color:#92400e; margin:0 0 4px; font-weight:700;">Get Instant Alerts for Camps in Your Area!</h4>
-                <p style="margin:0; font-size:13px; color:#78350f;">Receive SMS and WhatsApp alerts whenever a blood drive is scheduled near your campus or office.</p>
+                <h4 style="color:#92400e; margin:0 0 3px; font-weight:800;">Get Instant Alerts for Nearby Camps</h4>
+                <p style="margin:0; font-size:12.5px; color:#78350f;">Receive free SMS/WhatsApp alerts whenever a blood drive is scheduled in your district.</p>
             </div>
         </div>
-        <form method="POST" action="/subscribe-camp-alert/" style="display:flex; gap:10px; flex-wrap:wrap;">
+        <form method="POST" action="/subscribe-camp-alert/" style="display:flex; gap:8px; flex-wrap:wrap;">
             {% csrf_token %}
             <input type="hidden" name="state" value="{{ selected_state|default:'National' }}">
             <input type="hidden" name="district" value="{{ selected_district|default:'All' }}">
-            <input type="tel" name="mobile" required placeholder="Enter Mobile No." style="padding:9px 12px; border:1px solid #d97706; border-radius:6px; font-size:13px; outline:none;">
-            <input type="email" name="email" required placeholder="Enter Email" style="padding:9px 12px; border:1px solid #d97706; border-radius:6px; font-size:13px; outline:none;">
-            <button type="submit" style="background:#d97706; color:#fff; border:none; padding:9px 18px; border-radius:6px; font-weight:600; font-size:13px; cursor:pointer;">
-                Subscribe Free
+            <input type="tel" name="mobile" required placeholder="Mobile Number" style="flex:1; min-width:140px; padding:8px 12px; border:1px solid #d97706; border-radius:6px; font-size:13px; outline:none;">
+            <input type="email" name="email" required placeholder="Email Address" style="flex:1; min-width:160px; padding:8px 12px; border:1px solid #d97706; border-radius:6px; font-size:13px; outline:none;">
+            <button type="submit" style="background:#d97706; color:#fff; border:none; padding:8px 16px; border-radius:6px; font-weight:700; font-size:13px; cursor:pointer;">
+                Subscribe
             </button>
         </form>
+    </div>
+
+    <!-- Host a Camp CTA Box -->
+    <div class="host-box">
+        <div>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+                <span style="font-size:24px;">🏛️</span>
+                <h4 style="margin:0; font-size:17px; font-weight:800;">Host a Blood Drive on Campus</h4>
+            </div>
+            <p style="margin:0; font-size:12.5px; opacity:0.92;">Are you a College, University NSS unit, or Corporate HR? Organize a certified blood donation camp with our mobile medical team.</p>
+        </div>
+        <button onclick="openHostModal()" style="background:#ffd700; color:#0f172a; border:none; padding:10px 16px; border-radius:8px; font-weight:800; font-size:13px; cursor:pointer; margin-top:12px; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+            <i class="fa-solid fa-handshake"></i> Request Camp Organization
+        </button>
     </div>
 </div>
 
@@ -195,9 +273,13 @@
             </div>
             <div>
                 <span style="font-size:11.5px; font-weight:700; background:#dcfce7; color:#166534; padding:3px 8px; border-radius:4px; text-transform:uppercase;">
-                    ● {{ camp.status }}
+                    ● {{ camp.status|default:"Scheduled" }}
                 </span>
-                <h3 style="margin:6px 0 4px; font-size:17px; font-weight:800; color:#0f172a;">{{ camp.camp_name }}</h3>
+                <span style="font-size:11px; font-weight:600; background:#e0e7ff; color:#3730a3; padding:3px 8px; border-radius:4px; margin-left:4px;">
+                    {{ camp.camp_type }}
+                </span>
+
+                <h3 style="margin:6px 0 4px; font-size:17.5px; font-weight:800; color:#0f172a;">{{ camp.camp_name }}</h3>
                 <div style="font-size:13px; color:#64748b; margin-bottom:4px;">
                     <i class="fa-solid fa-location-dot text-danger"></i> {{ camp.venue }} (<strong>{{ camp.district }}, {{ camp.state }}</strong>)
                 </div>
@@ -205,16 +287,22 @@
                     <span><i class="fa-solid fa-clock text-warning"></i> {{ camp.time }}</span> | 
                     <span><i class="fa-solid fa-users text-primary"></i> Organized by: <strong>{{ camp.organized_by }}</strong></span>
                 </div>
+                <div style="font-size:12px; color:#16a34a; font-weight:600; margin-top:3px;">
+                    🎁 Perks: {{ camp.perks|default:"Digital Certificate, Donor Refreshment Box, Health Checkup" }}
+                </div>
             </div>
         </div>
 
         <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
             <div style="font-size:12.5px; color:#64748b;">
-                Target: <strong style="color:#dc2626;">{{ camp.target_units }}</strong> | Conducted by: <strong>{{ camp.conducted_by }}</strong>
+                Target: <strong style="color:#dc2626;">{{ camp.target_units }}</strong> | Medical Unit: <strong>{{ camp.conducted_by }}</strong>
             </div>
-            <div style="display:flex; gap:10px;">
-                <a href="tel:{{ camp.contact_phone }}" style="background:#f1f5f9; color:#334155; padding:9px 14px; border-radius:8px; font-size:13px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
-                    <i class="fa-solid fa-phone"></i> {{ camp.contact_person }}
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <a href="tel:{{ camp.contact_phone }}" class="btn-action-small">
+                    <i class="fa-solid fa-phone text-primary"></i> {{ camp.contact_person }}
+                </a>
+                <a href="https://api.whatsapp.com/send?text=Join%20the%20Blood%20Donation%20Camp:%20{{ camp.camp_name|urlencode }}%20at%20{{ camp.venue|urlencode }}%20on%20{{ camp.date|urlencode }}." target="_blank" class="btn-action-small" style="color:#16a34a;">
+                    <i class="fa-brands fa-whatsapp"></i> Share
                 </a>
                 <button onclick="openVolunteerModal('{{ camp.camp_name|escapejs }}')" class="btn-register-camp">
                     <i class="fa-solid fa-hand-holding-heart"></i> Register to Donate
@@ -223,34 +311,34 @@
         </div>
     </div>
     {% empty %}
-    <div style="text-align: center; padding: 60px 20px; background:#fff; border-radius:14px;">
+    <div style="text-align: center; padding: 60px 20px; background:#fff; border-radius:16px;">
         <div style="font-size:50px;">📅</div>
         <h3 style="color:#0f172a; margin:10px 0;">No Upcoming Camps Found for Selected Filter</h3>
-        <p style="color:#64748b;">Please select another state or reset your search keywords.</p>
-        <a href="/camp-schedule/" class="btn-search-amber" style="display:inline-flex; margin-top:10px;">View All Camps</a>
+        <p style="color:#64748b;">Try choosing another state/district or click below to explore all camps.</p>
+        <a href="/camp-schedule/" class="btn-search-amber" style="display:inline-flex; margin-top:10px;">View All Nationwide Camps</a>
     </div>
     {% endfor %}
 </div>
 
-<!-- Volunteer Modal -->
-<div id="volunteerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center; padding:20px;">
-    <div style="background:#fff; border-radius:16px; max-width:480px; width:100%; padding:28px; box-shadow:0 20px 40px rgba(0,0,0,0.25); position:relative;">
+<!-- Volunteer Registration Modal -->
+<div id="volunteerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:2000; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#fff; border-radius:16px; max-width:460px; width:100%; padding:28px; box-shadow:0 20px 40px rgba(0,0,0,0.25); position:relative;">
         <button onclick="closeVolunteerModal()" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:20px; cursor:pointer; color:#64748b;">✕</button>
-        <h3 style="color:#990000; margin-top:0; font-size:20px; font-weight:800;"><i class="fa-solid fa-hand-holding-heart"></i> Register for Camp</h3>
-        <p style="font-size:13px; color:#64748b; margin-bottom:18px;" id="modalCampName">Join as a voluntary donor hero.</p>
+        <h3 style="color:#990000; margin-top:0; font-size:20px; font-weight:800;"><i class="fa-solid fa-hand-holding-heart"></i> Volunteer Donor Registration</h3>
+        <p style="font-size:13px; color:#64748b; margin-bottom:18px;" id="modalCampName">Camp details</p>
         <form method="POST" action="/register-camp-volunteer/">
             {% csrf_token %}
             <input type="hidden" name="camp_name" id="hiddenCampName">
             <div style="margin-bottom:12px;">
-                <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Your Full Name</label>
-                <input type="text" name="volunteer_name" required class="form-control-custom">
+                <label style="font-size:13px; font-weight:700; display:block; margin-bottom:4px;">Full Name</label>
+                <input type="text" name="volunteer_name" required class="form-control-custom" placeholder="Your full name">
             </div>
             <div style="margin-bottom:12px;">
-                <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Mobile Number</label>
-                <input type="tel" name="phone" required class="form-control-custom">
+                <label style="font-size:13px; font-weight:700; display:block; margin-bottom:4px;">Mobile Number</label>
+                <input type="tel" name="phone" required class="form-control-custom" placeholder="10-digit mobile">
             </div>
             <div style="margin-bottom:18px;">
-                <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">Blood Group</label>
+                <label style="font-size:13px; font-weight:700; display:block; margin-bottom:4px;">Blood Group</label>
                 <select name="blood_group" required class="form-control-custom">
                     <option value="A+">A+</option>
                     <option value="A-">A-</option>
@@ -262,12 +350,78 @@
                     <option value="AB-">AB-</option>
                 </select>
             </div>
-            <button type="submit" class="btn-register-camp" style="width:100%; justify-content:center; padding:12px;">Confirm Camp Registration</button>
+            <button type="submit" class="btn-register-camp" style="width:100%; justify-content:center; padding:12px;">Confirm Registration</button>
+        </form>
+    </div>
+</div>
+
+<!-- Host a Camp Modal -->
+<div id="hostCampModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:2000; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#fff; border-radius:16px; max-width:520px; width:100%; padding:28px; box-shadow:0 20px 40px rgba(0,0,0,0.25); position:relative;">
+        <button onclick="closeHostModal()" style="position:absolute; top:16px; right:16px; background:none; border:none; font-size:20px; cursor:pointer; color:#64748b;">✕</button>
+        <h3 style="color:#990000; margin-top:0; font-size:20px; font-weight:800;"><i class="fa-solid fa-handshake"></i> Host a Blood Donation Drive</h3>
+        <p style="font-size:13px; color:#64748b; margin-bottom:18px;">Partner with HemoCampus to bring a certified mobile blood collection van to your institution.</p>
+        <form method="POST" action="/host-camp-request/">
+            {% csrf_token %}
+            <div style="margin-bottom:12px;">
+                <label style="font-size:13px; font-weight:700; display:block; margin-bottom:4px;">College / Organization Name</label>
+                <input type="text" name="org_name" required class="form-control-custom" placeholder="e.g. ABC Institute of Technology">
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+                <div>
+                    <label style="font-size:13px; font-weight:700; display:block; margin-bottom:4px;">Contact Person</label>
+                    <input type="text" name="contact_person" required class="form-control-custom" placeholder="Nodal officer name">
+                </div>
+                <div>
+                    <label style="font-size:13px; font-weight:700; display:block; margin-bottom:4px;">Phone Number</label>
+                    <input type="tel" name="phone" required class="form-control-custom" placeholder="Phone number">
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px;">
+                <div>
+                    <label style="font-size:13px; font-weight:700; display:block; margin-bottom:4px;">City / District</label>
+                    <input type="text" name="city" required class="form-control-custom" placeholder="e.g. Lucknow">
+                </div>
+                <div>
+                    <label style="font-size:13px; font-weight:700; display:block; margin-bottom:4px;">Preferred Date</label>
+                    <input type="date" name="preferred_date" required class="form-control-custom">
+                </div>
+            </div>
+            <button type="submit" class="btn-register-camp" style="width:100%; justify-content:center; padding:12px; background:#990000;">
+                Submit Camp Hosting Request
+            </button>
         </form>
     </div>
 </div>
 
 <script>
+    const campStateDistrictsMap = {{ states_districts_json|safe }};
+    const currentCampDistrict = "{{ selected_district }}";
+
+    function onCampStateChange() {
+        const stateSelect = document.getElementById('campStateSelect');
+        const districtSelect = document.getElementById('campDistrictSelect');
+        const selectedState = stateSelect.value;
+
+        districtSelect.innerHTML = '<option value="">All Districts</option>';
+
+        if (selectedState && campStateDistrictsMap[selectedState]) {
+            campStateDistrictsMap[selectedState].forEach(dist => {
+                const opt = document.createElement('option');
+                opt.value = dist;
+                opt.textContent = dist;
+                if (dist === currentCampDistrict) {
+                    opt.selected = true;
+                }
+                districtSelect.appendChild(opt);
+            });
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        onCampStateChange();
+    });
+
     function openVolunteerModal(campName) {
         document.getElementById('modalCampName').innerText = "Registering for: " + campName;
         document.getElementById('hiddenCampName').value = campName;
@@ -276,6 +430,14 @@
     function closeVolunteerModal() {
         document.getElementById('volunteerModal').style.display = 'none';
     }
+
+    function openHostModal() {
+        document.getElementById('hostCampModal').style.display = 'flex';
+    }
+    function closeHostModal() {
+        document.getElementById('hostCampModal').style.display = 'none';
+    }
+
     const campSearch = document.getElementById('campSearchInput');
     if (campSearch) {
         campSearch.addEventListener('keyup', function() {

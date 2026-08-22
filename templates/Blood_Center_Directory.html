@@ -6,43 +6,43 @@
 {% block content %}
 <style>
     .dir-hero {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #3b0764 100%);
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #312e81 100%);
         color: #fff;
-        padding: 40px 20px;
+        padding: 45px 20px 35px;
         text-align: center;
     }
     .dir-hero h1 {
-        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-size: clamp(2rem, 4.5vw, 2.8rem);
         font-weight: 800;
         margin-bottom: 10px;
     }
     .dir-hero p {
-        font-size: 1.05rem;
+        font-size: 1.1rem;
         color: #cbd5e1;
-        max-width: 750px;
-        margin: 0 auto;
+        max-width: 800px;
+        margin: 0 auto 20px;
     }
     .dir-panel {
-        max-width: 1200px;
+        max-width: 1240px;
         margin: -25px auto 30px;
         background: #ffffff;
         border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        padding: 24px;
+        box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+        padding: 26px;
         border: 1px solid #e2e8f0;
         position: relative;
         z-index: 10;
     }
-    .dir-grid {
+    .dir-filter-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
         gap: 16px;
         align-items: flex-end;
     }
     .form-group label {
         font-size: 13px;
-        font-weight: 600;
-        color: #475569;
+        font-weight: 700;
+        color: #334155;
         display: block;
         margin-bottom: 6px;
     }
@@ -53,20 +53,20 @@
         border-radius: 8px;
         font-size: 14px;
         background: #f8fafc;
-        color: #0f172a;
         outline: none;
+        transition: all 0.2s ease;
     }
     .form-control-custom:focus {
-        border-color: #2563eb;
+        border-color: #312e81;
         background: #fff;
     }
-    .btn-search-blue {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    .btn-search-indigo {
+        background: linear-gradient(135deg, #3730a3 0%, #4338ca 100%);
         color: #fff;
         border: none;
-        padding: 11px 24px;
+        padding: 12px 24px;
         font-size: 15px;
-        font-weight: 600;
+        font-weight: 700;
         border-radius: 8px;
         cursor: pointer;
         display: flex;
@@ -75,19 +75,19 @@
         gap: 8px;
     }
     .centers-card-grid {
-        max-width: 1200px;
+        max-width: 1240px;
         margin: 0 auto 50px;
         padding: 0 20px;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-        gap: 22px;
+        grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
+        gap: 24px;
     }
     .center-card {
         background: #ffffff;
-        border-radius: 14px;
+        border-radius: 16px;
         border: 1px solid #e2e8f0;
-        padding: 22px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        padding: 24px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.04);
         transition: transform 0.25s ease, box-shadow 0.25s ease;
         display: flex;
         flex-direction: column;
@@ -95,8 +95,8 @@
     }
     .center-card:hover {
         transform: translateY(-4px);
-        box-shadow: 0 12px 28px rgba(0,0,0,0.1);
-        border-color: #cbd5e1;
+        box-shadow: 0 14px 30px rgba(49, 46, 129, 0.1);
+        border-color: #c7d2fe;
     }
     .card-top {
         display: flex;
@@ -115,7 +115,7 @@
         letter-spacing: 0.5px;
     }
     .center-name {
-        font-size: 16.5px;
+        font-size: 17px;
         font-weight: 800;
         color: #0f172a;
         margin-bottom: 8px;
@@ -131,11 +131,12 @@
     }
     .center-details {
         background: #f8fafc;
-        border-radius: 8px;
-        padding: 12px;
+        border-radius: 10px;
+        padding: 12px 14px;
         margin-bottom: 16px;
         font-size: 12.5px;
         color: #334155;
+        border: 1px solid #f1f5f9;
     }
     .detail-row {
         display: flex;
@@ -156,16 +157,17 @@
     .card-actions {
         display: flex;
         gap: 10px;
+        margin-top: 14px;
     }
     .btn-call {
         flex: 1;
         background: #0284c7;
         color: #fff;
-        padding: 9px;
+        padding: 10px;
         text-align: center;
         border-radius: 8px;
         text-decoration: none;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 13px;
         display: inline-flex;
         align-items: center;
@@ -177,11 +179,11 @@
         flex: 1;
         background: #dc2626;
         color: #fff;
-        padding: 9px;
+        padding: 10px;
         text-align: center;
         border-radius: 8px;
         text-decoration: none;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 13px;
         display: inline-flex;
         align-items: center;
@@ -189,19 +191,33 @@
         gap: 6px;
     }
     .btn-req-card:hover { background: #b91c1c; color: #fff; }
+    .btn-map-link {
+        background: #f1f5f9;
+        color: #334155;
+        padding: 10px 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+    .btn-map-link:hover { background: #e2e8f0; }
 </style>
 
 <div class="dir-hero">
     <h1><i class="fa-solid fa-hospital text-danger"></i> All-India Blood Center & Hospital Directory</h1>
-    <p>Direct contact details, 24x7 emergency helplines, license codes, and component facilities of 100+ accredited medical centers across India.</p>
+    <p>Comprehensive registry of accredited Medical Universities, Apex Institutes, Red Cross societies, and Charitable blood centers with direct nodal contacts and Google Maps directions.</p>
 </div>
 
 <div class="dir-panel">
-    <form method="GET" action="/blood-center-directory/">
-        <div class="dir-grid">
+    <form method="GET" action="/blood-center-directory/" id="dirFilterForm">
+        <div class="dir-filter-grid">
             <div class="form-group">
-                <label><i class="fa-solid fa-map-location-dot text-primary"></i> State</label>
-                <select name="state" class="form-control-custom" onchange="this.form.submit()">
+                <label><i class="fa-solid fa-map-location-dot text-indigo"></i> Select State</label>
+                <select name="state" id="dirStateSelect" class="form-control-custom" onchange="onDirStateChange()">
                     <option value="">All States across India</option>
                     {% for st in all_states %}
                     <option value="{{ st }}" {% if selected_state == st %}selected{% endif %}>{{ st }}</option>
@@ -210,8 +226,15 @@
             </div>
 
             <div class="form-group">
-                <label><i class="fa-solid fa-building-columns text-primary"></i> Category</label>
-                <select name="category" class="form-control-custom" onchange="this.form.submit()">
+                <label><i class="fa-solid fa-city text-indigo"></i> Select District</label>
+                <select name="district" id="dirDistrictSelect" class="form-control-custom">
+                    <option value="">All Districts</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-building-columns text-indigo"></i> Category</label>
+                <select name="category" class="form-control-custom">
                     <option value="">All Categories</option>
                     {% for cat in all_categories %}
                     <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
@@ -220,13 +243,18 @@
             </div>
 
             <div class="form-group">
-                <label><i class="fa-solid fa-magnifying-glass text-primary"></i> Quick Search</label>
-                <input type="text" name="q" id="dirSearchInput" value="{{ search_q }}" placeholder="Search center, city, state..." class="form-control-custom">
+                <label><i class="fa-solid fa-magnifying-glass text-indigo"></i> Search Center / Doctor</label>
+                <input type="text" name="q" id="dirSearchInput" value="{{ search_q }}" placeholder="Hospital name, doctor, city..." class="form-control-custom">
             </div>
 
-            <button type="submit" class="btn-search-blue">
-                <i class="fa-solid fa-filter"></i> Filter Centers
-            </button>
+            <div style="display:flex; gap:8px;">
+                <button type="submit" class="btn-search-indigo" style="flex:1;">
+                    <i class="fa-solid fa-filter"></i> Filter Centers
+                </button>
+                <a href="/blood-center-directory/" class="btn-map-link" title="Reset Filters">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </a>
+            </div>
         </div>
     </form>
 </div>
@@ -237,7 +265,7 @@
         <div>
             <div class="card-top">
                 <span class="center-tag">{{ c.category }}</span>
-                <span style="font-size:12px; font-weight:700; color:#16a34a;"><i class="fa-solid fa-star text-warning"></i> {{ c.rating }}</span>
+                <span style="font-size:12px; font-weight:700; color:#16a34a;"><i class="fa-solid fa-star text-warning"></i> {{ c.rating|default:"4.8" }}</span>
             </div>
             <h3 class="center-name">{{ c.name }}</h3>
             <div class="center-location">
@@ -247,8 +275,12 @@
 
             <div class="center-details">
                 <div class="detail-row">
+                    <span><i class="fa-solid fa-user-doctor text-primary"></i> Incharge:</span>
+                    <strong>{{ c.nodal_officer|default:"Medical Superintendent" }}</strong>
+                </div>
+                <div class="detail-row">
                     <span><i class="fa-solid fa-clock text-primary"></i> Timings:</span>
-                    <strong>{{ c.timing }}</strong>
+                    <strong>{{ c.timing|default:"24 Hours / 7 Days" }}</strong>
                 </div>
                 <div class="detail-row">
                     <span><i class="fa-solid fa-id-card text-primary"></i> License:</span>
@@ -260,32 +292,67 @@
                 </div>
             </div>
 
-            <div style="margin-bottom: 16px;">
-                <div style="font-size:11.5px; font-weight:700; color:#64748b; margin-bottom:4px;">AVAILABLE COMPONENTS:</div>
+            <div>
+                <div style="font-size:11.5px; font-weight:700; color:#64748b; margin-bottom:4px;">CERTIFIED FACILITIES:</div>
                 <div>
-                    {% for comp in c.components %}
-                    <span class="badge-comp">{{ comp }}</span>
+                    {% for fac in c.facilities %}
+                    <span class="badge-comp">{{ fac }}</span>
+                    {% empty %}
+                    <span class="badge-comp">Component Separation</span>
+                    <span class="badge-comp">Platelet Storage</span>
                     {% endfor %}
                 </div>
             </div>
         </div>
 
-        <div class="card-actions">
-            <a href="tel:{{ c.phone }}" class="btn-call"><i class="fa-solid fa-phone"></i> Call Center</a>
-            <a href="/request-blood/?hospital={{ c.name|urlencode }}" class="btn-req-card"><i class="fa-solid fa-droplet"></i> Request Blood</a>
+        <div>
+            <div class="card-actions">
+                <a href="tel:{{ c.phone }}" class="btn-call"><i class="fa-solid fa-phone"></i> Call Center</a>
+                <a href="https://www.google.com/maps/search/?api=1&query={{ c.name|urlencode }}+{{ c.district|urlencode }}" target="_blank" class="btn-map-link" title="Open in Google Maps">
+                    <i class="fa-solid fa-diamond-turn-right text-danger"></i> Map
+                </a>
+                <a href="/request-blood/?hospital={{ c.name|urlencode }}" class="btn-req-card"><i class="fa-solid fa-droplet"></i> Request</a>
+            </div>
         </div>
     </div>
     {% empty %}
-    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background:#fff; border-radius:14px;">
+    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background:#fff; border-radius:16px;">
         <div style="font-size:50px;">🏥</div>
-        <h3 style="color:#0f172a; margin:10px 0;">No Blood Centers Match Your Search</h3>
-        <p style="color:#64748b;">Try adjusting your state or category filters.</p>
-        <a href="/blood-center-directory/" class="btn-search-blue" style="display:inline-flex; margin-top:10px;">Reset Filters</a>
+        <h3 style="color:#0f172a; margin:10px 0;">No Blood Centers Match Your Search Filter</h3>
+        <p style="color:#64748b;">Try adjusting your state, district, or category selections.</p>
+        <a href="/blood-center-directory/" class="btn-search-indigo" style="display:inline-flex; margin-top:10px;">Reset All Filters</a>
     </div>
     {% endfor %}
 </div>
 
 <script>
+    const dirStateDistrictsMap = {{ states_districts_json|safe }};
+    const currentDirDistrict = "{{ selected_district }}";
+
+    function onDirStateChange() {
+        const stateSelect = document.getElementById('dirStateSelect');
+        const districtSelect = document.getElementById('dirDistrictSelect');
+        const selectedState = stateSelect.value;
+
+        districtSelect.innerHTML = '<option value="">All Districts</option>';
+
+        if (selectedState && dirStateDistrictsMap[selectedState]) {
+            dirStateDistrictsMap[selectedState].forEach(dist => {
+                const opt = document.createElement('option');
+                opt.value = dist;
+                opt.textContent = dist;
+                if (dist === currentDirDistrict) {
+                    opt.selected = true;
+                }
+                districtSelect.appendChild(opt);
+            });
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        onDirStateChange();
+    });
+
     const dirSearch = document.getElementById('dirSearchInput');
     if (dirSearch) {
         dirSearch.addEventListener('keyup', function() {

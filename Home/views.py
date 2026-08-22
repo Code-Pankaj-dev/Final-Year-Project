@@ -10,7 +10,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 import json
 
-from .services_data import ALL_INDIA_BLOOD_CENTERS, ALL_INDIA_CAMP_SCHEDULES
+from .services_data import ALL_INDIA_BLOOD_CENTERS, ALL_INDIA_CAMP_SCHEDULES, INDIA_STATES_DISTRICTS
 
 
 # ===========================
@@ -26,7 +26,7 @@ def about(request):
 
 
 def services_hub(request):
-    """Dedicated Services Overview Page"""
+    """Dedicated Services Overview Hub Page"""
     total_centers = len(ALL_INDIA_BLOOD_CENTERS)
     total_camps = len(ALL_INDIA_CAMP_SCHEDULES)
     return render(request, "services.html", {
@@ -36,7 +36,7 @@ def services_hub(request):
 
 
 def blood_availability(request):
-    """Real-time Blood Stock Availability across India"""
+    """Real-time Blood Stock Availability across India with Multi-Filter"""
     selected_state = request.GET.get("state", "").strip()
     selected_district = request.GET.get("district", "").strip()
     selected_bg = request.GET.get("blood_group", "").strip()
@@ -48,21 +48,23 @@ def blood_availability(request):
     if selected_state and selected_state != "All States":
         centers = [c for c in centers if c["state"].lower() == selected_state.lower()]
     if selected_district and selected_district != "All Districts":
-        centers = [c for c in centers if c["district"].lower() == selected_district.lower()]
+        centers = [c for c in centers if selected_district.lower() in c["district"].lower()]
     if search_q:
-        centers = [c for c in centers if search_q in c["name"].lower() or search_q in c["address"].lower() or search_q in c["district"].lower()]
+        centers = [c for c in centers if search_q in c["name"].lower() or search_q in c["address"].lower() or search_q in c["district"].lower() or search_q in c["state"].lower()]
 
-    # Collect unique states for dropdown
-    all_states = sorted(list(set(c["state"] for c in ALL_INDIA_BLOOD_CENTERS)))
+    all_states = sorted(list(INDIA_STATES_DISTRICTS.keys()))
 
     # Process centers with blood group stock info
     processed_centers = []
+    total_available_units = 0
     for idx, c in enumerate(centers, 1):
         stock_dict = c.get("stock", {})
         if selected_bg and selected_bg != "All":
             units = stock_dict.get(selected_bg, 10)
         else:
             units = sum(stock_dict.values())
+        
+        total_available_units += units
 
         if units >= 25:
             status_text = "Available"
@@ -76,18 +78,22 @@ def blood_availability(request):
 
         processed_centers.append({
             "sno": idx,
+            "id": c.get("id", f"BC-{idx}"),
             "name": c["name"],
             "category": c["category"],
             "state": c["state"],
             "district": c["district"],
             "phone": c["phone"],
             "emergency_helpline": c["emergency_helpline"],
+            "email": c.get("email", "bloodbank@hemocampus.org"),
+            "nodal_officer": c.get("nodal_officer", "Medical Superintendent"),
             "address": c["address"],
             "units": units,
             "status_text": status_text,
             "status_class": status_class,
-            "components": c["components"],
+            "facilities": c.get("facilities", ["Component Separation", "24x7 Triage"]),
             "license_no": c["license_no"],
+            "rating": c.get("rating", "4.8"),
             "stock_dict": stock_dict
         })
 
@@ -100,6 +106,8 @@ def blood_availability(request):
         "selected_component": selected_component,
         "search_q": search_q,
         "total_results": len(processed_centers),
+        "total_available_units": total_available_units,
+        "states_districts_json": json.dumps(INDIA_STATES_DISTRICTS),
         "all_centers_json": json.dumps(ALL_INDIA_BLOOD_CENTERS)
     })
 
@@ -116,13 +124,13 @@ def blood_center_directory(request):
     if selected_state and selected_state != "All States":
         centers = [c for c in centers if c["state"].lower() == selected_state.lower()]
     if selected_district and selected_district != "All Districts":
-        centers = [c for c in centers if c["district"].lower() == selected_district.lower()]
+        centers = [c for c in centers if selected_district.lower() in c["district"].lower()]
     if selected_category and selected_category != "All Categories":
         centers = [c for c in centers if selected_category.lower() in c["category"].lower()]
     if search_q:
-        centers = [c for c in centers if search_q in c["name"].lower() or search_q in c["address"].lower() or search_q in c["district"].lower() or search_q in c["state"].lower()]
+        centers = [c for c in centers if search_q in c["name"].lower() or search_q in c["address"].lower() or search_q in c["district"].lower() or search_q in c["state"].lower() or search_q in c.get("nodal_officer", "").lower()]
 
-    all_states = sorted(list(set(c["state"] for c in ALL_INDIA_BLOOD_CENTERS)))
+    all_states = sorted(list(INDIA_STATES_DISTRICTS.keys()))
     all_categories = sorted(list(set(c["category"] for c in ALL_INDIA_BLOOD_CENTERS)))
 
     return render(request, "Blood_Center_Directory.html", {
@@ -134,6 +142,7 @@ def blood_center_directory(request):
         "selected_category": selected_category,
         "search_q": search_q,
         "total_centers": len(centers),
+        "states_districts_json": json.dumps(INDIA_STATES_DISTRICTS),
         "all_centers_json": json.dumps(ALL_INDIA_BLOOD_CENTERS)
     })
 
@@ -142,6 +151,7 @@ def camp_schedule(request):
     """Scheduled Blood Donation Camps & Mobile Drives across India"""
     selected_state = request.GET.get("state", "").strip()
     selected_district = request.GET.get("district", "").strip()
+    selected_type = request.GET.get("camp_type", "").strip()
     search_q = request.GET.get("q", "").strip().lower()
 
     camps = ALL_INDIA_CAMP_SCHEDULES
@@ -149,19 +159,25 @@ def camp_schedule(request):
     if selected_state and selected_state != "All States":
         camps = [c for c in camps if c["state"].lower() == selected_state.lower()]
     if selected_district and selected_district != "All Districts":
-        camps = [c for c in camps if c["district"].lower() == selected_district.lower()]
+        camps = [c for c in camps if selected_district.lower() in c["district"].lower()]
+    if selected_type and selected_type != "All Types":
+        camps = [c for c in camps if selected_type.lower() in c.get("camp_type", "").lower()]
     if search_q:
         camps = [c for c in camps if search_q in c["camp_name"].lower() or search_q in c["venue"].lower() or search_q in c["district"].lower() or search_q in c["organized_by"].lower()]
 
-    all_states = sorted(list(set(c["state"] for c in ALL_INDIA_CAMP_SCHEDULES)))
+    all_states = sorted(list(INDIA_STATES_DISTRICTS.keys()))
+    all_types = sorted(list(set(c.get("camp_type", "Campus Drive") for c in ALL_INDIA_CAMP_SCHEDULES)))
 
     return render(request, "Camp_Schedule.html", {
         "camps": camps,
         "all_states": all_states,
+        "all_types": all_types,
         "selected_state": selected_state,
         "selected_district": selected_district,
+        "selected_type": selected_type,
         "search_q": search_q,
         "total_camps": len(camps),
+        "states_districts_json": json.dumps(INDIA_STATES_DISTRICTS),
         "all_camps_json": json.dumps(ALL_INDIA_CAMP_SCHEDULES)
     })
 
@@ -173,7 +189,7 @@ def subscribe_camp_alert(request):
         mobile = request.POST.get("mobile", "").strip()
         state = request.POST.get("state", "").strip()
         district = request.POST.get("district", "").strip()
-        return HttpResponse("<script>alert('Thank you! You will receive instant notifications for upcoming blood donation camps in " + district + ", " + state + ".');window.location.href='/camp-schedule/'</script>")
+        return HttpResponse("<script>alert('Thank you! You will receive instant SMS/WhatsApp alerts for upcoming blood donation camps in " + district + ", " + state + ".');window.location.href='/camp-schedule/'</script>")
     return redirect("camp_schedule")
 
 
@@ -182,7 +198,20 @@ def register_camp_volunteer(request):
     if request.method == "POST":
         name = request.POST.get("volunteer_name", "").strip()
         camp_name = request.POST.get("camp_name", "").strip()
-        return HttpResponse("<script>alert('Thank you " + name + "! Your volunteer registration for [" + camp_name + "] is confirmed. Our camp coordinator will contact you.');window.location.href='/camp-schedule/'</script>")
+        return HttpResponse("<script>alert('Thank you " + name + "! Your voluntary donor registration for [" + camp_name + "] is confirmed. Our camp medical team will welcome you with your digital donor certificate.');window.location.href='/camp-schedule/'</script>")
+    return redirect("camp_schedule")
+
+
+def host_camp_request(request):
+    """Host a Blood Donation Camp on College Campus or Corporate Office"""
+    if request.method == "POST":
+        org_name = request.POST.get("org_name", "").strip()
+        contact_person = request.POST.get("contact_person", "").strip()
+        phone = request.POST.get("phone", "").strip()
+        city = request.POST.get("city", "").strip()
+        camp_date = request.POST.get("preferred_date", "").strip()
+        expected = request.POST.get("expected_donors", "100")
+        return HttpResponse("<script>alert('Thank you " + contact_person + "! Your camp hosting request for [" + org_name + "] in " + city + " on " + camp_date + " has been registered. Our regional blood bank coordinator will call you within 24 hours.');window.location.href='/camp-schedule/'</script>")
     return redirect("camp_schedule")
 
 

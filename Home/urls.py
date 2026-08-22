@@ -10,6 +10,7 @@ urlpatterns = [
     path('camp-schedule/', views.camp_schedule, name='camp_schedule'),
     path('subscribe-camp-alert/', views.subscribe_camp_alert, name='subscribe_camp_alert'),
     path('register-camp-volunteer/', views.register_camp_volunteer, name='register_camp_volunteer'),
+    path('host-camp-request/', views.host_camp_request, name='host_camp_request'),
 
     path('donate/', views.donate, name='donate'),
     path('request-blood/', views.request_blood, name='request_blood'),

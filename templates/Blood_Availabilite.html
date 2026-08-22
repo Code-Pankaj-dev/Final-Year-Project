@@ -6,60 +6,76 @@
 {% block content %}
 <style>
     .service-hero {
-        background: linear-gradient(135deg, #1e0508 0%, #6e0d1d 60%, #990000 100%);
+        background: linear-gradient(135deg, #1e0508 0%, #6e0d1d 50%, #990000 100%);
         color: #fff;
-        padding: 40px 20px;
+        padding: 45px 20px 35px;
         text-align: center;
         position: relative;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     }
     .service-hero h1 {
-        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-size: clamp(2rem, 4.5vw, 2.8rem);
         font-weight: 800;
         margin-bottom: 10px;
         letter-spacing: -0.5px;
     }
     .service-hero p {
-        font-size: 1.05rem;
-        opacity: 0.92;
-        max-width: 750px;
-        margin: 0 auto;
+        font-size: 1.1rem;
         color: #ffcccc;
+        max-width: 800px;
+        margin: 0 auto 20px;
     }
+    .kpi-metrics-bar {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+    }
+    .kpi-chip {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(8px);
+        padding: 8px 18px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.25);
+        font-size: 13px;
+        color: #fff;
+    }
+    .kpi-chip strong { color: #ffd700; font-size: 16px; margin-right: 4px; }
+
     .search-panel {
-        max-width: 1200px;
+        max-width: 1240px;
         margin: -25px auto 30px;
         background: #ffffff;
         border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        box-shadow: 0 12px 35px rgba(0,0,0,0.08);
         padding: 26px;
-        border: 1px solid #f0e0e3;
+        border: 1px solid #f1e3e6;
         position: relative;
         z-index: 10;
     }
     .filter-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
         gap: 16px;
         align-items: flex-end;
     }
     .form-group label {
         font-size: 13px;
-        font-weight: 600;
-        color: #4a5568;
+        font-weight: 700;
+        color: #334155;
         display: block;
         margin-bottom: 6px;
     }
     .form-control-custom {
         width: 100%;
         padding: 10px 14px;
-        border: 1.5px solid #e2e8f0;
+        border: 1.5px solid #cbd5e1;
         border-radius: 8px;
         font-size: 14px;
         background: #f8fafc;
-        color: #1e293b;
-        transition: all 0.2s ease;
+        color: #0f172a;
         outline: none;
+        transition: all 0.2s ease;
     }
     .form-control-custom:focus {
         border-color: #990000;
@@ -72,7 +88,7 @@
         border: none;
         padding: 12px 24px;
         font-size: 15px;
-        font-weight: 600;
+        font-weight: 700;
         border-radius: 8px;
         cursor: pointer;
         transition: all 0.25s ease;
@@ -86,8 +102,24 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 18px rgba(153,0,0,0.35);
     }
+    .btn-reset {
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+        padding: 12px 18px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 8px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    .btn-reset:hover { background: #e2e8f0; color: #1e293b; }
+
     .results-container {
-        max-width: 1200px;
+        max-width: 1240px;
         margin: 0 auto 50px;
         padding: 0 20px;
     }
@@ -97,12 +129,7 @@
         align-items: center;
         margin-bottom: 18px;
         flex-wrap: wrap;
-        gap: 12px;
-    }
-    .results-count {
-        font-size: 16px;
-        font-weight: 700;
-        color: #1e293b;
+        gap: 14px;
     }
     .table-card {
         background: #ffffff;
@@ -119,7 +146,7 @@
         width: 100%;
         border-collapse: collapse;
         text-align: left;
-        min-width: 850px;
+        min-width: 900px;
     }
     .custom-table thead {
         background: #fdf2f2;
@@ -138,65 +165,79 @@
         border-bottom: 1px solid #f1f5f9;
         vertical-align: middle;
     }
-    .custom-table tr:hover {
-        background: #fcf8f8;
-    }
+    .custom-table tr:hover { background: #fcf8f8; }
+
     .status-badge {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 5px 12px;
+        gap: 5px;
+        padding: 4px 10px;
         border-radius: 20px;
-        font-size: 12.5px;
-        font-weight: 600;
+        font-size: 12px;
+        font-weight: 700;
     }
     .badge-success { background: #dcfce7; color: #166534; }
     .badge-warning { background: #fef3c7; color: #92400e; }
     .badge-danger { background: #fee2e2; color: #991b1b; }
 
+    .blood-mini-matrix {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        max-width: 220px;
+    }
+    .blood-mini-pill {
+        font-size: 11px;
+        padding: 2px 5px;
+        border-radius: 4px;
+        font-weight: 700;
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #e2e8f0;
+    }
+    .blood-mini-pill.highlight {
+        background: #fee2e2;
+        color: #990000;
+        border-color: #fca5a5;
+    }
+
     .btn-action-req {
         background: #990000;
         color: #fff;
         border: none;
-        padding: 7px 14px;
+        padding: 8px 14px;
         border-radius: 6px;
         font-size: 13px;
         font-weight: 600;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
         transition: 0.2s;
     }
-    .btn-action-req:hover {
-        background: #7a0000;
-        color: #ffd700;
-    }
-    .call-link {
-        color: #2563eb;
-        text-decoration: none;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-    }
-    .call-link:hover { text-decoration: underline; }
+    .btn-action-req:hover { background: #7a0000; color: #ffd700; }
 </style>
 
 <!-- Hero Section -->
 <div class="service-hero">
-    <h1><i class="fa-solid fa-magnifying-glass-chart text-warning"></i> Real-Time Blood Stock Availability</h1>
-    <p>Search live blood unit inventories, packed red blood cells, platelets, and plasma across premier hospitals and authorized blood banks all over India.</p>
+    <h1><i class="fa-solid fa-magnifying-glass-chart text-warning"></i> Real-Time Blood Stock Telemetry</h1>
+    <p>Live inventory tracking of Whole Blood, Packed RBC, Platelets (RDP/SDP), and Fresh Frozen Plasma across apex medical colleges and authorized regional blood banks throughout India.</p>
+    <div class="kpi-metrics-bar">
+        <div class="kpi-chip"><strong>{{ total_results }}</strong> Partner Blood Centers</div>
+        <div class="kpi-chip"><strong>{{ total_available_units }}+</strong> Units in Regional Reserve</div>
+        <div class="kpi-chip"><strong>24x7</strong> Emergency Dispatch Hotline</div>
+        <div class="kpi-chip"><strong>NABH / NACO</strong> Certified Standards</div>
+    </div>
 </div>
 
-<!-- Filter Panel -->
+<!-- Filter Panel with Cascading State-District Logic -->
 <div class="search-panel">
-    <form method="GET" action="/blood-availability/">
+    <form method="GET" action="/blood-availability/" id="filterForm">
         <div class="filter-grid">
             <div class="form-group">
                 <label><i class="fa-solid fa-map-location-dot text-danger"></i> Select State</label>
-                <select name="state" id="stateSelect" class="form-control-custom" onchange="this.form.submit()">
-                    <option value="">All States</option>
+                <select name="state" id="stateSelect" class="form-control-custom" onchange="onStateChange()">
+                    <option value="">All States across India</option>
                     {% for st in all_states %}
                     <option value="{{ st }}" {% if selected_state == st %}selected{% endif %}>{{ st }}</option>
                     {% endfor %}
@@ -204,39 +245,51 @@
             </div>
 
             <div class="form-group">
+                <label><i class="fa-solid fa-city text-danger"></i> Select District</label>
+                <select name="district" id="districtSelect" class="form-control-custom">
+                    <option value="">All Districts</option>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label><i class="fa-solid fa-droplet text-danger"></i> Blood Group</label>
-                <select name="blood_group" class="form-control-custom" onchange="this.form.submit()">
+                <select name="blood_group" class="form-control-custom">
                     <option value="">All Blood Groups</option>
-                    <option value="A+" {% if selected_bg == 'A+' %}selected{% endif %}>A+</option>
-                    <option value="A-" {% if selected_bg == 'A-' %}selected{% endif %}>A-</option>
-                    <option value="B+" {% if selected_bg == 'B+' %}selected{% endif %}>B+</option>
-                    <option value="B-" {% if selected_bg == 'B-' %}selected{% endif %}>B-</option>
-                    <option value="O+" {% if selected_bg == 'O+' %}selected{% endif %}>O+</option>
-                    <option value="O-" {% if selected_bg == 'O-' %}selected{% endif %}>O-</option>
-                    <option value="AB+" {% if selected_bg == 'AB+' %}selected{% endif %}>AB+</option>
-                    <option value="AB-" {% if selected_bg == 'AB-' %}selected{% endif %}>AB-</option>
+                    <option value="A+" {% if selected_bg == 'A+' %}selected{% endif %}>A+ (Positive)</option>
+                    <option value="A-" {% if selected_bg == 'A-' %}selected{% endif %}>A- (Negative)</option>
+                    <option value="B+" {% if selected_bg == 'B+' %}selected{% endif %}>B+ (Positive)</option>
+                    <option value="B-" {% if selected_bg == 'B-' %}selected{% endif %}>B- (Negative)</option>
+                    <option value="O+" {% if selected_bg == 'O+' %}selected{% endif %}>O+ (Universal RBC Recipient)</option>
+                    <option value="O-" {% if selected_bg == 'O-' %}selected{% endif %}>O- (Universal Donor)</option>
+                    <option value="AB+" {% if selected_bg == 'AB+' %}selected{% endif %}>AB+ (Universal Plasma Donor)</option>
+                    <option value="AB-" {% if selected_bg == 'AB-' %}selected{% endif %}>AB- (Negative)</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label><i class="fa-solid fa-vial-virus text-danger"></i> Component</label>
-                <select name="component" class="form-control-custom" onchange="this.form.submit()">
+                <select name="component" class="form-control-custom">
                     <option value="Whole Blood" {% if selected_component == 'Whole Blood' %}selected{% endif %}>Whole Blood</option>
                     <option value="Packed RBC" {% if selected_component == 'Packed RBC' %}selected{% endif %}>Packed Red Blood Cells (PRBC)</option>
-                    <option value="Platelets" {% if selected_component == 'Platelets' %}selected{% endif %}>Platelets (RDP / SDP)</option>
+                    <option value="Platelets" {% if selected_component == 'Platelets' %}selected{% endif %}>Platelet Concentrates (RDP / SDP)</option>
                     <option value="Fresh Frozen Plasma" {% if selected_component == 'Fresh Frozen Plasma' %}selected{% endif %}>Fresh Frozen Plasma (FFP)</option>
                     <option value="Cryoprecipitate" {% if selected_component == 'Cryoprecipitate' %}selected{% endif %}>Cryoprecipitate</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label><i class="fa-solid fa-search text-danger"></i> Search Keyword</label>
-                <input type="text" name="q" value="{{ search_q }}" placeholder="Hospital name, city, address..." class="form-control-custom" id="instantSearch">
+                <label><i class="fa-solid fa-magnifying-glass text-danger"></i> Quick Keyword Search</label>
+                <input type="text" name="q" value="{{ search_q }}" placeholder="Hospital name, landmark, city..." class="form-control-custom" id="instantSearch">
             </div>
 
-            <button type="submit" class="btn-search-primary">
-                <i class="fa-solid fa-magnifying-glass"></i> Search
-            </button>
+            <div style="display:flex; gap:8px;">
+                <button type="submit" class="btn-search-primary" style="flex:1;">
+                    <i class="fa-solid fa-magnifying-glass"></i> Search Stock
+                </button>
+                <a href="/blood-availability/" class="btn-reset" title="Reset All Filters">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </a>
+            </div>
         </div>
     </form>
 </div>
@@ -244,11 +297,16 @@
 <!-- Results Section -->
 <div class="results-container">
     <div class="results-header">
-        <div class="results-count">
-            <i class="fa-solid fa-list-check text-danger"></i> Found <span style="color:#990000;">{{ total_results }}</span> Verified Blood Centers with Active Stock
+        <div>
+            <span style="font-size:16px; font-weight:800; color:#0f172a;">
+                <i class="fa-solid fa-list-check text-danger"></i> Found <span style="color:#990000;">{{ total_results }}</span> Verified Centers
+            </span>
+            {% if selected_state %}
+            <span style="font-size:13px; color:#64748b; margin-left:8px;">in <strong>{{ selected_state }}</strong>{% if selected_district %} &gt; <strong>{{ selected_district }}</strong>{% endif %}</span>
+            {% endif %}
         </div>
-        <div style="display:flex; gap:10px; font-size:12.5px;">
-            <span class="status-badge badge-success">● Available (&gt;25 Units)</span>
+        <div style="display:flex; gap:8px; font-size:12px;">
+            <span class="status-badge badge-success">● High (&gt;25 Units)</span>
             <span class="status-badge badge-warning">● Moderate (10-25 Units)</span>
             <span class="status-badge badge-danger">● Critical Low (&lt;10 Units)</span>
         </div>
@@ -259,12 +317,12 @@
             <table class="custom-table" id="stockTable">
                 <thead>
                     <tr>
-                        <th style="width: 50px;">S.No.</th>
-                        <th>Blood Center / Apex Hospital</th>
-                        <th>State / District</th>
+                        <th style="width:45px;">S.No.</th>
+                        <th>Hospital / Regional Blood Center</th>
+                        <th>State & District</th>
                         <th>Category</th>
-                        <th>Available Stock</th>
-                        <th>Status</th>
+                        <th>Live Blood Units Breakdown</th>
+                        <th>Total Availability</th>
                         <th>24x7 Emergency Contact</th>
                         <th>Action</th>
                     </tr>
@@ -274,42 +332,61 @@
                     <tr>
                         <td style="font-weight:700; color:#64748b;">{{ c.sno }}</td>
                         <td>
-                            <strong style="color:#0f172a; font-size:14.5px;">{{ c.name }}</strong>
-                            <div style="font-size:12px; color:#64748b; margin-top:3px;"><i class="fa-solid fa-location-dot"></i> {{ c.address }}</div>
+                            <strong style="color:#0f172a; font-size:15px;">{{ c.name }}</strong>
+                            <div style="font-size:12px; color:#64748b; margin-top:2px;">
+                                <i class="fa-solid fa-location-dot text-danger"></i> {{ c.address }}
+                            </div>
+                            <div style="font-size:11.5px; color:#475569; margin-top:2px;">
+                                <i class="fa-solid fa-id-card"></i> License: <strong>{{ c.license_no }}</strong> | Incharge: <strong>{{ c.nodal_officer }}</strong>
+                            </div>
                         </td>
                         <td>
-                            <span style="font-weight:600; color:#1e293b;">{{ c.district }}</span>
+                            <span style="font-weight:700; color:#0f172a;">{{ c.district }}</span>
                             <div style="font-size:12px; color:#64748b;">{{ c.state }}</div>
                         </td>
                         <td>
-                            <span style="font-size:12.5px; background:#f1f5f9; padding:3px 8px; border-radius:6px; font-weight:500;">{{ c.category }}</span>
+                            <span style="font-size:12px; background:#f1f5f9; color:#334155; padding:4px 8px; border-radius:6px; font-weight:600; display:inline-block;">
+                                {{ c.category }}
+                            </span>
                         </td>
                         <td>
-                            <span style="font-size:16px; font-weight:800; color:#990000;">{{ c.units }}</span> <small style="color:#64748b;">Units</small>
-                            {% if selected_bg %}
-                            <span style="background:#fee2e2; color:#990000; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:700; margin-left:4px;">{{ selected_bg }}</span>
-                            {% endif %}
+                            <div class="blood-mini-matrix">
+                                {% for bg, count in c.stock_dict.items %}
+                                <span class="blood-mini-pill {% if selected_bg == bg %}highlight{% endif %}" title="{{ bg }}: {{ count }} units available">
+                                    {{ bg }}: <strong>{{ count }}</strong>
+                                </span>
+                                {% endfor %}
+                            </div>
                         </td>
                         <td>
+                            <div style="font-size:17px; font-weight:800; color:#990000;">
+                                {{ c.units }} <span style="font-size:12px; color:#64748b; font-weight:500;">Units</span>
+                            </div>
                             <span class="status-badge badge-{{ c.status_class }}">● {{ c.status_text }}</span>
                         </td>
                         <td>
-                            <a href="tel:{{ c.phone }}" class="call-link"><i class="fa-solid fa-phone"></i> {{ c.phone }}</a>
-                            <div style="font-size:11px; color:#dc2626; font-weight:600; margin-top:2px;">🚨 {{ c.emergency_helpline }}</div>
+                            <div>
+                                <a href="tel:{{ c.phone }}" style="color:#2563eb; font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
+                                    <i class="fa-solid fa-phone"></i> {{ c.phone }}
+                                </a>
+                            </div>
+                            <div style="font-size:11.5px; color:#dc2626; font-weight:700; margin-top:3px;">
+                                🚨 {{ c.emergency_helpline }}
+                            </div>
                         </td>
                         <td>
-                            <a href="/request-blood/?hospital={{ c.name|urlencode }}" class="btn-action-req">
+                            <a href="/request-blood/?hospital={{ c.name|urlencode }}" class="btn-action-req" title="Submit Clinical Requisition">
                                 <i class="fa-solid fa-hand-holding-droplet"></i> Request
                             </a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="8" style="text-align:center; padding:50px 20px; color:#64748b;">
-                            <div style="font-size:45px; margin-bottom:10px;">🔍</div>
-                            <h4 style="color:#1e293b; margin-bottom:6px;">No Blood Centers Found Matching Your Filter</h4>
-                            <p style="font-size:13px; color:#64748b;">Please select another state or district, or clear your search keyword.</p>
-                            <a href="/blood-availability/" class="btn-search-primary" style="display:inline-flex; margin-top:10px;">Clear All Filters</a>
+                        <td colspan="8" style="text-align:center; padding:60px 20px; color:#64748b;">
+                            <div style="font-size:50px; margin-bottom:12px;">🔍</div>
+                            <h3 style="color:#0f172a; margin-bottom:6px;">No Centers Found for Selected State / District</h3>
+                            <p style="font-size:13.5px; color:#64748b;">Please select another district or reset your search query.</p>
+                            <a href="/blood-availability/" class="btn-search-primary" style="display:inline-flex; margin-top:10px;">View All Blood Centers</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -320,7 +397,36 @@
 </div>
 
 <script>
-    // Client-side quick filter
+    // State-District Cascading Logic
+    const stateDistrictsMap = {{ states_districts_json|safe }};
+    const currentSelectedDistrict = "{{ selected_district }}";
+
+    function onStateChange() {
+        const stateSelect = document.getElementById('stateSelect');
+        const districtSelect = document.getElementById('districtSelect');
+        const selectedState = stateSelect.value;
+
+        districtSelect.innerHTML = '<option value="">All Districts</option>';
+
+        if (selectedState && stateDistrictsMap[selectedState]) {
+            stateDistrictsMap[selectedState].forEach(dist => {
+                const opt = document.createElement('option');
+                opt.value = dist;
+                opt.textContent = dist;
+                if (dist === currentSelectedDistrict) {
+                    opt.selected = true;
+                }
+                districtSelect.appendChild(opt);
+            });
+        }
+    }
+
+    // Initialize districts on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        onStateChange();
+    });
+
+    // Instant table search
     const instantSearch = document.getElementById('instantSearch');
     if (instantSearch) {
         instantSearch.addEventListener('keyup', function() {
