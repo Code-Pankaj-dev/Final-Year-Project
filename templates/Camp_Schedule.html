@@ -35,8 +35,8 @@
     }
     .camp-filter-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 14px;
         align-items: flex-end;
     }
     .form-group label {
@@ -63,8 +63,8 @@
         background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
         color: #fff;
         border: none;
-        padding: 12px 24px;
-        font-size: 15px;
+        padding: 11px 20px;
+        font-size: 14.5px;
         font-weight: 700;
         border-radius: 8px;
         cursor: pointer;
@@ -180,6 +180,18 @@
 <div class="camp-panel">
     <form method="GET" action="/camp-schedule/" id="campFilterForm">
         <div class="camp-filter-grid">
+
+            <!-- Service Switcher -->
+            <div class="form-group">
+                <label><i class="fa-solid fa-hand-holding-droplet text-warning"></i> Select Service</label>
+                <select class="form-control-custom" onchange="if(this.value) window.location.href=this.value;">
+                    <option value="/camp-schedule/" selected>Camp Schedule & Drives</option>
+                    <option value="/blood-availability/">Blood Availability Search</option>
+                    <option value="/blood-center-directory/">Blood Center Directory</option>
+                </select>
+            </div>
+
+            <!-- State Selector -->
             <div class="form-group">
                 <label><i class="fa-solid fa-map-location-dot text-warning"></i> Select State</label>
                 <select name="state" id="campStateSelect" class="form-control-custom" onchange="onCampStateChange()">
@@ -190,6 +202,7 @@
                 </select>
             </div>
 
+            <!-- District Selector -->
             <div class="form-group">
                 <label><i class="fa-solid fa-city text-warning"></i> Select District</label>
                 <select name="district" id="campDistrictSelect" class="form-control-custom">
@@ -197,6 +210,7 @@
                 </select>
             </div>
 
+            <!-- Camp Type Selector -->
             <div class="form-group">
                 <label><i class="fa-solid fa-bullhorn text-warning"></i> Camp Type</label>
                 <select name="camp_type" class="form-control-custom">
@@ -207,9 +221,10 @@
                 </select>
             </div>
 
+            <!-- Keyword Search -->
             <div class="form-group">
-                <label><i class="fa-solid fa-magnifying-glass text-warning"></i> Search Camp / Venue</label>
-                <input type="text" name="q" id="campSearchInput" value="{{ search_q }}" placeholder="Campus, venue, organizer..." class="form-control-custom">
+                <label><i class="fa-solid fa-magnifying-glass text-warning"></i> Search Camp / City</label>
+                <input type="text" name="q" id="campSearchInput" value="{{ search_q }}" placeholder="Campus, city, organizer..." class="form-control-custom">
             </div>
 
             <div style="display:flex; gap:8px;">
@@ -281,7 +296,7 @@
 
                 <h3 style="margin:6px 0 4px; font-size:17.5px; font-weight:800; color:#0f172a;">{{ camp.camp_name }}</h3>
                 <div style="font-size:13px; color:#64748b; margin-bottom:4px;">
-                    <i class="fa-solid fa-location-dot text-danger"></i> {{ camp.venue }} (<strong>{{ camp.district }}, {{ camp.state }}</strong>)
+                    <i class="fa-solid fa-location-dot text-danger"></i> {{ camp.venue }} (<strong style="color:#b45309;">{{ camp.district }}</strong>, {{ camp.state }})
                 </div>
                 <div style="font-size:12.5px; color:#475569;">
                     <span><i class="fa-solid fa-clock text-warning"></i> {{ camp.time }}</span> | 
@@ -313,8 +328,8 @@
     {% empty %}
     <div style="text-align: center; padding: 60px 20px; background:#fff; border-radius:16px;">
         <div style="font-size:50px;">📅</div>
-        <h3 style="color:#0f172a; margin:10px 0;">No Upcoming Camps Found for Selected Filter</h3>
-        <p style="color:#64748b;">Try choosing another state/district or click below to explore all camps.</p>
+        <h3 style="color:#0f172a; margin:10px 0;">No Upcoming Camps Found for Selected District</h3>
+        <p style="color:#64748b;">Try choosing another district or click below to view all camps.</p>
         <a href="/camp-schedule/" class="btn-search-amber" style="display:inline-flex; margin-top:10px;">View All Nationwide Camps</a>
     </div>
     {% endfor %}
@@ -380,7 +395,7 @@
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px;">
                 <div>
                     <label style="font-size:13px; font-weight:700; display:block; margin-bottom:4px;">City / District</label>
-                    <input type="text" name="city" required class="form-control-custom" placeholder="e.g. Lucknow">
+                    <input type="text" name="city" required class="form-control-custom" placeholder="e.g. Gorakhpur">
                 </div>
                 <div>
                     <label style="font-size:13px; font-weight:700; display:block; margin-bottom:4px;">Preferred Date</label>

@@ -35,8 +35,8 @@
     }
     .dir-filter-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 14px;
         align-items: flex-end;
     }
     .form-group label {
@@ -64,8 +64,8 @@
         background: linear-gradient(135deg, #3730a3 0%, #4338ca 100%);
         color: #fff;
         border: none;
-        padding: 12px 24px;
-        font-size: 15px;
+        padding: 11px 20px;
+        font-size: 14.5px;
         font-weight: 700;
         border-radius: 8px;
         cursor: pointer;
@@ -215,6 +215,18 @@
 <div class="dir-panel">
     <form method="GET" action="/blood-center-directory/" id="dirFilterForm">
         <div class="dir-filter-grid">
+
+            <!-- Service Switcher -->
+            <div class="form-group">
+                <label><i class="fa-solid fa-hand-holding-droplet text-indigo"></i> Select Service</label>
+                <select class="form-control-custom" onchange="if(this.value) window.location.href=this.value;">
+                    <option value="/blood-center-directory/" selected>Blood Center Directory</option>
+                    <option value="/blood-availability/">Blood Availability Search</option>
+                    <option value="/camp-schedule/">Camp Schedule & Drives</option>
+                </select>
+            </div>
+
+            <!-- State Selector -->
             <div class="form-group">
                 <label><i class="fa-solid fa-map-location-dot text-indigo"></i> Select State</label>
                 <select name="state" id="dirStateSelect" class="form-control-custom" onchange="onDirStateChange()">
@@ -225,6 +237,7 @@
                 </select>
             </div>
 
+            <!-- District Selector -->
             <div class="form-group">
                 <label><i class="fa-solid fa-city text-indigo"></i> Select District</label>
                 <select name="district" id="dirDistrictSelect" class="form-control-custom">
@@ -232,6 +245,7 @@
                 </select>
             </div>
 
+            <!-- Category Selector -->
             <div class="form-group">
                 <label><i class="fa-solid fa-building-columns text-indigo"></i> Category</label>
                 <select name="category" class="form-control-custom">
@@ -242,9 +256,10 @@
                 </select>
             </div>
 
+            <!-- Keyword Search -->
             <div class="form-group">
-                <label><i class="fa-solid fa-magnifying-glass text-indigo"></i> Search Center / Doctor</label>
-                <input type="text" name="q" id="dirSearchInput" value="{{ search_q }}" placeholder="Hospital name, doctor, city..." class="form-control-custom">
+                <label><i class="fa-solid fa-magnifying-glass text-indigo"></i> Search Center / City</label>
+                <input type="text" name="q" id="dirSearchInput" value="{{ search_q }}" placeholder="Hospital, district, doctor..." class="form-control-custom">
             </div>
 
             <div style="display:flex; gap:8px;">
@@ -270,7 +285,7 @@
             <h3 class="center-name">{{ c.name }}</h3>
             <div class="center-location">
                 <i class="fa-solid fa-location-dot text-danger" style="margin-top:2px;"></i>
-                <span>{{ c.address }} (<strong>{{ c.district }}, {{ c.state }}</strong>)</span>
+                <span>{{ c.address }} (<strong style="color:#3730a3;">{{ c.district }}</strong>, {{ c.state }})</span>
             </div>
 
             <div class="center-details">
