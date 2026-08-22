@@ -1,221 +1,340 @@
 {% extends 'master.html' %}
 {% load static %}
 
-{% block title %}Blood Availability - Hemo Campus{% endblock %}
+{% block title %}Real-Time Blood Availability Search — HemoCampus{% endblock %}
 
 {% block content %}
 <style>
-    .container {
-        padding: 25px 30px;
-        background: #fff;
+    .service-hero {
+        background: linear-gradient(135deg, #1e0508 0%, #6e0d1d 60%, #990000 100%);
+        color: #fff;
+        padding: 40px 20px;
+        text-align: center;
+        position: relative;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     }
-    .heading {
-        color: #8B0000;
-        font-size: 22px;
-        font-weight: 700;
-        margin: 0 0 20px 0;
+    .service-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-weight: 800;
+        margin-bottom: 10px;
+        letter-spacing: -0.5px;
     }
-    .filter-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-        margin-bottom: 25px;
+    .service-hero p {
+        font-size: 1.05rem;
+        opacity: 0.92;
+        max-width: 750px;
+        margin: 0 auto;
+        color: #ffcccc;
+    }
+    .search-panel {
+        max-width: 1200px;
+        margin: -25px auto 30px;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        padding: 26px;
+        border: 1px solid #f0e0e3;
+        position: relative;
+        z-index: 10;
+    }
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
         align-items: flex-end;
     }
-    .form-group {
-        flex: 1;
-        min-width: 200px;
-    }
-    label {
+    .form-group label {
         font-size: 13px;
-        color: #555;
+        font-weight: 600;
+        color: #4a5568;
         display: block;
         margin-bottom: 6px;
-        font-weight: 500;
     }
-    select {
+    .form-control-custom {
         width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
+        padding: 10px 14px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 8px;
         font-size: 14px;
+        background: #f8fafc;
+        color: #1e293b;
+        transition: all 0.2s ease;
+        outline: none;
+    }
+    .form-control-custom:focus {
+        border-color: #990000;
         background: #fff;
-        box-sizing: border-box;
+        box-shadow: 0 0 0 3px rgba(153, 0, 0, 0.12);
     }
-    select:disabled {
-        background: #f5f5f5;
-        cursor: not-allowed;
-    }
-    .btn-search {
-        padding: 11px 40px;
-        background: #8B0000;
+    .btn-search-primary {
+        background: linear-gradient(135deg, #990000 0%, #c61a1a 100%);
         color: #fff;
         border: none;
-        border-radius: 5px;
+        padding: 12px 24px;
         font-size: 15px;
         font-weight: 600;
+        border-radius: 8px;
         cursor: pointer;
-        transition: 0.3s;
+        transition: all 0.25s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(153,0,0,0.25);
     }
-    .btn-search:hover {
-        background: #6d0000;
+    .btn-search-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(153,0,0,0.35);
     }
-    .result-heading {
+    .results-container {
+        max-width: 1200px;
+        margin: 0 auto 50px;
+        padding: 0 20px;
+    }
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .results-count {
         font-size: 16px;
         font-weight: 700;
-        color: #333;
-        margin: 0 0 15px 0;
+        color: #1e293b;
     }
-    table {
+    .table-card {
+        background: #ffffff;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+    .table-wrap {
+        overflow-x: auto;
+        width: 100%;
+    }
+    .custom-table {
         width: 100%;
         border-collapse: collapse;
-        background: #fff;
-        border-radius: 5px;
-        overflow: hidden;
-    }
-    thead {
-        background: #f8e9e9;
-    }
-    th {
-        padding: 12px;
         text-align: left;
+        min-width: 850px;
+    }
+    .custom-table thead {
+        background: #fdf2f2;
+    }
+    .custom-table th {
+        padding: 14px 16px;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: #7f1d1d;
+        border-bottom: 2px solid #fee2e2;
+    }
+    .custom-table td {
+        padding: 14px 16px;
         font-size: 14px;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+    .custom-table tr:hover {
+        background: #fcf8f8;
+    }
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12.5px;
         font-weight: 600;
-        color: #333;
-        border-bottom: 1px solid #e0e0e0;
     }
-    .no-data {
-        text-align: center;
-        padding: 60px 20px;
-        color: #999;
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+
+    .btn-action-req {
+        background: #990000;
+        color: #fff;
+        border: none;
+        padding: 7px 14px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: 0.2s;
     }
-    .no-data-icon {
-        font-size: 50px;
-        margin-bottom: 10px;
+    .btn-action-req:hover {
+        background: #7a0000;
+        color: #ffd700;
     }
+    .call-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .call-link:hover { text-decoration: underline; }
 </style>
 
-<div class="container">
-    <h2 class="heading">Nearest Blood Center(BB)/ Blood Storage Unit(BSU)</h2>
-    
-    <!-- Filter Section -->
-    <div class="filter-row">  
-        <div class="form-group">
-            <label>Select Services</label>
-            <select onchange="if(this.value) window.location.href=this.value">
-                <option value="">Select Service</option>
-{#                <option value="/blood-center-directory/">Blood Center Directory</option>#}
-{#                <option value="/camp-schedule/">Camp Schedule</option>#}
-                <option value="/blood-availability/" selected>Blood Availability</option>
-            </select>
+<!-- Hero Section -->
+<div class="service-hero">
+    <h1><i class="fa-solid fa-magnifying-glass-chart text-warning"></i> Real-Time Blood Stock Availability</h1>
+    <p>Search live blood unit inventories, packed red blood cells, platelets, and plasma across premier hospitals and authorized blood banks all over India.</p>
+</div>
+
+<!-- Filter Panel -->
+<div class="search-panel">
+    <form method="GET" action="/blood-availability/">
+        <div class="filter-grid">
+            <div class="form-group">
+                <label><i class="fa-solid fa-map-location-dot text-danger"></i> Select State</label>
+                <select name="state" id="stateSelect" class="form-control-custom" onchange="this.form.submit()">
+                    <option value="">All States</option>
+                    {% for st in all_states %}
+                    <option value="{{ st }}" {% if selected_state == st %}selected{% endif %}>{{ st }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-droplet text-danger"></i> Blood Group</label>
+                <select name="blood_group" class="form-control-custom" onchange="this.form.submit()">
+                    <option value="">All Blood Groups</option>
+                    <option value="A+" {% if selected_bg == 'A+' %}selected{% endif %}>A+</option>
+                    <option value="A-" {% if selected_bg == 'A-' %}selected{% endif %}>A-</option>
+                    <option value="B+" {% if selected_bg == 'B+' %}selected{% endif %}>B+</option>
+                    <option value="B-" {% if selected_bg == 'B-' %}selected{% endif %}>B-</option>
+                    <option value="O+" {% if selected_bg == 'O+' %}selected{% endif %}>O+</option>
+                    <option value="O-" {% if selected_bg == 'O-' %}selected{% endif %}>O-</option>
+                    <option value="AB+" {% if selected_bg == 'AB+' %}selected{% endif %}>AB+</option>
+                    <option value="AB-" {% if selected_bg == 'AB-' %}selected{% endif %}>AB-</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-vial-virus text-danger"></i> Component</label>
+                <select name="component" class="form-control-custom" onchange="this.form.submit()">
+                    <option value="Whole Blood" {% if selected_component == 'Whole Blood' %}selected{% endif %}>Whole Blood</option>
+                    <option value="Packed RBC" {% if selected_component == 'Packed RBC' %}selected{% endif %}>Packed Red Blood Cells (PRBC)</option>
+                    <option value="Platelets" {% if selected_component == 'Platelets' %}selected{% endif %}>Platelets (RDP / SDP)</option>
+                    <option value="Fresh Frozen Plasma" {% if selected_component == 'Fresh Frozen Plasma' %}selected{% endif %}>Fresh Frozen Plasma (FFP)</option>
+                    <option value="Cryoprecipitate" {% if selected_component == 'Cryoprecipitate' %}selected{% endif %}>Cryoprecipitate</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-search text-danger"></i> Search Keyword</label>
+                <input type="text" name="q" value="{{ search_q }}" placeholder="Hospital name, city, address..." class="form-control-custom" id="instantSearch">
+            </div>
+
+            <button type="submit" class="btn-search-primary">
+                <i class="fa-solid fa-magnifying-glass"></i> Search
+            </button>
         </div>
-        <div class="form-group">
-            <label>Select State</label>
-            <select id="stateSelect" onchange="loadDistricts()">
-                <option value="">Select State</option>
-                <option value="Andhra Pradesh">Andhra Pradesh</option>
-                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-                <option value="Assam">Assam</option>
-                <option value="Bihar">Bihar</option>
-                <option value="Chhattisgarh">Chhattisgarh</option>
-                <option value="Delhi">Delhi</option>
-                <option value="Goa">Goa</option>
-                <option value="Gujarat">Gujarat</option>
-                <option value="Haryana">Haryana</option>
-                <option value="Himachal Pradesh">Himachal Pradesh</option>
-                <option value="Jharkhand">Jharkhand</option>
-                <option value="Karnataka">Karnataka</option>
-                <option value="Kerala">Kerala</option>
-                <option value="Madhya Pradesh">Madhya Pradesh</option>
-                <option value="Maharashtra">Maharashtra</option>
-                <option value="Manipur">Manipur</option>
-                <option value="Meghalaya">Meghalaya</option>
-                <option value="Mizoram">Mizoram</option>
-                <option value="Nagaland">Nagaland</option>
-                <option value="Odisha">Odisha</option>
-                <option value="Punjab">Punjab</option>
-                <option value="Rajasthan">Rajasthan</option>
-                <option value="Sikkim">Sikkim</option>
-                <option value="Tamil Nadu">Tamil Nadu</option>
-                <option value="Telangana">Telangana</option>
-                <option value="Tripura">Tripura</option>
-                <option value="Uttar Pradesh">Uttar Pradesh</option>
-                <option value="Uttarakhand">Uttarakhand</option>
-                <option value="West Bengal">West Bengal</option>
-            </select>
+    </form>
+</div>
+
+<!-- Results Section -->
+<div class="results-container">
+    <div class="results-header">
+        <div class="results-count">
+            <i class="fa-solid fa-list-check text-danger"></i> Found <span style="color:#990000;">{{ total_results }}</span> Verified Blood Centers with Active Stock
         </div>
-        <div class="form-group">
-            <label>Select District</label>
-            <select id="districtSelect" disabled>
-                <option value="">Select District</option>
-            </select>
+        <div style="display:flex; gap:10px; font-size:12.5px;">
+            <span class="status-badge badge-success">● Available (&gt;25 Units)</span>
+            <span class="status-badge badge-warning">● Moderate (10-25 Units)</span>
+            <span class="status-badge badge-danger">● Critical Low (&lt;10 Units)</span>
         </div>
-        <button class="btn-search">Search</button>
     </div>
-    
-    <!-- Search Result -->
-    <h3 class="result-heading">Search Result</h3>
-    <div style="overflow-x: auto; width: 100%; border-radius: 8px; border: 1px solid #e0e0e0;">
-    <table>
-        <thead>
-            <tr>
-                <th>S.No.</th>
-                <th>Blood Center</th>
-                <th>Category</th>
-                <th>Distance</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td colspan="5" class="no-data">
-                    <div class="no-data-icon">📦</div>
-                    <div>No data</div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+
+    <div class="table-card">
+        <div class="table-wrap">
+            <table class="custom-table" id="stockTable">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">S.No.</th>
+                        <th>Blood Center / Apex Hospital</th>
+                        <th>State / District</th>
+                        <th>Category</th>
+                        <th>Available Stock</th>
+                        <th>Status</th>
+                        <th>24x7 Emergency Contact</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in centers %}
+                    <tr>
+                        <td style="font-weight:700; color:#64748b;">{{ c.sno }}</td>
+                        <td>
+                            <strong style="color:#0f172a; font-size:14.5px;">{{ c.name }}</strong>
+                            <div style="font-size:12px; color:#64748b; margin-top:3px;"><i class="fa-solid fa-location-dot"></i> {{ c.address }}</div>
+                        </td>
+                        <td>
+                            <span style="font-weight:600; color:#1e293b;">{{ c.district }}</span>
+                            <div style="font-size:12px; color:#64748b;">{{ c.state }}</div>
+                        </td>
+                        <td>
+                            <span style="font-size:12.5px; background:#f1f5f9; padding:3px 8px; border-radius:6px; font-weight:500;">{{ c.category }}</span>
+                        </td>
+                        <td>
+                            <span style="font-size:16px; font-weight:800; color:#990000;">{{ c.units }}</span> <small style="color:#64748b;">Units</small>
+                            {% if selected_bg %}
+                            <span style="background:#fee2e2; color:#990000; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:700; margin-left:4px;">{{ selected_bg }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="status-badge badge-{{ c.status_class }}">● {{ c.status_text }}</span>
+                        </td>
+                        <td>
+                            <a href="tel:{{ c.phone }}" class="call-link"><i class="fa-solid fa-phone"></i> {{ c.phone }}</a>
+                            <div style="font-size:11px; color:#dc2626; font-weight:600; margin-top:2px;">🚨 {{ c.emergency_helpline }}</div>
+                        </td>
+                        <td>
+                            <a href="/request-blood/?hospital={{ c.name|urlencode }}" class="btn-action-req">
+                                <i class="fa-solid fa-hand-holding-droplet"></i> Request
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" style="text-align:center; padding:50px 20px; color:#64748b;">
+                            <div style="font-size:45px; margin-bottom:10px;">🔍</div>
+                            <h4 style="color:#1e293b; margin-bottom:6px;">No Blood Centers Found Matching Your Filter</h4>
+                            <p style="font-size:13px; color:#64748b;">Please select another state or district, or clear your search keyword.</p>
+                            <a href="/blood-availability/" class="btn-search-primary" style="display:inline-flex; margin-top:10px;">Clear All Filters</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <script>
-    // UP ke 75 Jile
-    const upDistricts = [
-        "Agra", "Aligarh", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Ayodhya", "Azamgarh", 
-        "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti", 
-        "Bhadohi", "Bijnor", "Budaun", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah", 
-        "Etawah", "Farrukhabad", "Fatehpur", "Firozabad", "Gautam Buddha Nagar", "Ghaziabad", 
-        "Ghazipur", "Gonda", "Gorakhpur", "Hamirpur", "Hapur", "Hardoi", "Hathras", "Jalaun", 
-        "Jaunpur", "Jhansi", "Kannauj", "Kanpur Dehat", "Kanpur Nagar", "Kasganj", "Kaushambi", 
-        "Kheri", "Kushinagar", "Lalitpur", "Lucknow", "Maharajganj", "Mahoba", "Mainpuri", "Mathura", 
-        "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Pratapgarh", 
-        "Prayagraj", "Raebareli", "Rampur", "Saharanpur", "Sambhal", "Sant Kabir Nagar", 
-        "Shahjahanpur", "Shamli", "Shrawasti", "Siddharthnagar", "Sitapur", "Sonbhadra", 
-        "Sultanpur", "Unnao", "Varanasi"
-    ];
-    
-    function loadDistricts() {
-        const state = document.getElementById("stateSelect").value;
-        const districtSelect = document.getElementById("districtSelect"); 
-        
-        districtSelect.innerHTML = '<option value="">Select District</option>';       
-        
-        if(state === "Uttar Pradesh") {
-            districtSelect.disabled = false;
-            upDistricts.forEach(dist => {
-                let option = document.createElement("option");
-                option.value = dist;
-                option.text = dist;
-                districtSelect.appendChild(option);
+    // Client-side quick filter
+    const instantSearch = document.getElementById('instantSearch');
+    if (instantSearch) {
+        instantSearch.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#stockTable tbody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
             });
-        } else if(state !== "") {
-            districtSelect.disabled = false;
-            let option = document.createElement("option");
-            option.text = "Other State - Data not available";
-            districtSelect.appendChild(option);
-        } else {
-            districtSelect.disabled = true;
-        }
+        });
     }
 </script>
 {% endblock %}

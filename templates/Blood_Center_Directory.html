@@ -1,246 +1,305 @@
 {% extends 'master.html' %}
-{% block content %}
+{% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blood Availability</title>
-</head>
-<body style="margin:0; font-family:'Segoe UI', Arial, sans-serif; background:#f5f5f5;">
-<div style="background:#fff; padding:20px 30px; border-top:3px solid #8B0000;">
-  <!-- Heading -->
-  <h2 style="color:#8B0000; font-size:24px; font-weight:700; margin:0 0 20px;">Blood Availability</h2>
-  <!-- Filter Row 1 -->
-  <div style="display:flex; flex-wrap:wrap; gap:15px; margin-bottom:15px;"> 
-    <div style="flex:1; min-width:180px;">
-      <label style="font-size:13px; color:#555; display:block; margin-bottom:5px;">Select Services</label>
-      <select style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:14px; background:#fff;">
-{#        <option>Blood Availability</option>#}
-{#        <option>Camp Schedule</option>#}
-        <option>Blood Center Directory</option>
-      </select>
-    </div>
-    <div style="flex:1; min-width:180px;">
-      <label style="font-size:13px; color:#555; display:block; margin-bottom:5px;">Select State</label>
-      <select style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:14px; background:#fff;">
-        <option>Select</option>
-        <option>Uttar Pradesh</option>
-        <option>Andhra Pradesh</option>
-        <option>Assam</option>
-        <option>Goa</option>
-        <option>Bihar</option>
-        <option>Chhattisgarh</option>
-        <option>Gujarat</option>
-        <option>Haryana</option>
-        <option>HimachalPradesh</option>
-        <option>Jharkhand</option>
-        <option>Kerala</option>
-        <option>Karnataka</option>
-        <option>MadhyaPradesh</option>
-        <option>Maharashtra</option>
-        <option>Manipur</option>
-        <option>Meghalaya</option>
-        <option>Mizoram</option>
-        <option>Nagaland</option>
-        <option>Odisha</option>
-        <option>Punjab</option>
-        <option>Rajasthan</option>
-        <option>Sikkim</option>
-        <option>Tamil Nadu</option>
-        <option>Telangana</option>
-        <option>Tripura</option>
-        <option>Uttarakhand</option>
-        <option>West Bengal</option>
-      </select>
-    </div>
-    <div style="flex:1; min-width:180px;">
-      <label style="font-size:13px; color:#555; display:block; margin-bottom:5px;">Select District</label>
-      <select style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:14px; background:#fff;">
-         <option value="">Select District</option>
-          <option value="Agra">Agra</option>
-          <option value="Aligarh">Aligarh</option>
-          <option value="Ambedkar Nagar">Ambedkar Nagar</option>
-          <option value="Amethi">Amethi</option>
-          <option value="Amroha">Amroha</option>
-          <option value="Auraiya">Auraiya</option>
-          <option value="Ayodhya">Ayodhya</option>
-          <option value="Azamgarh">Azamgarh</option>
-          <option value="Baghpat">Baghpat</option>
-          <option value="Bahraich">Bahraich</option>
-          <option value="Ballia">Ballia</option>
-          <option value="Balrampur">Balrampur</option>
-          <option value="Banda">Banda</option>
-          <option value="Barabanki">Barabanki</option>
-          <option value="Bareilly">Bareilly</option>
-          <option value="Basti">Basti</option>
-          <option value="Bhadohi">Bhadohi</option>
-          <option value="Bijnor">Bijnor</option>
-          <option value="Budaun">Budaun</option>
-          <option value="Bulandshahr">Bulandshahr</option>
-          <option value="Chandauli">Chandauli</option>
-          <option value="Chitrakoot">Chitrakoot</option>
-          <option value="Deoria">Deoria</option>
-          <option value="Etah">Etah</option>
-          <option value="Etawah">Etawah</option>
-          <option value="Farrukhabad">Farrukhabad</option>
-          <option value="Fatehpur">Fatehpur</option>
-          <option value="Firozabad">Firozabad</option>
-          <option value="Gautam Buddha Nagar">Gautam Buddha Nagar</option>
-          <option value="Ghaziabad">Ghaziabad</option>
-          <option value="Ghazipur">Ghazipur</option>
-          <option value="Gonda">Gonda</option>
-          <option value="Gorakhpur">Gorakhpur</option>
-          <option value="Hamirpur">Hamirpur</option>
-          <option value="Hapur">Hapur</option>
-          <option value="Hardoi">Hardoi</option>
-          <option value="Hathras">Hathras</option>
-          <option value="Jalaun">Jalaun</option>
-          <option value="Jaunpur">Jaunpur</option>
-          <option value="Jhansi">Jhansi</option>
-          <option value="Kannauj">Kannauj</option>
-          <option value="Kanpur Dehat">Kanpur Dehat</option>
-          <option value="Kanpur Nagar">Kanpur Nagar</option>
-          <option value="Kasganj">Kasganj</option>
-          <option value="Kaushambi">Kaushambi</option>
-          <option value="Kheri">Kheri</option>
-          <option value="Kushinagar">Kushinagar</option>
-          <option value="Lalitpur">Lalitpur</option>
-          <option value="Lucknow">Lucknow</option>
-          <option value="Maharajganj">Maharajganj</option>
-          <option value="Mahoba">Mahoba</option>
-          <option value="Mainpuri">Mainpuri</option>
-          <option value="Mathura">Mathura</option>
-          <option value="Mau">Mau</option>
-          <option value="Meerut">Meerut</option>
-          <option value="Mirzapur">Mirzapur</option>
-          <option value="Moradabad">Moradabad</option>
-          <option value="Muzaffarnagar">Muzaffarnagar</option>
-          <option value="Pilibhit">Pilibhit</option>
-          <option value="Pratapgarh">Pratapgarh</option>
-          <option value="Prayagraj">Prayagraj</option>
-          <option value="Raebareli">Raebareli</option>
-          <option value="Rampur">Rampur</option>
-          <option value="Saharanpur">Saharanpur</option>
-          <option value="Sambhal">Sambhal</option>
-          <option value="Sant Kabir Nagar">Sant Kabir Nagar</option>
-          <option value="Shahjahanpur">Shahjahanpur</option>
-          <option value="Shamli">Shamli</option>
-          <option value="Shrawasti">Shrawasti</option>
-          <option value="Siddharthnagar">Siddharthnagar</option>
-          <option value="Sitapur">Sitapur</option>
-          <option value="Sonbhadra">Sonbhadra</option>
-          <option value="Sultanpur">Sultanpur</option>
-          <option value="Unnao">Unnao</option>
-          <option value="Varanasi">Varanasi</option>
-      </select>
-    </div>
-    <div style="flex:1; min-width:180px;">
-      <label style="font-size:13px; color:#555; display:block; margin-bottom:5px;">Select Blood Center</label>
-      <select style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:14px; background:#fff;">
-  <option value="">Select Blood Center</option>
-  <option value="SGPGI Lucknow">SGPGI - Sanjay Gandhi PGI, Lucknow</option>
-  <option value="KGMU Lucknow">KGMU - King George Medical University, Lucknow</option>
-  <option value="RML Lucknow">Dr. RML Hospital, Lucknow</option>
-  <option value="Civil Hospital Lucknow">Civil Hospital, Lucknow</option>
-  <option value="GSVM Kanpur">GSVM Medical College, Kanpur</option>
-  <option value="Hallet Hospital Kanpur">Hallet Hospital, Kanpur</option>
-  <option value="SNMC Agra">SN Medical College, Agra</option>
-  <option value="BHU IMS Varanasi">BHU IMS - Banaras Hindu University, Varanasi</option>
-  <option value="Kabir Chaura Hospital Varanasi">Kabir Chaura Hospital, Varanasi</option>
-  <option value="MLNMC Prayagraj">MLN Medical College, Prayagraj</option>
-  <option value="Swroop Rani Hospital Prayagraj">Swroop Rani Hospital, Prayagraj</option>
-  <option value="LLRM Meerut">LLRM Medical College, Meerut</option>
-  <option value="BRD Gorakhpur">BRD Medical College, Gorakhpur</option>
-  <option value="AIIMS Gorakhpur">AIIMS, Gorakhpur</option>
-  <option value="District Hospital Bareilly">District Hospital, Bareilly</option>
-  <option value="District Hospital Aligarh">District Hospital, Aligarh</option>
-  <option value="District Hospital Moradabad">District Hospital, Moradabad</option>
-  <option value="MLB Jhansi">Maharani Laxmi Bai Medical College, Jhansi</option>
-  <option value="District Hospital Shahjahanpur">District Hospital, Shahjahanpur</option>
-  <option value="District Hospital Basti">District Hospital, Basti</option>
-</select>
-      <input type="text" placeholder="Type hospital name" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:14px; box-sizing:border-box;">
-    </div>
-    <div style="flex:1; min-width:180px;">
-      <label style="font-size:13px; color:#555; display:block; margin-bottom:5px;">Select Blood Group</label>
-      <select style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:14px; background:#fff;">
-        <option>All</option>
-        <option>A+</option>
-        <option>A-</option>
-        <option>B+</option>
-        <option>B-</option>
-        <option>O+</option>
-        <option>O-</option>
-        <option>AB+</option>
-        <option>AB-</option>
-      </select>
-    </div>
-  </div>
-  <!-- Filter Row 2 --> 
-  <div style="display:flex; gap:15px; align-items:flex-end; margin-bottom:25px;">
-    <div style="flex:1;">
-      <label style="font-size:13px; color:#555; display:block; margin-bottom:5px;">Select Blood Component</label>
-      <select style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-size:14px; background:#fff;">
-        <option>Packed Red Blood Cells</option>
-        <option>Whole Blood</option>
-        <option>Platelets</option>
-        <option>Cryo Poor Plasma </option> 
-        <option>Cryoprecipitate</option> 
-        <option>Plasma</option>
-         <option>Fresh Frozen Plasma</option> 
-        <option>Irradiated RBC</option> 
-        <option>Leukoreduced Rbc</option>
-        <option>Platelet Concentrate</option> 
-        <optiom>Platelet Concentrate</optiom>
-        <optiom>Platelet Rich Plasma</optiom>
-        <optiom>Random Donor Platelets</optiom>
-        <optiom>Sagm Packed Red Blood Cells</optiom>
-        <optiom>Single Donor Plasma</optiom>
-        <optiom>Single Donor Platelet</optiom>
-        <optiom>Whole Blood</optiom>
-      </select>
-    </div>
-    <button style="padding:11px 40px; background:#8B0000; color:#fff; border:none; border-radius:5px; font-size:15px; font-weight:600; cursor:pointer;">
-      Search
-    </button>
-  </div>
-  <!-- Selected Fields + Table Search -->
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
-    <div style="display:flex; align-items:center; gap:10px;">
-      <span style="font-size:16px; font-weight:600; color:#333;">Selected Fields</span>
-      <span style="background:#d9edf7; color:#31708f; padding:4px 12px; border-radius:15px; font-size:13px;">Packed Red Blood Cells</span>
-    </div>
-    <div style="position:relative;">
-      <input type="text" placeholder="🔍 Search" style="padding:8px 12px 8px 35px; border:1px solid #ddd; border-radius:5px; font-size:14px; width:200px;">
-    </div>
-  </div>
-  <!-- Table -->
-  <div style="overflow-x:auto;">
-    <table style="width:100%; border-collapse:collapse; background:#fff;">
-      <thead>
-        <tr style="background:#fdecea;">
-          <th style="padding:12px; text-align:left; font-size:14px; font-weight:600; color:#333; border-bottom:1px solid #eee;">S.No.</th>
-          <th style="padding:12px; text-align:left; font-size:14px; font-weight:600; color:#333; border-bottom:1px solid #eee;">Blood Center</th>
-          <th style="padding:12px; text-align:left; font-size:14px; font-weight:600; color:#333; border-bottom:1px solid #eee;">Category</th>
-          <th style="padding:12px; text-align:left; font-size:14px; font-weight:600; color:#333; border-bottom:1px solid #eee;">Availability</th>
-          <th style="padding:12px; text-align:left; font-size:14px; font-weight:600; color:#333; border-bottom:1px solid #eee;">Last Updated</th>
-          <th style="padding:12px; text-align:left; font-size:14px; font-weight:600; color:#333; border-bottom:1px solid #eee;">Type</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td colspan="6" style="text-align:center; padding:60px 20px; color:#999;">
-            <div style="font-size:50px; margin-bottom:10px;">📁</div>
-            <div style="font-size:14px;">No data</div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+{% block title %}All-India Blood Center & Hospital Directory — HemoCampus{% endblock %}
+
+{% block content %}
+<style>
+    .dir-hero {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #3b0764 100%);
+        color: #fff;
+        padding: 40px 20px;
+        text-align: center;
+    }
+    .dir-hero h1 {
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+    .dir-hero p {
+        font-size: 1.05rem;
+        color: #cbd5e1;
+        max-width: 750px;
+        margin: 0 auto;
+    }
+    .dir-panel {
+        max-width: 1200px;
+        margin: -25px auto 30px;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        padding: 24px;
+        border: 1px solid #e2e8f0;
+        position: relative;
+        z-index: 10;
+    }
+    .dir-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        align-items: flex-end;
+    }
+    .form-group label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #475569;
+        display: block;
+        margin-bottom: 6px;
+    }
+    .form-control-custom {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 14px;
+        background: #f8fafc;
+        color: #0f172a;
+        outline: none;
+    }
+    .form-control-custom:focus {
+        border-color: #2563eb;
+        background: #fff;
+    }
+    .btn-search-blue {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: #fff;
+        border: none;
+        padding: 11px 24px;
+        font-size: 15px;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .centers-card-grid {
+        max-width: 1200px;
+        margin: 0 auto 50px;
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 22px;
+    }
+    .center-card {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        padding: 22px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .center-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+        border-color: #cbd5e1;
+    }
+    .card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+    }
+    .center-tag {
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: #e0e7ff;
+        color: #3730a3;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .center-name {
+        font-size: 16.5px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 8px;
+        line-height: 1.35;
+    }
+    .center-location {
+        font-size: 13px;
+        color: #64748b;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+    }
+    .center-details {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 16px;
+        font-size: 12.5px;
+        color: #334155;
+    }
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 6px;
+    }
+    .detail-row:last-child { margin-bottom: 0; }
+    .badge-comp {
+        background: #fee2e2;
+        color: #991b1b;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 7px;
+        border-radius: 4px;
+        display: inline-block;
+        margin: 2px;
+    }
+    .card-actions {
+        display: flex;
+        gap: 10px;
+    }
+    .btn-call {
+        flex: 1;
+        background: #0284c7;
+        color: #fff;
+        padding: 9px;
+        text-align: center;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    .btn-call:hover { background: #0369a1; color: #fff; }
+    .btn-req-card {
+        flex: 1;
+        background: #dc2626;
+        color: #fff;
+        padding: 9px;
+        text-align: center;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    .btn-req-card:hover { background: #b91c1c; color: #fff; }
+</style>
+
+<div class="dir-hero">
+    <h1><i class="fa-solid fa-hospital text-danger"></i> All-India Blood Center & Hospital Directory</h1>
+    <p>Direct contact details, 24x7 emergency helplines, license codes, and component facilities of 100+ accredited medical centers across India.</p>
 </div>
 
-</body>
-</html>
+<div class="dir-panel">
+    <form method="GET" action="/blood-center-directory/">
+        <div class="dir-grid">
+            <div class="form-group">
+                <label><i class="fa-solid fa-map-location-dot text-primary"></i> State</label>
+                <select name="state" class="form-control-custom" onchange="this.form.submit()">
+                    <option value="">All States across India</option>
+                    {% for st in all_states %}
+                    <option value="{{ st }}" {% if selected_state == st %}selected{% endif %}>{{ st }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-building-columns text-primary"></i> Category</label>
+                <select name="category" class="form-control-custom" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    {% for cat in all_categories %}
+                    <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa-solid fa-magnifying-glass text-primary"></i> Quick Search</label>
+                <input type="text" name="q" id="dirSearchInput" value="{{ search_q }}" placeholder="Search center, city, state..." class="form-control-custom">
+            </div>
+
+            <button type="submit" class="btn-search-blue">
+                <i class="fa-solid fa-filter"></i> Filter Centers
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="centers-card-grid" id="centerGrid">
+    {% for c in centers %}
+    <div class="center-card">
+        <div>
+            <div class="card-top">
+                <span class="center-tag">{{ c.category }}</span>
+                <span style="font-size:12px; font-weight:700; color:#16a34a;"><i class="fa-solid fa-star text-warning"></i> {{ c.rating }}</span>
+            </div>
+            <h3 class="center-name">{{ c.name }}</h3>
+            <div class="center-location">
+                <i class="fa-solid fa-location-dot text-danger" style="margin-top:2px;"></i>
+                <span>{{ c.address }} (<strong>{{ c.district }}, {{ c.state }}</strong>)</span>
+            </div>
+
+            <div class="center-details">
+                <div class="detail-row">
+                    <span><i class="fa-solid fa-clock text-primary"></i> Timings:</span>
+                    <strong>{{ c.timing }}</strong>
+                </div>
+                <div class="detail-row">
+                    <span><i class="fa-solid fa-id-card text-primary"></i> License:</span>
+                    <strong>{{ c.license_no }}</strong>
+                </div>
+                <div class="detail-row">
+                    <span><i class="fa-solid fa-truck-medical text-danger"></i> Emergency:</span>
+                    <strong style="color:#dc2626;">{{ c.emergency_helpline }}</strong>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <div style="font-size:11.5px; font-weight:700; color:#64748b; margin-bottom:4px;">AVAILABLE COMPONENTS:</div>
+                <div>
+                    {% for comp in c.components %}
+                    <span class="badge-comp">{{ comp }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card-actions">
+            <a href="tel:{{ c.phone }}" class="btn-call"><i class="fa-solid fa-phone"></i> Call Center</a>
+            <a href="/request-blood/?hospital={{ c.name|urlencode }}" class="btn-req-card"><i class="fa-solid fa-droplet"></i> Request Blood</a>
+        </div>
+    </div>
+    {% empty %}
+    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background:#fff; border-radius:14px;">
+        <div style="font-size:50px;">🏥</div>
+        <h3 style="color:#0f172a; margin:10px 0;">No Blood Centers Match Your Search</h3>
+        <p style="color:#64748b;">Try adjusting your state or category filters.</p>
+        <a href="/blood-center-directory/" class="btn-search-blue" style="display:inline-flex; margin-top:10px;">Reset Filters</a>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    const dirSearch = document.getElementById('dirSearchInput');
+    if (dirSearch) {
+        dirSearch.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const cards = document.querySelectorAll('#centerGrid .center-card');
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                if (text.includes(filter)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
+</script>
 {% endblock %}

@@ -1,0 +1,314 @@
+{% extends 'master.html' %}
+{% load static %}
+
+{% block title %}Healthcare Services & Clinical Solutions — HemoCampus{% endblock %}
+
+{% block content %}
+<style>
+    .hub-hero {
+        background: linear-gradient(135deg, #1e0508 0%, #7a1426 50%, #990000 100%);
+        color: #fff;
+        padding: 55px 20px 45px;
+        text-align: center;
+        position: relative;
+    }
+    .hub-hero h1 {
+        font-size: clamp(2.2rem, 5vw, 3.2rem);
+        font-weight: 800;
+        margin-bottom: 12px;
+        letter-spacing: -0.5px;
+    }
+    .hub-hero p {
+        font-size: 1.15rem;
+        color: #ffcccc;
+        max-width: 800px;
+        margin: 0 auto 24px;
+        line-height: 1.6;
+    }
+    .hub-kpi-bar {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+    .hub-kpi-item {
+        background: rgba(255,255,255,0.12);
+        backdrop-filter: blur(8px);
+        padding: 10px 24px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    .hub-kpi-num { font-size: 22px; font-weight: 800; color: #ffd700; }
+    .hub-kpi-lbl { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #f1f5f9; }
+
+    .hub-container {
+        max-width: 1200px;
+        margin: 45px auto 60px;
+        padding: 0 20px;
+    }
+    .services-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 26px;
+        margin-bottom: 50px;
+    }
+    .service-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #f1e3e6;
+        padding: 30px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+        transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+    }
+    .service-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #990000;
+        opacity: 0;
+        transition: opacity 0.28s ease;
+    }
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 16px 36px rgba(153, 0, 0, 0.12);
+        border-color: #fca5a5;
+    }
+    .service-card:hover::before { opacity: 1; }
+
+    .srv-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        margin-bottom: 20px;
+    }
+    .srv-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 10px;
+    }
+    .srv-desc {
+        font-size: 14px;
+        color: #64748b;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+    .srv-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 24px;
+        font-size: 13px;
+        color: #334155;
+    }
+    .srv-features li {
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .srv-btn {
+        padding: 11px 20px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 14px;
+        text-decoration: none;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .emergency-cta-bar {
+        background: linear-gradient(135deg, #7f1d1d 0%, #b91c1c 100%);
+        border-radius: 16px;
+        padding: 32px 36px;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        box-shadow: 0 10px 30px rgba(185, 28, 28, 0.25);
+    }
+</style>
+
+<div class="hub-hero">
+    <h1>🩸 Comprehensive Healthcare & Blood Bank Services</h1>
+    <p>Empowering voluntary blood donors, partner hospitals, and trauma centers with real-time stock telemetry, emergency clinical requisitions, and certified transfusion logistics across India.</p>
+    <div class="hub-kpi-bar">
+        <div class="hub-kpi-item">
+            <div class="hub-kpi-num">{{ total_centers }}+</div>
+            <div class="hub-kpi-lbl">Apex Hospitals & Blood Centers</div>
+        </div>
+        <div class="hub-kpi-item">
+            <div class="hub-kpi-num">{{ total_camps }}+</div>
+            <div class="hub-kpi-lbl">Active Scheduled Camps</div>
+        </div>
+        <div class="hub-kpi-item">
+            <div class="hub-kpi-num">&lt; 15 Mins</div>
+            <div class="hub-kpi-lbl">Emergency SOS Dispatch</div>
+        </div>
+        <div class="hub-kpi-item">
+            <div class="hub-kpi-num">24x7</div>
+            <div class="hub-kpi-lbl">Clinical Hotline Support</div>
+        </div>
+    </div>
+</div>
+
+<div class="hub-container">
+    <div class="services-grid-3">
+
+        <!-- Service 1 -->
+        <div class="service-card">
+            <div>
+                <div class="srv-icon" style="background:#fee2e2; color:#990000;">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                </div>
+                <h3 class="srv-title">1. Real-Time Blood Stock Search</h3>
+                <p class="srv-desc">Access live 8-blood group stock counters and component availability (Packed RBC, Platelets, FFP) across authorized regional blood banks.</p>
+                <ul class="srv-features">
+                    <li><i class="fa-solid fa-circle-check text-success"></i> Instant multi-state and district level search</li>
+                    <li><i class="fa-solid fa-circle-check text-success"></i> Real-time inventory status (Available / Limited)</li>
+                    <li><i class="fa-solid fa-circle-check text-success"></i> Direct emergency requisition link</li>
+                </ul>
+            </div>
+            <a href="/blood-availability/" class="srv-btn" style="background:#990000; color:#fff;">
+                <span>Check Blood Availability</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- Service 2 -->
+        <div class="service-card">
+            <div>
+                <div class="srv-icon" style="background:#e0e7ff; color:#3730a3;">
+                    <i class="fa-solid fa-hospital"></i>
+                </div>
+                <h3 class="srv-title">2. Blood Center & Hospital Directory</h3>
+                <p class="srv-desc">Explore verified contact records, emergency helplines, licensing numbers, and component separation facilities of 100+ apex hospitals.</p>
+                <ul class="srv-features">
+                    <li><i class="fa-solid fa-circle-check text-success"></i> AIIMS, SGPGI, KGMU, CMC, Tata Memorial</li>
+                    <li><i class="fa-solid fa-circle-check text-success"></i> Direct click-to-call 24x7 hotlines</li>
+                    <li><i class="fa-solid fa-circle-check text-success"></i> Component & Apheresis separation tags</li>
+                </ul>
+            </div>
+            <a href="/blood-center-directory/" class="srv-btn" style="background:#3730a3; color:#fff;">
+                <span>Explore Directory</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- Service 3 -->
+        <div class="service-card">
+            <div>
+                <div class="srv-icon" style="background:#fef3c7; color:#92400e;">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+                <h3 class="srv-title">3. Camp Schedules & Mobile Drives</h3>
+                <p class="srv-desc">Find scheduled voluntary blood donation camps across universities, corporate hubs, and public centers with volunteer registration.</p>
+                <ul class="srv-features">
+                    <li><i class="fa-solid fa-circle-check text-success"></i> College campus and Red Cross drives</li>
+                    <li><i class="fa-solid fa-circle-check text-success"></i> Free SMS/WhatsApp camp notification alert</li>
+                    <li><i class="fa-solid fa-circle-check text-success"></i> 1-click volunteer donor registration</li>
+                </ul>
+            </div>
+            <a href="/camp-schedule/" class="srv-btn" style="background:#d97706; color:#fff;">
+                <span>View Camp Schedule</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- Service 4 -->
+        <div class="service-card">
+            <div>
+                <div class="srv-icon" style="background:#dcfce7; color:#166534;">
+                    <i class="fa-solid fa-hand-holding-droplet"></i>
+                </div>
+                <h3 class="srv-title">4. Voluntary Donor Loyalty Program</h3>
+                <p class="srv-desc">Join our hero donor community. Track your personal donation milestones, earn gamified reward points, and receive next-eligibility alerts.</p>
+                <ul class="srv-features">
+                    <li><i class="fa-solid fa-circle-check text-success"></i> +50 Reward Points per verified donation</li>
+                    <li><i class="fa-solid fa-circle-check text-success"></i> 90-Day Medical Cooling Period countdown</li>
+                    <li><i class="fa-solid fa-circle-check text-success"></i> In-Portal Emergency Family Requisition</li>
+                </ul>
+            </div>
+            <a href="/register/" class="srv-btn" style="background:#16a34a; color:#fff;">
+                <span>Register as Voluntary Donor</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- Service 5 -->
+        <div class="service-card">
+            <div>
+                <div class="srv-icon" style="background:#fee2e2; color:#dc2626;">
+                    <i class="fa-solid fa-truck-medical"></i>
+                </div>
+                <h3 class="srv-title">5. Clinical Emergency SOS (🚨)</h3>
+                <p class="srv-desc">Hospital ICU and trauma surgery requisition pipeline. Emergency SOS orders appear at the top of the central triage queue with red visual priority.</p>
+                <ul class="srv-features">
+                    <li><i class="fa-solid fa-circle-check text-success"></i> High-speed 8-minute dispatch triage</li>
+                    <li><i class="fa-solid fa-circle-check text-success"></i> Automated inventory deduction upon fulfillment</li>
+                    <li><i class="fa-solid fa-circle-check text-success"></i> Real-time status tracker (Pending -&gt; Fulfilled)</li>
+                </ul>
+            </div>
+            <a href="/request-blood/" class="srv-btn" style="background:#dc2626; color:#fff;">
+                <span>Submit Blood Request</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- Service 6 -->
+        <div class="service-card">
+            <div>
+                <div class="srv-icon" style="background:#f3e8ff; color:#6b21a8;">
+                    <i class="fa-solid fa-vials"></i>
+                </div>
+                <h3 class="srv-title">6. Component Separation & Compatibility</h3>
+                <p class="srv-desc">Advanced matching algorithms and component separation insights for Packed Red Blood Cells (PRBC), Platelet Concentrates, FFP, and Cryo.</p>
+                <ul class="srv-features">
+                    <li><i class="fa-solid fa-circle-check text-success"></i> Interactive Blood Compatibility Matrix</li>
+                    <li><i class="fa-solid fa-circle-check text-success"></i> Universal Donor (O-) and Recipient (AB+) Guide</li>
+                    <li><i class="fa-solid fa-circle-check text-success"></i> Component shelf-life preservation guidelines</li>
+                </ul>
+            </div>
+            <a href="/#compatSection" class="srv-btn" style="background:#7c3aed; color:#fff;">
+                <span>Explore Compatibility Tool</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Emergency Hotline Banner -->
+    <div class="emergency-cta-bar">
+        <div>
+            <h3 style="margin:0 0 6px; font-size:22px; font-weight:800;">🚨 Need Urgent Emergency Blood Units?</h3>
+            <p style="margin:0; font-size:14px; opacity:0.92;">Our 24x7 clinical support desk coordinates directly with nearest trauma centers and regional blood banks.</p>
+        </div>
+        <div style="display:flex; gap:12px;">
+            <a href="tel:1800111222" style="background:#fff; color:#990000; padding:12px 24px; border-radius:8px; font-weight:800; font-size:15px; text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-phone"></i> 1800-XXX-XXXX
+            </a>
+            <a href="/request-blood/" style="background:#ffd700; color:#0f172a; padding:12px 24px; border-radius:8px; font-weight:800; font-size:15px; text-decoration:none;">
+                Request Blood Online
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
