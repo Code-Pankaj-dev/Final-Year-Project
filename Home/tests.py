@@ -29,12 +29,31 @@ class HomePublicPagesTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_blood_availability_multi_filter_search(self):
-        # Test 3 options: State, District, Blood Group
+        # Test 3 options: State, District, Blood Group (UP)
         response = self.client.get('/blood-availability/?state=Uttar%20Pradesh&district=Lucknow&blood_group=O%2B')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "KGMU")
         self.assertContains(response, "Uttar Pradesh")
         self.assertContains(response, "Lucknow")
+
+    def test_blood_availability_bihar_and_uttarakhand(self):
+        # Test Bihar - Patna
+        resp_bihar = self.client.get('/blood-availability/?state=Bihar&district=Patna&blood_group=A%2B')
+        self.assertEqual(resp_bihar.status_code, 200)
+        self.assertContains(resp_bihar, "AIIMS Patna")
+        self.assertContains(resp_bihar, "Patna")
+
+        # Test Uttarakhand - Dehradun
+        resp_uk = self.client.get('/blood-availability/?state=Uttarakhand&district=Dehradun&blood_group=B%2B')
+        self.assertEqual(resp_uk.status_code, 200)
+        self.assertContains(resp_uk, "AIIMS Rishikesh")
+        self.assertContains(resp_uk, "Dehradun")
+
+        # Test Rajasthan - Jaipur
+        resp_rj = self.client.get('/blood-availability/?state=Rajasthan&district=Jaipur')
+        self.assertEqual(resp_rj.status_code, 200)
+        self.assertContains(resp_rj, "SMS")
+        self.assertContains(resp_rj, "Jaipur")
 
     def test_blood_center_directory_page(self):
         response = self.client.get('/blood-center-directory/')
