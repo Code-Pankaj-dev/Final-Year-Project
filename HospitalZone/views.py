@@ -8,10 +8,8 @@ from .models import Hospital, BloodRequest
 def get_current_hospital(request):
     aid = request.session.get('aid')
     if aid:
-        hospital = Hospital.objects.filter(email=aid).first()
-        if hospital:
-            return hospital
-    return Hospital.objects.first()
+        return Hospital.objects.filter(email=aid).first()
+    return None
 
 
 # ======================================
@@ -25,6 +23,10 @@ def hospital_dashboard(request):
         )
 
     hospital = get_current_hospital(request)
+    if not hospital:
+        return HttpResponse(
+            "<script>alert('Hospital session invalid or account not found. Please login.');window.location.href='/login/'</script>"
+        )
 
     if request.method == "POST" and "update_profile" in request.POST:
         if hospital:
@@ -77,8 +79,10 @@ def hospital_dashboard(request):
 
 def request_blood(request):
     if not request.session.has_key('aid'):
-        return HttpResponse("<script>alert('First Login');window.location.href='/login/'</script>")
+        return HttpResponse("<script>alert('First Login as Hospital');window.location.href='/login/'</script>")
     hospital = get_current_hospital(request)
+    if not hospital:
+        return HttpResponse("<script>alert('Hospital session invalid. Please login.');window.location.href='/login/'</script>")
     if request.method == "POST":
         patient_name = request.POST.get("patient_name")
         blood_group = request.POST.get("blood_group")
@@ -107,8 +111,10 @@ def request_blood(request):
 
 def emergency_request(request):
     if not request.session.has_key('aid'):
-        return HttpResponse("<script>alert('First Login');window.location.href='/login/'</script>")
+        return HttpResponse("<script>alert('First Login as Hospital');window.location.href='/login/'</script>")
     hospital = get_current_hospital(request)
+    if not hospital:
+        return HttpResponse("<script>alert('Hospital session invalid. Please login.');window.location.href='/login/'</script>")
     if request.method == "POST":
         patient_name = request.POST.get("patient_name")
         blood_group = request.POST.get("blood_group")

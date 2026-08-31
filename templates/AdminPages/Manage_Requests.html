@@ -214,13 +214,17 @@
     <a href="/Manage_Request/" class="btn-reset">Reset</a>
   </form>
 
-  <!-- Requisitions Table -->
-  <div class="data-card">
+  <!-- Hospital Requisitions Table -->
+  <div class="data-card" style="margin-bottom:28px;">
+    <div style="padding:16px 20px 0; font-size:16px; font-weight:700; color:var(--dark); display:flex; justify-content:space-between; align-items:center;">
+      <span>🏥 Hospital & Clinical Requisitions</span>
+      <span style="font-size:12px; color:var(--text-light);">{{ hospital_requests.count }} Hospital Requisition(s)</span>
+    </div>
     <div class="table-responsive">
       <table class="data-table">
         <thead>
           <tr>
-            <th>Patient / Reason</th>
+            <th>Patient / Remarks</th>
             <th>Hospital</th>
             <th>Group</th>
             <th>Units</th>
@@ -235,11 +239,11 @@
           <tr>
             <td>
               <strong>{{ req.patient_name }}</strong><br>
-              <span style="font-size:12px; color:var(--text-light);">{{ req.reason|default:"Medical Requisition" }}</span>
+              <span style="font-size:12px; color:var(--text-light);">{{ req.remarks|default:"Clinical Requisition" }}</span>
             </td>
             <td>
               <strong>{{ req.hospital.hospital_name }}</strong><br>
-              <span style="font-size:12px; color:var(--text-light);">{{ req.hospital.city }} | {{ req.hospital.contact_number }}</span>
+              <span style="font-size:12px; color:var(--text-light);">{{ req.hospital.district|default:req.hospital.address }} | {{ req.hospital.phone }}</span>
             </td>
             <td><span class="badge-blood">{{ req.blood_group }}</span></td>
             <td><strong>{{ req.units }} Unit(s)</strong></td>
@@ -281,8 +285,88 @@
           </tr>
           {% empty %}
           <tr>
-            <td colspan="8" style="text-align:center; padding:36px; color:#94a3b8;">
-              <p style="font-size:15px; font-weight:600;">No blood requisitions found.</p>
+            <td colspan="8" style="text-align:center; padding:28px; color:#94a3b8;">
+              <p style="font-size:14px; font-weight:600;">No hospital blood requisitions found.</p>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Public / Portal Requisitions Table -->
+  <div class="data-card">
+    <div style="padding:16px 20px 0; font-size:16px; font-weight:700; color:var(--dark); display:flex; justify-content:space-between; align-items:center;">
+      <span>🩸 Public & Donor Blood Requests</span>
+      <span style="font-size:12px; color:var(--text-light);">{{ public_requests.count }} Direct Public Request(s)</span>
+    </div>
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Patient / Hospital</th>
+            <th>Contact Phone</th>
+            <th>Group</th>
+            <th>Units</th>
+            <th>Required Date</th>
+            <th>Urgency</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for req in public_requests %}
+          <tr>
+            <td>
+              <strong>{{ req.patient_name }}</strong><br>
+              <span style="font-size:12px; color:var(--text-light);">{{ req.hospital_name }} ({{ req.hospital_address }})</span>
+            </td>
+            <td>
+              <a href="tel:{{ req.contact_phone }}" style="color:var(--primary); font-weight:600; text-decoration:none;">{{ req.contact_phone }}</a>
+            </td>
+            <td><span class="badge-blood">{{ req.blood_group }}</span></td>
+            <td><strong>{{ req.units_needed }} Unit(s)</strong></td>
+            <td><span style="font-size:12.5px;">{{ req.required_by|date:"d M Y"|default:"Immediate" }}</span></td>
+            <td>
+              {% if req.urgency == 'Emergency' %}
+              <span style="color:#dc2626; font-weight:700;">🚨 Emergency</span>
+              {% else %}
+              <span style="color:#64748b;">Normal</span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="badge-status status-{{ req.status|lower }}">{{ req.status }}</span>
+            </td>
+            <td>
+              <div class="actions-group">
+                {% if req.status == 'Pending' %}
+                <form method="POST" action="/admin_action_request/{{ req.id }}/approve/" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-action btn-approve" title="Approve Request">Approve</button>
+                </form>
+                {% endif %}
+
+                {% if req.status != 'Fulfilled' %}
+                <form method="POST" action="/admin_action_request/{{ req.id }}/fulfill/" style="display:inline;" onsubmit="return confirm('Fulfill request?');">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-action btn-fulfill" title="Mark Fulfilled">Fulfill</button>
+                </form>
+                {% endif %}
+
+                {% if req.status != 'Rejected' and req.status != 'Fulfilled' %}
+                <form method="POST" action="/admin_action_request/{{ req.id }}/reject/" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-action btn-reject" title="Reject Request">Reject</button>
+                </form>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8" style="text-align:center; padding:28px; color:#94a3b8;">
+              <p style="font-size:14px; font-weight:600;">No public blood requests found.</p>
             </td>
           </tr>
           {% endfor %}

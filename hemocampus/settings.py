@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-o-p$&i&*#k_4g1t36=togv^v900!^^lm+g$idx%qc3buvykbsh'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-o-p$&i&*#k_4g1t36=togv^v900!^^lm+g$idx%qc3buvykbsh')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 't', 'yes')
 
-ALLOWED_HOSTS = ['codepankajdev.pythonanywhere.com', '127.0.0.1', 'localhost', 'testserver', '*']
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', 'codepankajdev.pythonanywhere.com,127.0.0.1,localhost,testserver,*').split(',') if h.strip()]
 
 
 # Application definition
@@ -86,6 +87,15 @@ DATABASES = {
     }
 }
 
+# Dynamic PostgreSQL Database Support (e.g. Render / Cloud DB)
+db_url = os.environ.get('DATABASE_URL')
+if db_url:
+    try:
+        import dj_database_url
+        DATABASES['default'] = dj_database_url.config(default=db_url, conn_max_age=600)
+    except ImportError:
+        pass
+
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -130,6 +140,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_URL = '/login/'
+
 # Production Security & CSRF
 CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
@@ -141,3 +152,8 @@ CSRF_TRUSTED_ORIGINS = [
 
 # Whitenoise Static Storage
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Security Headers
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True

@@ -3,6 +3,9 @@ from django.db.models import Sum, Count
 from django.utils import timezone
 from datetime import timedelta
 
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password, check_password
+
 from AdminZone.models import (
     ContactModel,
     DonateBloodModel,
@@ -122,6 +125,7 @@ def blood_stock(request):
     context = {
         'stocks': stocks,
         'total_units': total_units,
+        'total_stock_units': total_units,
         'critical_count': critical_count,
     }
     return render(request, "AdminPages/Blood_Stock.html", context)
@@ -136,7 +140,7 @@ def manage_donors(request):
 
     blood_filter = request.GET.get('blood_group', '').strip()
     status_filter = request.GET.get('status', '').strip()
-    search_q = request.GET.get('search', '').strip()
+    search_q = (request.GET.get('q', '') or request.GET.get('search', '')).strip()
 
     donors = DonorRegisterModel.objects.all().order_by('-id')
 
@@ -151,6 +155,8 @@ def manage_donors(request):
             email__icontains=search_q
         ) | donors.filter(
             city__icontains=search_q
+        ) | donors.filter(
+            mobile__icontains=search_q
         )
 
     total_count = DonorRegisterModel.objects.count()
@@ -167,6 +173,7 @@ def manage_donors(request):
         'selected_blood': blood_filter,
         'selected_status': status_filter,
         'search_q': search_q,
+        'query': search_q,
     }
     return render(request, "AdminPages/Manage_Donors.html", context)
 
@@ -217,21 +224,53 @@ def manage_request(request):
     if not check_admin_session(request):
         return HttpResponse("<script>alert('First Login as Admin');window.location.href='/login/'</script>")
 
-    hospital_requests = BloodRequest.objects.all().order_by('-id')
+    q = request.GET.get('q', '').strip()
+    blood_group = request.GET.get('blood_group', '').strip()
+    status = request.GET.get('status', '').strip()
+    priority = request.GET.get('priority', '').strip()
+
+    hospital_requests = BloodRequest.objects.select_related('hospital').all().order_by('-id')
     public_requests = RequestBloodModel.objects.all().order_by('-id')
 
+    if q:
+        hospital_requests = hospital_requests.filter(
+            patient_name__icontains=q
+        ) | hospital_requests.filter(
+            hospital__hospital_name__icontains=q
+        ) | hospital_requests.filter(
+            remarks__icontains=q
+        )
+        public_requests = public_requests.filter(
+            patient_name__icontains=q
+        ) | public_requests.filter(
+            hospital_name__icontains=q
+        )
+    if blood_group:
+        hospital_requests = hospital_requests.filter(blood_group=blood_group)
+        public_requests = public_requests.filter(blood_group=blood_group)
+    if status:
+        hospital_requests = hospital_requests.filter(status__iexact=status)
+        public_requests = public_requests.filter(status__iexact=status)
+    if priority:
+        hospital_requests = hospital_requests.filter(priority__iexact=priority)
+        public_requests = public_requests.filter(urgency__iexact=priority)
+
     total_hospital_req = hospital_requests.count()
-    pending_hospital = hospital_requests.filter(status='Pending').count()
-    approved_hospital = hospital_requests.filter(status='Approved').count()
-    emergency_count = hospital_requests.filter(priority='Emergency').count()
+    public_req_count = public_requests.count()
+    total_count = total_hospital_req + public_req_count
 
     context = {
         'hospital_requests': hospital_requests,
         'public_requests': public_requests,
-        'total_requests': total_hospital_req + public_requests.count(),
-        'pending_requests': pending_hospital + public_requests.filter(status='Pending').count(),
-        'approved_requests': approved_hospital + public_requests.filter(status='Approved').count(),
-        'emergency_count': emergency_count,
+        'total_count': total_count,
+        'total_requests': total_count,
+        'pending_requests': hospital_requests.filter(status='Pending').count() + public_requests.filter(status='Pending').count(),
+        'approved_requests': hospital_requests.filter(status='Approved').count() + public_requests.filter(status='Approved').count(),
+        'emergency_count': hospital_requests.filter(priority='Emergency').count() + public_requests.filter(urgency='Emergency').count(),
+        'query': q,
+        'selected_group': blood_group,
+        'selected_status': status,
+        'selected_priority': priority,
     }
     return render(request, "AdminPages/Manage_Requests.html", context)
 
@@ -285,16 +324,27 @@ def reports_analytics(request):
         return HttpResponse("<script>alert('First Login as Admin');window.location.href='/login/'</script>")
 
     total_donors = DonorRegisterModel.objects.count()
+    total_hospitals = Hospital.objects.count()
     total_donations = DonateBloodModel.objects.count() + DonationHistory.objects.count()
     total_requests = BloodRequest.objects.count() + RequestBloodModel.objects.count()
+    pending_requests = BloodRequest.objects.filter(status='Pending').count() + RequestBloodModel.objects.filter(status='Pending').count()
     fulfilled_requests = BloodRequest.objects.filter(status='Fulfilled').count() + RequestBloodModel.objects.filter(status='Fulfilled').count()
+
+    ensure_initial_blood_stock()
+    stocks = BloodStock.objects.order_by('blood_group')
+    total_stock = sum(s.units for s in stocks)
 
     context = {
         'total_donors': total_donors,
+        'total_hospitals': total_hospitals,
         'total_donations': total_donations,
         'total_requests': total_requests,
+        'pending_requests': pending_requests,
         'fulfilled_requests': fulfilled_requests,
-        'total_stock': BloodStock.objects.aggregate(total=Sum('units'))['total'] or 0,
+        'stocks': stocks,
+        'total_stock': total_stock,
+        'total_stock_units': total_stock,
+        'total_units': total_stock,
     }
     return render(request, "AdminPages/Reports_Analytics.html", context)
 
@@ -318,8 +368,14 @@ def change_password(request):
             aid = request.session.get('aid')
             data = LoginModel.objects.filter(email=aid).first()
             if data:
-                data.password = new_password
+                data.password = make_password(new_password)
                 data.save()
+
+                user_obj = User.objects.filter(email=aid).first()
+                if user_obj:
+                    user_obj.set_password(new_password)
+                    user_obj.save()
+
                 return HttpResponse(
                     "<script>alert('Password Changed Successfully');window.location.href='/Setting/'</script>"
                 )
@@ -336,10 +392,42 @@ def settings(request):
         return HttpResponse("<script>alert('First Login as Admin');window.location.href='/login/'</script>")
 
     admin_email = request.session.get('aid')
-    admin_user = LoginModel.objects.filter(email=admin_email).first()
+    admin_login = LoginModel.objects.filter(email=admin_email).first()
+    admin_user = User.objects.filter(email=admin_email).first()
+
+    if request.method == "POST":
+        full_name = request.POST.get("full_name", "").strip()
+        new_email = request.POST.get("email", "").strip()
+        phone = request.POST.get("phone", "").strip()
+
+        if new_email and admin_login:
+            admin_login.email = new_email
+            admin_login.save()
+            request.session['aid'] = new_email
+            admin_email = new_email
+
+        if admin_user:
+            if full_name:
+                parts = full_name.split(' ', 1)
+                admin_user.first_name = parts[0]
+                if len(parts) > 1:
+                    admin_user.last_name = parts[1]
+            if new_email:
+                admin_user.email = new_email
+            admin_user.save()
+
+        return HttpResponse("<script>alert('Profile Settings updated successfully!');window.location.href='/Setting/'</script>")
+
+    user_data = {
+        'name': f"{admin_user.first_name} {admin_user.last_name}".strip() if admin_user and (admin_user.first_name or admin_user.last_name) else (admin_login.role.title() if admin_login else "Admin"),
+        'email': admin_email,
+        'phone': getattr(admin_user, 'phone', '+91 9876543210') if admin_user else '+91 9876543210',
+        'profile_pic': None
+    }
 
     context = {
         'admin_email': admin_email,
-        'admin_user': admin_user,
+        'admin_user': admin_login,
+        'user': user_data
     }
     return render(request, "AdminPages/Settings.html", context)

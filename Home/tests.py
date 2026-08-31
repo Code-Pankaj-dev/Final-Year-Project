@@ -1,3 +1,123 @@
-from django.test import TestCase
+from django.test import TestCase, Client
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 
-# Create your tests here.
+from AdminZone.models import LoginModel, DonorRegisterModel, BloodStock
+from DonorZone.models import Donor
+from HospitalZone.models import Hospital
+
+
+class HomePublicPagesTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_home_page_status(self):
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "HEMO CAMPUS")
+
+    def test_about_page_status(self):
+        response = self.client.get('/about/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_services_page_status(self):
+        response = self.client.get('/services/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_blood_availability_page(self):
+        response = self.client.get('/blood-availability/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_blood_center_directory_page(self):
+        response = self.client.get('/blood-center-directory/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_camp_schedule_page(self):
+        response = self.client.get('/camp-schedule/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_donate_page(self):
+        response = self.client.get('/donate/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_request_blood_page_with_prefill(self):
+        response = self.client.get('/request-blood/?hospital=KGMU%20Trauma%20Center')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'value="KGMU Trauma Center"')
+
+    def test_contact_page(self):
+        response = self.client.get('/contact/')
+        self.assertEqual(response.status_code, 200)
+
+
+class AuthenticationAndSecurityTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # Seed test admin account
+        LoginModel.objects.create(
+            email='admin@hemocampus.edu',
+            password=make_password('admin123'),
+            role='admin'
+        )
+        # Seed test donor account
+        LoginModel.objects.create(
+            email='donor@test.com',
+            password=make_password('donorpass123'),
+            role='donor'
+        )
+        Donor.objects.create(
+            full_name='Test Donor',
+            email='donor@test.com',
+            gender='Male',
+            blood_group='O+',
+            mobile='9876543210',
+            date_of_birth='1995-05-15',
+            age=29,
+            address='123 Test Street',
+            city='Lucknow',
+            state='Uttar Pradesh'
+        )
+
+    def test_admin_login_success(self):
+        response = self.client.post('/loginCode/', {
+            'username': 'admin@hemocampus.edu',
+            'password': 'admin123',
+            'role': 'admin'
+        })
+        self.assertEqual(self.client.session.get('aid'), 'admin@hemocampus.edu')
+        self.assertIn('/Admin_Dashboard/', response.content.decode())
+
+    def test_donor_login_success(self):
+        response = self.client.post('/loginCode/', {
+            'username': 'donor@test.com',
+            'password': 'donorpass123',
+            'role': 'donor'
+        })
+        self.assertEqual(self.client.session.get('aid'), 'donor@test.com')
+        self.assertIn('/donor-dashboard/', response.content.decode())
+
+    def test_login_invalid_password(self):
+        response = self.client.post('/loginCode/', {
+            'username': 'donor@test.com',
+            'password': 'wrongpassword',
+            'role': 'donor'
+        })
+        self.assertIsNone(self.client.session.get('aid'))
+        self.assertIn('Invalid Email/Username or Password', response.content.decode())
+
+    def test_legacy_plaintext_password_auto_upgrade(self):
+        # Create user with plaintext password
+        LoginModel.objects.create(
+            email='legacy@test.com',
+            password='plainpassword123',
+            role='donor'
+        )
+        response = self.client.post('/loginCode/', {
+            'username': 'legacy@test.com',
+            'password': 'plainpassword123',
+            'role': 'donor'
+        })
+        self.assertEqual(self.client.session.get('aid'), 'legacy@test.com')
+        # Verify it was auto-upgraded to a secure hash
+        upgraded_user = LoginModel.objects.get(email='legacy@test.com')
+        self.assertTrue(upgraded_user.password.startswith(('pbkdf2_sha256$', 'argon2', 'bcrypt')))

@@ -16,10 +16,8 @@ from .models import (
 def get_current_donor(request):
     aid = request.session.get('aid')
     if aid:
-        donor = Donor.objects.filter(email=aid).first()
-        if donor:
-            return donor
-    return Donor.objects.first()
+        return Donor.objects.filter(email=aid).first()
+    return None
 
 
 # =========Donor Dashboard==========#
@@ -31,6 +29,10 @@ def donor_dashboard(request):
         )
 
     donor = get_current_donor(request)
+    if not donor:
+        return HttpResponse(
+            "<script>alert('Donor session invalid or account not found. Please login.');window.location.href='/login/'</script>"
+        )
 
     if request.method == "POST" and "update_profile" in request.POST:
         if donor:
@@ -97,6 +99,10 @@ def donate_blood(request):
         )
 
     donor = get_current_donor(request)
+    if not donor:
+        return HttpResponse(
+            "<script>alert('Donor session invalid. Please login.');window.location.href='/login/'</script>"
+        )
     if request.method == "POST":
         units = int(request.POST.get("units", 1))
         bg = request.POST.get("blood_group") or (donor.blood_group if donor else "O+")
@@ -159,6 +165,10 @@ def blood_requests(request):
         )
 
     donor = get_current_donor(request)
+    if not donor:
+        return HttpResponse(
+            "<script>alert('Donor session invalid. Please login.');window.location.href='/login/'</script>"
+        )
     if request.method == "POST":
         patient_name = request.POST.get("patient_name")
         bg = request.POST.get("blood_group")

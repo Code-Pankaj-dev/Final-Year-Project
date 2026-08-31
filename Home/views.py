@@ -8,6 +8,8 @@ from HospitalZone.models import Hospital
 from DonorZone.models import Donor
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
+from django.contrib.auth.hashers import make_password, check_password
+from django.utils.html import escape
 import json
 
 from .services_data import ALL_INDIA_BLOOD_CENTERS, ALL_INDIA_CAMP_SCHEDULES, INDIA_STATES_DISTRICTS
@@ -189,7 +191,9 @@ def subscribe_camp_alert(request):
         mobile = request.POST.get("mobile", "").strip()
         state = request.POST.get("state", "").strip()
         district = request.POST.get("district", "").strip()
-        return HttpResponse("<script>alert('Thank you! You will receive instant SMS/WhatsApp alerts for upcoming blood donation camps in " + district + ", " + state + ".');window.location.href='/camp-schedule/'</script>")
+        msg = f"Thank you! You will receive instant SMS/WhatsApp alerts for upcoming blood donation camps in {district}, {state}."
+        safe_msg = json.dumps(msg)
+        return HttpResponse(f"<script>alert({safe_msg});window.location.href='/camp-schedule/'</script>")
     return redirect("camp_schedule")
 
 
@@ -198,7 +202,9 @@ def register_camp_volunteer(request):
     if request.method == "POST":
         name = request.POST.get("volunteer_name", "").strip()
         camp_name = request.POST.get("camp_name", "").strip()
-        return HttpResponse("<script>alert('Thank you " + name + "! Your voluntary donor registration for [" + camp_name + "] is confirmed. Our camp medical team will welcome you with your digital donor certificate.');window.location.href='/camp-schedule/'</script>")
+        msg = f"Thank you {name}! Your voluntary donor registration for [{camp_name}] is confirmed. Our camp medical team will welcome you with your digital donor certificate."
+        safe_msg = json.dumps(msg)
+        return HttpResponse(f"<script>alert({safe_msg});window.location.href='/camp-schedule/'</script>")
     return redirect("camp_schedule")
 
 
@@ -211,7 +217,9 @@ def host_camp_request(request):
         city = request.POST.get("city", "").strip()
         camp_date = request.POST.get("preferred_date", "").strip()
         expected = request.POST.get("expected_donors", "100")
-        return HttpResponse("<script>alert('Thank you " + contact_person + "! Your camp hosting request for [" + org_name + "] in " + city + " on " + camp_date + " has been registered. Our regional blood bank coordinator will call you within 24 hours.');window.location.href='/camp-schedule/'</script>")
+        msg = f"Thank you {contact_person}! Your camp hosting request for [{org_name}] in {city} on {camp_date} has been registered. Our regional blood bank coordinator will call you within 24 hours."
+        safe_msg = json.dumps(msg)
+        return HttpResponse(f"<script>alert({safe_msg});window.location.href='/camp-schedule/'</script>")
     return redirect("camp_schedule")
 
 
@@ -238,17 +246,28 @@ def loginCode(request):
         password = request.POST.get("password", "").strip()
         role = request.POST.get("role", "").strip().lower()
 
-        # Check in LoginModel directly by email
-        data = LoginModel.objects.filter(email=username, password=password, role=role)
-        
-        # If not found by email, check if username was entered instead of email
-        if not data.exists():
+        # Find candidates in LoginModel
+        login_users = list(LoginModel.objects.filter(email=username, role=role))
+        if not login_users:
             user_obj = User.objects.filter(username=username).first()
             if user_obj and user_obj.email:
-                data = LoginModel.objects.filter(email=user_obj.email, password=password, role=role)
+                login_users = list(LoginModel.objects.filter(email=user_obj.email, role=role))
 
-        if data.exists():
-            matched_user = data.first()
+        matched_user = None
+        for u in login_users:
+            if u.password:
+                if u.password.startswith(('pbkdf2_sha256$', 'argon2', 'bcrypt')):
+                    if check_password(password, u.password):
+                        matched_user = u
+                        break
+                elif u.password == password:
+                    # Upgrade legacy plaintext password to secure hash
+                    matched_user = u
+                    matched_user.password = make_password(password)
+                    matched_user.save()
+                    break
+
+        if matched_user:
             request.session['aid'] = matched_user.email
             if role == 'admin':
                 return HttpResponse("<script>alert('Welcome to Admin Zone');window.location.href='/Admin_Dashboard/'</script>")
@@ -475,7 +494,7 @@ def DonorRegisterData(request):
             email=email,
             defaults={
                 'role': 'donor',
-                'password': password
+                'password': make_password(password)
             }
         )
 
@@ -537,7 +556,7 @@ def hospital_registration(request):
             email=email,
             defaults={
                 'role': 'hospital',
-                'password': password
+                'password': make_password(password)
             }
         )
 
