@@ -28,6 +28,14 @@ class HomePublicPagesTest(TestCase):
         response = self.client.get('/blood-availability/')
         self.assertEqual(response.status_code, 200)
 
+    def test_blood_availability_multi_filter_search(self):
+        # Test 3 options: State, District, Blood Group
+        response = self.client.get('/blood-availability/?state=Uttar%20Pradesh&district=Lucknow&blood_group=O%2B')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "KGMU")
+        self.assertContains(response, "Uttar Pradesh")
+        self.assertContains(response, "Lucknow")
+
     def test_blood_center_directory_page(self):
         response = self.client.get('/blood-center-directory/')
         self.assertEqual(response.status_code, 200)
