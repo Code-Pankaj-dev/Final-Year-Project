@@ -256,4 +256,30 @@ def logout_view(request):
     return redirect("/login/")
 
 
+# ==========================================
+# Blood Donation Certificate
+# ==========================================
+
+def donor_certificate(request, donation_id):
+    if not request.session.has_key('aid'):
+        return HttpResponse("<script>alert('First Login as Donor');window.location.href='/login/'</script>")
+
+    donor = get_current_donor(request)
+    if not donor:
+        return HttpResponse("<script>alert('Donor session invalid. Please login.');window.location.href='/login/'</script>")
+
+    donation = DonationHistory.objects.filter(id=donation_id, donor=donor).first()
+    if not donation:
+        return HttpResponse("<script>alert('Donation record not found or access denied.');window.location.href='/donor-dashboard/'</script>")
+
+    cert_number = f"HC-CERT-{donation.donation_date.strftime('%Y')}-{donation.id:05d}"
+    context = {
+        "donor": donor,
+        "donation": donation,
+        "cert_number": cert_number,
+        "issued_date": timezone.now().date(),
+    }
+    return render(request, "DonorPages/Certificate.html", context)
+
+
 

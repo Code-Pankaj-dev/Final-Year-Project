@@ -501,6 +501,7 @@
                   <th>Units</th>
                   <th>Center / Hospital</th>
                   <th>Status</th>
+                  <th>Certificate</th>
                 </tr>
               </thead>
               <tbody>
@@ -519,10 +520,19 @@
                     <span class="pill pill-amber">Pending</span>
                     {% endif %}
                   </td>
+                  <td>
+                    {% if d.status == 'Approved' or d.status == 'Completed' %}
+                    <a href="{% url 'donor_certificate' d.id %}" target="_blank" style="background:#ffd700; color:#3b0000; font-weight:700; font-size:12px; padding:5px 12px; border-radius:6px; text-decoration:none; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(255,215,0,0.35);">
+                      <i class="fa-solid fa-award"></i> Certificate
+                    </a>
+                    {% else %}
+                    <span style="font-size:12px; color:#94a3b8;">Pending Approval</span>
+                    {% endif %}
+                  </td>
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="5" style="text-align:center; padding:28px; color:#94a3b8;">
+                  <td colspan="6" style="text-align:center; padding:28px; color:#94a3b8;">
                     No donation records logged yet. Click <strong>Record Donation</strong> above to register your donation!
                   </td>
                 </tr>

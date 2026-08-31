@@ -1,0 +1,351 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificate of Appreciation - {{ donor.full_name }} - HemoCampus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Montserrat:wght@400;500;600;700;800&family=Alex+Brush&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #c61a1a;
+      --gold: #b48c36;
+      --gold-light: #dfba6d;
+      --dark: #1e293b;
+      --bg: #0f172a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 15px;
+      color: var(--dark);
+    }
+
+    /* Print / Action Toolbar */
+    .toolbar {
+      width: 100%;
+      max-width: 960px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-back {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+    .btn-back:hover { background: rgba(255,255,255,0.25); }
+
+    .btn-print {
+      background: linear-gradient(135deg, #ffd700, #ffb700);
+      color: #3b0000;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+      transition: all 0.2s;
+    }
+    .btn-print:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6); }
+
+    /* Certificate Outer Frame */
+    .cert-container {
+      width: 100%;
+      max-width: 960px;
+      background: #fffcf7;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .cert-border-outer {
+      border: 8px double var(--gold);
+      padding: 36px 40px;
+      position: relative;
+      background: radial-gradient(circle at center, #ffffff 60%, #fffbf0 100%);
+    }
+
+    /* Corner Ornaments */
+    .corner-decor {
+      position: absolute;
+      width: 45px;
+      height: 45px;
+      border: 3px solid var(--gold);
+    }
+    .c-tl { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+    .c-tr { top: 8px; right: 8px; border-left: none; border-bottom: none; }
+    .c-bl { bottom: 8px; left: 8px; border-right: none; border-top: none; }
+    .c-br { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+
+    /* Header */
+    .cert-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-title {
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .cert-tagline {
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .cert-main-title {
+      font-family: 'Cinzel', serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 18px;
+      margin-bottom: 6px;
+    }
+
+    .cert-subtitle {
+      font-size: 15px;
+      font-style: italic;
+      color: #475569;
+    }
+
+    /* Recipient Name */
+    .recipient-block {
+      text-align: center;
+      margin: 28px 0 20px;
+    }
+
+    .recipient-name {
+      font-family: 'Alex Brush', cursive;
+      font-size: 54px;
+      color: #881337;
+      line-height: 1.2;
+      border-bottom: 2px solid var(--gold-light);
+      display: inline-block;
+      padding: 0 40px 6px;
+      margin-bottom: 12px;
+    }
+
+    .cert-statement {
+      max-width: 740px;
+      margin: 0 auto 28px;
+      text-align: center;
+      font-size: 14.5px;
+      line-height: 1.8;
+      color: #334155;
+    }
+
+    .cert-details-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      background: #fff8eb;
+      border: 1px dashed var(--gold-light);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 36px;
+      text-align: center;
+    }
+
+    .detail-item .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #78350f;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .detail-item .val {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--dark);
+    }
+
+    /* Signatures & Seal Footer */
+    .cert-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 20px;
+      padding: 0 20px;
+    }
+
+    .sign-block {
+      text-align: center;
+      width: 200px;
+    }
+
+    .sign-img {
+      font-family: 'Alex Brush', cursive;
+      font-size: 28px;
+      color: #1e3a8a;
+      border-bottom: 1.5px solid #94a3b8;
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+    }
+
+    .sign-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .seal-block {
+      text-align: center;
+    }
+
+    .gold-seal {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fde047 0%, #ca8a04 100%);
+      border: 4px solid #854d0e;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 16px rgba(161, 98, 7, 0.4);
+      color: #451a03;
+      margin: 0 auto;
+    }
+
+    .gold-seal i { font-size: 24px; margin-bottom: 2px; }
+    .gold-seal span { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .cert-id-bar {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 11.5px;
+      color: #94a3b8;
+      letter-spacing: 1.5px;
+    }
+
+    /* Print Overrides */
+    @media print {
+      body { background: #fff; padding: 0; }
+      .toolbar { display: none !important; }
+      .cert-container { box-shadow: none; border-radius: 0; max-width: 100%; }
+      .cert-border-outer { padding: 25px 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <a href="/donor-dashboard/" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+    <button onclick="window.print();" class="btn-print"><i class="fa-solid fa-print"></i> Print / Save as PDF</button>
+  </div>
+
+  <!-- Certificate Box -->
+  <div class="cert-container">
+    <div class="cert-border-outer">
+      <div class="corner-decor c-tl"></div>
+      <div class="corner-decor c-tr"></div>
+      <div class="corner-decor c-bl"></div>
+      <div class="corner-decor c-br"></div>
+
+      <!-- Header -->
+      <div class="cert-header">
+        <div class="brand-title">🩸 HEMOCAMPUS</div>
+        <div class="cert-tagline">National Blood Transfusion & Donor Network</div>
+        <div class="cert-main-title">Certificate of Appreciation</div>
+        <div class="cert-subtitle">Proudly presented for exemplary contribution to humanity</div>
+      </div>
+
+      <!-- Recipient -->
+      <div class="recipient-block">
+        <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 2px; color: #64748b; margin-bottom: 6px;">This is awarded to</div>
+        <div class="recipient-name">{{ donor.full_name }}</div>
+      </div>
+
+      <!-- Body Statement -->
+      <div class="cert-statement">
+        In grateful recognition of your voluntary and selfless gift of blood at <strong>{{ donation.hospital_name|default:"HemoCampus Central Blood Center" }}</strong>. Your compassionate donation helps save lives, supports critical emergency treatments, and upholds the highest standards of civic responsibility.
+      </div>
+
+      <!-- Details Strip -->
+      <div class="cert-details-grid">
+        <div class="detail-item">
+          <div class="label">Blood Group</div>
+          <div class="val" style="color:var(--primary);">{{ donation.blood_group|default:donor.blood_group }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Units Donated</div>
+          <div class="val">{{ donation.units }} Unit(s)</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Donation Date</div>
+          <div class="val">{{ donation.donation_date|date:"d M Y" }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Reward Points</div>
+          <div class="val" style="color:#b45309;">+50 Pts</div>
+        </div>
+      </div>
+
+      <!-- Footer & Signatures -->
+      <div class="cert-footer">
+        <div class="sign-block">
+          <div class="sign-img">Dr. S. K. Verma</div>
+          <div class="sign-title">Medical Superintendent</div>
+          <div style="font-size:10.5px; color:#94a3b8;">{{ donation.hospital_name|default:"Blood Transfusion Dept" }}</div>
+        </div>
+
+        <div class="seal-block">
+          <div class="gold-seal">
+            <i class="fa-solid fa-award"></i>
+            <span>VERIFIED</span>
+          </div>
+        </div>
+
+        <div class="sign-block">
+          <div class="sign-img">Dr. R. K. Sharma</div>
+          <div class="sign-title">Director General</div>
+          <div style="font-size:10.5px; color:#94a3b8;">HemoCampus Blood Network</div>
+        </div>
+      </div>
+
+      <!-- Certificate ID -->
+      <div class="cert-id-bar">
+        CERTIFICATE ID: <strong>{{ cert_number }}</strong> &bull; ISSUED ON: {{ issued_date|date:"d M Y" }} &bull; VERIFIED PLATFORM RECORD
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

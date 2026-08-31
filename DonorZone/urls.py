@@ -103,4 +103,14 @@ urlpatterns = [
         name='donor_logout'
     ),
 
+    # ======================================
+    # Certificate
+    # ======================================
+
+    path(
+        'certificate/<int:donation_id>/',
+        views.donor_certificate,
+        name='donor_certificate'
+    ),
+
 ]

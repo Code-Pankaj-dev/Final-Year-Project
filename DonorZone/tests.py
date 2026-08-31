@@ -79,3 +79,22 @@ class DonorZoneSecurityAndFunctionalityTest(TestCase):
         self.assertEqual(self.donor2.reward_points, 100) # 50 initial + 50 reward
         stock = BloodStock.objects.get(blood_group='A+')
         self.assertEqual(stock.units, 12) # 10 initial + 2 added
+
+    def test_donor_certificate_generation(self):
+        donation = DonationHistory.objects.create(
+            donor=self.donor2,
+            donation_date=timezone.now().date(),
+            hospital_name='Apollo Hospital',
+            units=1,
+            blood_group='B+',
+            status='Approved'
+        )
+        session = self.client.session
+        session['aid'] = 'second@test.com'
+        session.save()
+
+        response = self.client.get(f'/donor-dashboard/certificate/{donation.id}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Certificate of Appreciation')
+        self.assertContains(response, 'Second Donor')
+        self.assertContains(response, 'Apollo Hospital')
