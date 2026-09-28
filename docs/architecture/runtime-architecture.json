@@ -1,0 +1,264 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "HemoCampus — High-Level Runtime Architecture",
+    "output": "runtime-architecture.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "primary-path",
+        "label": "Primary Telemetry Path",
+        "focus": ["clients", "edge_proxy", "gunicorn_wsgi", "services_portal", "database"],
+        "note": "Citizen blood availability inquiry flowing from client to live relational inventory."
+      },
+      {
+        "id": "auth-perimeter",
+        "label": "Authentication & Trust Perimeter",
+        "focus": ["security_engine", "gunicorn_wsgi", "admin_control"],
+        "note": "PBKDF2 password encryption, CSRF protection, and role-based access control."
+      },
+      {
+        "id": "clinical-operations",
+        "label": "Clinical & Hospital Operations",
+        "focus": ["operations_hub", "database", "external_apis"],
+        "note": "Emergency hospital requisitions, verified donor certificates, and external map routing."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "clients",
+      "type": "external",
+      "label": "Client Tier",
+      "sublabel": "Browsers & Mobile",
+      "pos": [40, 240],
+      "size": [126, 60]
+    },
+    {
+      "id": "edge_proxy",
+      "type": "cloud",
+      "label": "Render Edge",
+      "sublabel": "TLS 1.3 / HTTPS Proxy",
+      "pos": [240, 240],
+      "size": [130, 60]
+    },
+    {
+      "id": "whitenoise",
+      "type": "frontend",
+      "label": "WhiteNoise Engine",
+      "sublabel": "Static Asset Pipeline",
+      "pos": [240, 100],
+      "size": [130, 60]
+    },
+    {
+      "id": "gunicorn_wsgi",
+      "type": "backend",
+      "label": "Gunicorn WSGI",
+      "sublabel": "Python App Server",
+      "brand": "python",
+      "pos": [450, 240],
+      "size": [136, 60]
+    },
+    {
+      "id": "security_engine",
+      "type": "security",
+      "label": "Auth & Security",
+      "sublabel": "PBKDF2 / Session / CSRF",
+      "pos": [450, 100],
+      "size": [136, 60]
+    },
+    {
+      "id": "services_portal",
+      "type": "backend",
+      "label": "Services Portal",
+      "sublabel": "Stock & Camp Telemetry",
+      "brand": "django",
+      "pos": [670, 240],
+      "size": [146, 60]
+    },
+    {
+      "id": "admin_control",
+      "type": "backend",
+      "label": "Central Admin",
+      "sublabel": "Inventory & Audit",
+      "brand": "django",
+      "pos": [670, 100],
+      "size": [146, 60]
+    },
+    {
+      "id": "operations_hub",
+      "type": "backend",
+      "label": "Operations Hub",
+      "sublabel": "Donor & Hospital SOS",
+      "brand": "django",
+      "pos": [670, 380],
+      "size": [146, 60]
+    },
+    {
+      "id": "database",
+      "type": "database",
+      "label": "Relational DB",
+      "sublabel": "PostgreSQL / SQLite",
+      "brand": "postgresql",
+      "pos": [910, 240],
+      "size": [146, 60]
+    },
+    {
+      "id": "external_apis",
+      "type": "external",
+      "label": "External APIs",
+      "sublabel": "Google Maps Platform",
+      "pos": [910, 380],
+      "size": [136, 60]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Render Cloud Platform (US-East Managed PaaS)",
+      "wraps": [
+        "edge_proxy",
+        "whitenoise",
+        "gunicorn_wsgi",
+        "security_engine",
+        "services_portal",
+        "admin_control",
+        "operations_hub",
+        "database"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "Protected Django Application Perimeter",
+      "wraps": [
+        "gunicorn_wsgi",
+        "security_engine",
+        "services_portal",
+        "admin_control",
+        "operations_hub"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "c-clients-edge",
+      "from": "clients",
+      "to": "edge_proxy",
+      "label": "HTTPS",
+      "variant": "emphasis",
+      "route": "straight"
+    },
+    {
+      "id": "c-edge-static",
+      "from": "edge_proxy",
+      "to": "whitenoise",
+      "label": "static files",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "c-edge-wsgi",
+      "from": "edge_proxy",
+      "to": "gunicorn_wsgi",
+      "label": "WSGI proxy",
+      "variant": "emphasis",
+      "route": "straight"
+    },
+    {
+      "id": "c-wsgi-security",
+      "from": "gunicorn_wsgi",
+      "to": "security_engine",
+      "label": "verify session",
+      "variant": "security",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "c-security-admin",
+      "from": "security_engine",
+      "to": "admin_control",
+      "label": "RBAC session",
+      "variant": "security",
+      "route": "straight"
+    },
+    {
+      "id": "c-wsgi-services",
+      "from": "gunicorn_wsgi",
+      "to": "services_portal",
+      "label": "dispatch",
+      "variant": "emphasis",
+      "route": "straight"
+    },
+    {
+      "id": "c-wsgi-ops",
+      "from": "gunicorn_wsgi",
+      "to": "operations_hub",
+      "label": "ops routes",
+      "fromSide": "bottom",
+      "toSide": "left"
+    },
+    {
+      "id": "c-services-db",
+      "from": "services_portal",
+      "to": "database",
+      "label": "stock queries",
+      "variant": "emphasis",
+      "route": "straight"
+    },
+    {
+      "id": "c-admin-db",
+      "from": "admin_control",
+      "to": "database",
+      "label": "audit CRUD",
+      "fromSide": "right",
+      "toSide": "top"
+    },
+    {
+      "id": "c-ops-db",
+      "from": "operations_hub",
+      "to": "database",
+      "label": "transact SOS",
+      "fromSide": "right",
+      "toSide": "bottom"
+    },
+    {
+      "id": "c-ops-maps",
+      "from": "operations_hub",
+      "to": "external_apis",
+      "label": "maps routing",
+      "labelDy": 24,
+      "variant": "dashed",
+      "route": "straight"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Ingress & Edge",
+      "items": [
+        "Render edge proxy terminates TLS 1.3 with DDoS mitigation",
+        "WhiteNoise serves pre-compressed CSS/JS and certificate assets"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Django Application Mesh",
+      "items": [
+        "Gunicorn WSGI orchestrates concurrent Python worker processes",
+        "Services Portal handles 28-state cascading stock availability",
+        "Operations Hub manages verified certificates and hospital requisitions",
+        "PBKDF2 security layer with CSRF, session tokens, and IDOR protection"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Persistence & External",
+      "items": [
+        "Relational PostgreSQL / SQLite transactional persistence tier",
+        "Google Maps Platform API integration for apex hospital discovery"
+      ]
+    }
+  ]
+}
